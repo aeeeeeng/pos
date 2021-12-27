@@ -48,9 +48,7 @@
                         <label for="kode_produk" class="col-lg-2">Kode Produk</label>
                         <div class="col-lg-5">
                             <div class="input-group">
-                                <input type="hidden" name="id_penjualan" id="id_penjualan" value="{{ $id_penjualan }}">
-                                <input type="hidden" name="id_produk" id="id_produk">
-                                <input type="text" class="form-control" name="kode_produk" id="kode_produk">
+                                <select class="js-data-example-ajax select2 form-control" style="width:100%;"></select>
                                 <span class="input-group-btn">
                                     <button onclick="tampilProduk()" class="btn btn-info btn-flat" type="button"><i class="fa fa-arrow-right"></i></button>
                                 </span>
@@ -80,11 +78,9 @@
                     <div class="col-lg-4">
                         <form action="{{ route('transaksi.simpan') }}" class="form-penjualan" method="post">
                             @csrf
-                            <input type="hidden" name="id_penjualan" value="{{ $id_penjualan }}">
                             <input type="hidden" name="total" id="total">
                             <input type="hidden" name="total_item" id="total_item">
                             <input type="hidden" name="bayar" id="bayar">
-                            <input type="hidden" name="id_member" id="id_member" value="{{ $memberSelected->id_member }}">
 
                             <div class="form-group row">
                                 <label for="totalrp" class="col-lg-2 control-label">Total</label>
@@ -96,7 +92,6 @@
                                 <label for="kode_member" class="col-lg-2 control-label">Member</label>
                                 <div class="col-lg-8">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="kode_member" value="{{ $memberSelected->kode_member }}">
                                         <span class="input-group-btn">
                                             <button onclick="tampilMember()" class="btn btn-info btn-flat" type="button"><i class="fa fa-arrow-right"></i></button>
                                         </span>
@@ -107,7 +102,7 @@
                                 <label for="diskon" class="col-lg-2 control-label">Diskon</label>
                                 <div class="col-lg-8">
                                     <input type="number" name="diskon" id="diskon" class="form-control" 
-                                        value="{{ ! empty($memberSelected->id_member) ? $diskon : 0 }}" 
+                                        value="" 
                                         readonly>
                                 </div>
                             </div>
@@ -147,180 +142,67 @@
 
 @push('scripts')
 <script>
-    let table, table2;
-
-    $(function () {
-        $('body').addClass('sidebar-collapse');
-
-        table = $('.table-penjualan').DataTable({
-            responsive: true,
-            processing: true,
-            serverSide: true,
-            autoWidth: false,
-            ajax: {
-                url: '{{ route('transaksi.data', $id_penjualan) }}',
+    $(".js-data-example-ajax").select2({
+        ajax: {
+            url: "https://api.github.com/search/repositories",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term
+                    page: params.page
+                };
             },
-            columns: [
-                {data: 'DT_RowIndex', searchable: false, sortable: false},
-                {data: 'kode_produk'},
-                {data: 'nama_produk'},
-                {data: 'harga_jual'},
-                {data: 'jumlah'},
-                {data: 'diskon'},
-                {data: 'subtotal'},
-                {data: 'aksi', searchable: false, sortable: false},
-            ],
-            dom: 'Brt',
-            bSort: false,
-            paginate: false
-        })
-        .on('draw.dt', function () {
-            loadForm($('#diskon').val());
-            // setTimeout(() => {
-                $('#diterima').trigger('input');
-            // }, 300);
-        });
-        table2 = $('.table-produk').DataTable();
+            processResults: function (data, params) {
+                params.page = params.page || 1;
 
-        $(document).on('input', '.quantity', function () {
-            let id = $(this).data('id');
-            let jumlah = parseInt($(this).val());
+                return {
+                    results: data.items,
+                    pagination: {
+                    more: (params.page * 30) < data.total_count
+                    }
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Search for a repository',
+        minimumInputLength: 1,
+        templateResult: formatRepo,
+        templateSelection: formatRepoSelection
+    })
 
-            if (jumlah < 1) {
-                $(this).val(1);
-                alert('Jumlah tidak boleh kurang dari 1');
-                return;
-            }
-            if (jumlah > 10000) {
-                $(this).val(10000);
-                alert('Jumlah tidak boleh lebih dari 10000');
-                return;
-            }
-
-            // $("#detailTransaksi").fadeOut(1000);
-
-            $.post(`{{ url('/transaksi') }}/${id}`, {
-                    '_token': $('[name=csrf-token]').attr('content'),
-                    '_method': 'put',
-                    'jumlah': jumlah
-                })
-                .done(response => {
-                    
-                    table.ajax.reload(() => loadForm($('#diskon').val()));
-                    
-                })
-                .fail(errors => {
-                    alert('Tidak dapat menyimpan data');
-                    return;
-                });
-        });
-
-        $(document).on('input', '#diskon', function () {
-            if ($(this).val() == "") {
-                $(this).val(0).select();
-            }
-
-            loadForm($(this).val());
-        });
-
-        $('#diterima').on('input', function () {
-            if ($(this).val() == "") {
-                $(this).val(0).select();
-            }
-
-            loadForm($('#diskon').val(), $(this).val());
-        }).focus(function () {
-            $(this).select();
-        });
-
-        $('.btn-simpan').on('click', function () {
-            $('.form-penjualan').submit();
-        });
-    });
-
-    function tampilProduk() {
-        $('#modal-produk').modal('show');
-    }
-
-    function hideProduk() {
-        $('#modal-produk').modal('hide');
-    }
-
-    function pilihProduk(id, kode) {
-        $('#id_produk').val(id);
-        $('#kode_produk').val(kode);
-        hideProduk();
-        tambahProduk();
-    }
-
-    function tambahProduk() {
-        $.post('{{ route('transaksi.store') }}', $('.form-produk').serialize())
-            .done(response => {
-                $('#kode_produk').focus();
-                table.ajax.reload(() => loadForm($('#diskon').val()));
-            })
-            .fail(errors => {
-                alert('Tidak dapat menyimpan data');
-                return;
-            });
-    }
-
-    function tampilMember() {
-        $('#modal-member').modal('show');
-    }
-
-    function pilihMember(id, kode) {
-        $('#id_member').val(id);
-        $('#kode_member').val(kode);
-        $('#diskon').val('{{ $diskon }}');
-        loadForm($('#diskon').val());
-        $('#diterima').val(0).focus().select();
-        hideMember();
-    }
-
-    function hideMember() {
-        $('#modal-member').modal('hide');
-    }
-
-    function deleteData(url) {
-        if (confirm('Yakin ingin menghapus data terpilih?')) {
-            $.post(url, {
-                    '_token': $('[name=csrf-token]').attr('content'),
-                    '_method': 'delete'
-                })
-                .done((response) => {
-                    table.ajax.reload(() => loadForm($('#diskon').val()));
-                })
-                .fail((errors) => {
-                    alert('Tidak dapat menghapus data');
-                    return;
-                });
+    function formatRepo (repo) {
+        if (repo.loading) {
+            return repo.text;
         }
+
+        var $container = $(
+            "<div class='select2-result-repository clearfix'>" +
+            "<div class='select2-result-repository__avatar'><img src='" + repo.owner.avatar_url + "' /></div>" +
+            "<div class='select2-result-repository__meta'>" +
+                "<div class='select2-result-repository__title'></div>" +
+                "<div class='select2-result-repository__description'></div>" +
+                "<div class='select2-result-repository__statistics'>" +
+                "<div class='select2-result-repository__forks'><i class='fa fa-flash'></i> </div>" +
+                "<div class='select2-result-repository__stargazers'><i class='fa fa-star'></i> </div>" +
+                "<div class='select2-result-repository__watchers'><i class='fa fa-eye'></i> </div>" +
+                "</div>" +
+            "</div>" +
+            "</div>"
+        );
+
+        $container.find(".select2-result-repository__title").text(repo.full_name);
+        $container.find(".select2-result-repository__description").text(repo.description);
+        $container.find(".select2-result-repository__forks").append(repo.forks_count + " Forks");
+        $container.find(".select2-result-repository__stargazers").append(repo.stargazers_count + " Stars");
+        $container.find(".select2-result-repository__watchers").append(repo.watchers_count + " Watchers");
+
+        return $container;
     }
 
-    function loadForm(diskon = 0, diterima = 0) {
-        $('#total').val($('.total').text());
-        $('#total_item').val($('.total_item').text());
-        $.get(`{{ url('/transaksi/loadform') }}/${diskon}/${$('.total').text()}/${diterima}`)
-            .done(response => {
-                $('#totalrp').val('Rp. '+ response.totalrp);
-                $('#bayarrp').val('Rp. '+ response.bayarrp);
-                $('#bayar').val(response.bayar);
-                $('.tampil-bayar').text('Bayar: Rp. '+ response.bayarrp);
-                $('.tampil-terbilang').text(response.terbilang);
-
-                $('#kembali').val('Rp.'+ response.kembalirp);
-                if ($('#diterima').val() != 0) {
-                    $('.tampil-bayar').text('Kembali: Rp. '+ response.kembalirp);
-                    $('.tampil-terbilang').text(response.kembali_terbilang);
-                }
-            })
-            .fail(errors => {
-                alert('Tidak dapat menampilkan data');
-                return;
-            }).always(() => {
-                $("#detailTransaksi").fadeIn(1000);
-            })
+    function formatRepoSelection (repo) {
+     return repo.full_name || repo.text;
     }
+
 </script>
 @endpush
