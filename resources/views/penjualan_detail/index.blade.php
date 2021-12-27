@@ -21,6 +21,11 @@
         display: none;
     }
 
+    .select2-container--default .select2-selection--single {
+        border-radius: unset;
+        height: 35px;
+    }
+
     @media(max-width: 768px) {
         .tampil-bayar {
             font-size: 3em;
@@ -45,13 +50,10 @@
                 <form class="form-produk">
                     @csrf
                     <div class="form-group row">
-                        <label for="kode_produk" class="col-lg-2">Kode Produk</label>
-                        <div class="col-lg-5">
+                        <label for="kode_produk" class="col-lg-2">Kode / Nama Produk</label>
+                        <div class="col-lg-8">
                             <div class="input-group">
-                                <select class="js-data-example-ajax select2 form-control" style="width:100%;"></select>
-                                <span class="input-group-btn">
-                                    <button onclick="tampilProduk()" class="btn btn-info btn-flat" type="button"><i class="fa fa-arrow-right"></i></button>
-                                </span>
+                                <select class="js-data-example-ajax select2 form-control" style="width:850px;"></select>
                             </div>
                         </div>
                     </div>
@@ -144,7 +146,7 @@
 <script>
     $(".js-data-example-ajax").select2({
         ajax: {
-            url: "https://api.github.com/search/repositories",
+            url: "{{url('transaksi/get-product')}}",
             dataType: 'json',
             delay: 250,
             data: function (params) {
@@ -165,43 +167,42 @@
             },
             cache: true
         },
-        placeholder: 'Search for a repository',
+        placeholder: 'Cari Produk',
         minimumInputLength: 1,
-        templateResult: formatRepo,
-        templateSelection: formatRepoSelection
-    })
+        templateResult: formatResult,
+        templateSelection: formatResultSelection,
+        escapeMarkup: function(markup) {
+            return markup;
+        },
+    });
 
-    function formatRepo (repo) {
-        if (repo.loading) {
-            return repo.text;
+    $('.js-data-example-ajax').on('select2:select', function (e) {
+        var data = e.params.data;
+        console.log(data);
+    });
+
+    function formatResult(item) {
+        if (item.loading) {
+            return item.text;
         }
 
         var $container = $(
             "<div class='select2-result-repository clearfix'>" +
-            "<div class='select2-result-repository__avatar'><img src='" + repo.owner.avatar_url + "' /></div>" +
-            "<div class='select2-result-repository__meta'>" +
-                "<div class='select2-result-repository__title'></div>" +
-                "<div class='select2-result-repository__description'></div>" +
-                "<div class='select2-result-repository__statistics'>" +
-                "<div class='select2-result-repository__forks'><i class='fa fa-flash'></i> </div>" +
-                "<div class='select2-result-repository__stargazers'><i class='fa fa-star'></i> </div>" +
-                "<div class='select2-result-repository__watchers'><i class='fa fa-eye'></i> </div>" +
+                "<div class='select2-result-repository__meta'>" +
+                    "<div class='select2-result-repository__kode_produk'></div>" +
+                    "<div class='select2-result-repository__nama_produk'></div>" +
                 "</div>" +
-            "</div>" +
             "</div>"
         );
 
-        $container.find(".select2-result-repository__title").text(repo.full_name);
-        $container.find(".select2-result-repository__description").text(repo.description);
-        $container.find(".select2-result-repository__forks").append(repo.forks_count + " Forks");
-        $container.find(".select2-result-repository__stargazers").append(repo.stargazers_count + " Stars");
-        $container.find(".select2-result-repository__watchers").append(repo.watchers_count + " Watchers");
+        $container.find(".select2-result-repository__kode_produk").text(item.kode_produk);
+        $container.find(".select2-result-repository__nama_produk").text(item.nama_produk);
 
         return $container;
     }
 
-    function formatRepoSelection (repo) {
-     return repo.full_name || repo.text;
+    function formatResultSelection(item) {
+     return item.kode_produk;
     }
 
 </script>

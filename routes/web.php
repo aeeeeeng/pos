@@ -81,6 +81,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/transaksi/loadform/{diskon}/{total}/{diterima}', [PenjualanDetailController::class, 'loadForm'])->name('transaksi.load_form');
         Route::resource('/transaksi', PenjualanDetailController::class)
             ->except('create', 'show', 'edit');
+        
+        Route::get('transaksi/get-product', [PenjualanDetailController::class, 'getDataProduct'])->name('transaksi.autocomplete-product');
     });
 
     Route::group(['middleware' => 'level:1'], function () {
