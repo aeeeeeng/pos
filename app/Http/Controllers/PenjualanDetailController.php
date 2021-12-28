@@ -70,7 +70,7 @@ class PenjualanDetailController extends Controller
                 self::updateStock($item['id_produk'], $item['qty_order']);
             }
             DB::table('penjualan_detail')->insert($details);
-            $responseJson = Response::success('Berhasil menyimpan transaksi');
+            $responseJson = Response::success('Berhasil menyimpan transaksi', ['id_penjualan' => $id_penjualan]);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();

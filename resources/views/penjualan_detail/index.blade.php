@@ -370,7 +370,7 @@
             showErrorAlert('Produk harus berisi minimal 1 baris');
             return;
         }
-        if(totalKembalian <= 0) {
+        if(totalKembalian < 0) {
             showErrorAlert('Uang yang diterima tidak valid');
             return;
         }
@@ -391,16 +391,17 @@
         }).done(response => {
             showSuccessAlert(response.message);
             unBlockLoading();
-            bootbox.dialog({
-                closeButton: false,
-                size: "medium",
-                title: '',
-                message: `
-                    <center>
-                        <button class="btn btn-warning btn-flat">Cetak Struk</button>
-                        <button onclick="window.location.reload();" class="btn btn-primary btn-flat">Transaksi Baru</button>
-                    </center>
-                `
+            const id_penjualan = response.data.id_penjualan;
+            $.ajax({
+                url: `{{url('transaksi/selesai')}}?id_penjualan=${id_penjualan}`,
+                success: function(response) {
+                    bootbox.dialog({
+                        closeButton: false,
+                        size: "medium",
+                        title: 'Penjualan telah selesai',
+                        message: response
+                    });
+                }
             });
         }).fail(error => {
             const respJson = $.parseJSON(error.responseText);
@@ -465,6 +466,42 @@
             return item.text;
         }
         return item.kode_member + ' - ' + item.nama_member;
+    }
+
+
+    /// SELESAI
+
+    document.cookie = "innerHeight=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    
+    function notaKecil(url, title) {
+        popupCenter(url, title, 625, 500);
+    }
+
+    function notaBesar(url, title) {
+        popupCenter(url, title, 900, 675);
+    }
+
+    function popupCenter(url, title, w, h) {
+        const dualScreenLeft = window.screenLeft !==  undefined ? window.screenLeft : window.screenX;
+        const dualScreenTop  = window.screenTop  !==  undefined ? window.screenTop  : window.screenY;
+
+        const width  = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+        const height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+        const systemZoom = width / window.screen.availWidth;
+        const left       = (width - w) / 2 / systemZoom + dualScreenLeft
+        const top        = (height - h) / 2 / systemZoom + dualScreenTop
+        const newWindow  = window.open(url, title, 
+        `
+            scrollbars=yes,
+            width  = ${w / systemZoom}, 
+            height = ${h / systemZoom}, 
+            top    = ${top}, 
+            left   = ${left}
+        `
+        );
+
+        if (window.focus) newWindow.focus();
     }
 
 </script>
