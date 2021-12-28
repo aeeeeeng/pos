@@ -7,9 +7,9 @@
 @push('css')
 <style>
     .tampil-bayar {
-        font-size: 5em;
+        font-size: 3em;
         text-align: center;
-        height: 100px;
+        height: 100%;
     }
 
     .tampil-terbilang {
@@ -46,18 +46,25 @@
     <div class="col-lg-12">
         <div class="box">
             <div class="box-body">
-                    
-                <form class="form-produk">
-                    @csrf
-                    <div class="form-group row">
-                        <label for="kode_produk" class="col-md-3">Cari Berdasar Kode / Nama Produk -> </label>
-                        <div class="col-lg-8">
-                            <div class="input-group">
-                                <select class="pilih-product select2 form-control" style="width:500px;"></select>
-                            </div>
+                
+                <div class="form-group row">
+                    <label for="kode_produk" class="col-md-3">Cari Member Berdasar Kode / Nama Member -> </label>
+                    <div class="col-lg-8">
+                        <div class="input-group">
+                            <select class="pilih-member select2 form-control" style="width:500px;"></select>
                         </div>
                     </div>
-                </form>
+                </div>
+
+                <div class="form-group row">
+                    <label for="kode_produk" class="col-md-3">Cari Produk Berdasar Kode / Nama Produk -> </label>
+                    <div class="col-lg-8">
+                        <div class="input-group">
+                            <select class="pilih-product select2 form-control" style="width:500px;"></select>
+                        </div>
+                    </div>
+                </div>
+                
 
                 <table class="table table-bordered" id="tablePenjualan">
                     <thead>
@@ -79,7 +86,7 @@
                 <hr>
                 <div class="row" id="detailTransaksi">
                     <div class="col-lg-8">
-                        <div class="tampil-bayar bg-primary">0</div>
+                        <div class="tampil-bayar bg-primary">Total Belanja<br>0</div>
                         <div class="tampil-terbilang"></div>
                     </div>
                     <div class="col-lg-4">
@@ -133,7 +140,9 @@
             </div>
 
             <div class="box-footer">
-                <button type="button" class="btn btn-primary btn-flat pull-right" onclick="simpan(this)"><i class="fa fa-floppy-o"></i> Simpan Transaksi</button>
+                <center>
+                    <button type="button" class="btn btn-primary btn-flat" onclick="simpan(this)"><i class="fa fa-floppy-o"></i> &nbsp; Simpan Transaksi</button>
+                </center>
             </div>
         </div>
     </div>
@@ -150,6 +159,11 @@
     let grandTotal = 0;
     let totalBayar = 0;
     let totalKembalian = 0;
+    let member = null
+
+    $(document).ready(function(){
+        $('body').addClass('sidebar-collapse');
+    });
 
     $(".pilih-product").select2({
         placeholder: "Pilih Barang Melalui Kode/Nama",
@@ -181,12 +195,46 @@
         templateSelection: formatResultSelection
     });
 
+    $(".pilih-member").select2({
+        placeholder: "Pilih Member Melalui Kode/Nama",
+        allowClear: true,
+        ajax: {
+            url: "{{url('transaksi/get-member')}}",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term
+                    page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.items,
+                    pagination: {
+                    more: (params.page * 30) < data.total_count
+                    }
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 2,
+        templateResult: formatResultMember,
+        templateSelection: formatResultSelectionMember
+    });
+
     $('.pilih-product').on('select2:select', function (e) {
         var data = e.params.data;
         storeOptionProduct(data);
         $(".pilih-product").val('').trigger('change');
         renderTable();
         console.log(dataDetail);
+    });
+
+    $('.pilih-member').on('select2:select', function (e) {
+        var data = e.params.data;
     });
 
     function storeOptionProduct(selected)
@@ -212,7 +260,11 @@
     function changeQty(that, id)
     {
         const indexEdit = dataDetail.findIndex(item => item.id == id);
-        dataDetail[indexEdit].qty_order = $(that).val();
+        if($(that).val() < 0) {
+            showErrorAlert('Quantity tidak boleh kurang dari 0');
+            $(that).val(1);
+        } 
+        dataDetail[indexEdit].qty_order = parseInt($(that).val());
         sumSubTotal(that, id);
         $("#diterima").val('0').trigger('change');
     }
@@ -225,6 +277,13 @@
         const discount = dataDetail[indexExist].diskon;
         dataDetail[indexExist].subtotal = qty_order * (harga_jual - (discount/100*harga_jual));
         $(that).closest('tr').find('td.subtotal').text(formatMoney(dataDetail[indexExist].subtotal));
+        if(parseInt(qty_order) > dataDetail[indexExist].stok) {
+            console.log(parseInt(qty_order), dataDetail[indexExist].stok);
+            $(that).closest('tr').css('background-color', '#f5f588');
+            showErrorAlert('Stok Tersedia tidak Mencukupi, tetapi masih boleh menyimpan dengan Stok Tersedia Minus');
+        } else {
+            $(that).closest('tr').css('background-color', 'unset');
+        }
         sumGrandTotal();
         sumTotalBayar();
         renderTampilBayar();
@@ -238,7 +297,7 @@
                                         <td colspan="8" class="text-center">Belum ada data</td>
                                     </tr>`);
         } else {
-            const row = dataDetail.map((item, index) => `<tr>
+            const row = dataDetail.map((item, index) => `<tr ${item.qty_order > item.stok ? `style="background-color:#f5f588"` : ''}>
                 <td>${index+1}</td>
                 <td><small class="label bg-primary">${item.kode_produk}</small></td>
                 <td>${item.nama_produk}</td>
@@ -270,9 +329,9 @@
     function renderTampilBayar()
     {
         if($("#diterima").val() == 0 || $("#diterima").val() == '' || $("#diterima").val() == null) {
-            $(".tampil-bayar").text(formatMoney(totalBayar));
+            $(".tampil-bayar").html(`Total Belanja <br> ${formatMoney(totalBayar)}`);
         } else {
-            $(".tampil-bayar").text(formatMoney(totalKembalian));
+            $(".tampil-bayar").html(`Kembalian <br> ${formatMoney(totalKembalian)}`);
         }
     }
 
@@ -304,8 +363,50 @@
     {
         event.preventDefault();
         const diterima = $("#diterima").val();
-        const payloads = {dataDetail, grandTotal, totalBayar, totalKembalian, diterima};
-        console.log(payloads);
+        const member = $(".pilih-member").val();
+        const diskon = `{{$diskon}}`;
+        const payloads = {dataDetail, grandTotal, totalBayar, totalKembalian, diterima, member, diskon};
+        if(dataDetail.length == 0) {
+            showErrorAlert('Produk harus berisi minimal 1 baris');
+            return;
+        }
+        if(totalKembalian <= 0) {
+            showErrorAlert('Uang yang diterima tidak valid');
+            return;
+        }
+        if(totalBayar == 0) {
+            showErrorAlert('Total bayar tidak valid');
+            return;
+        }
+        
+        $.ajax({
+            url: "{{url('transaksi/simpan')}}" ,
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(payloads),
+            beforeSend: () => {
+                blockLoading();
+            }
+        }).done(response => {
+            showSuccessAlert(response.message);
+            unBlockLoading();
+            bootbox.dialog({
+                closeButton: false,
+                size: "medium",
+                title: '',
+                message: `
+                    <center>
+                        <button class="btn btn-warning btn-flat">Cetak Struk</button>
+                        <button onclick="window.location.reload();" class="btn btn-primary btn-flat">Transaksi Baru</button>
+                    </center>
+                `
+            });
+        }).fail(error => {
+            const respJson = $.parseJSON(error.responseText);
+            showErrorAlert(respJson.message);
+        });
+
     }
 
     function mustBeNumber(that)
@@ -336,7 +437,34 @@
     }
 
     function formatResultSelection(item) {
-     return item.kode_produk;
+     return item.text;
+    }
+
+    function formatResultMember(item) {
+        if (item.loading) {
+            return item.text;
+        }
+
+        var $container = $(
+            "<div class='select2-result-repository clearfix'>" +
+                "<div class='select2-result-repository__meta'>" +
+                    "<div class='select2-result-repository__kode_member'></div>" +
+                    "<div class='select2-result-repository__nama_member'></div>" +
+                "</div>" +
+            "</div>"
+        );
+
+        $container.find(".select2-result-repository__kode_member").text(item.kode_member);
+        $container.find(".select2-result-repository__nama_member").text(item.nama_member);
+
+        return $container;
+    }
+
+    function formatResultSelectionMember(item) {
+        if(item.kode_member == undefined || item.nama_member == undefined) {
+            return item.text;
+        }
+        return item.kode_member + ' - ' + item.nama_member;
     }
 
 </script>

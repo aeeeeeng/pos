@@ -72,7 +72,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::group(['middleware' => 'level:1,2'], function () {
         Route::get('/transaksi/baru', [PenjualanController::class, 'create'])->name('transaksi.baru');
-        Route::post('/transaksi/simpan', [PenjualanController::class, 'store'])->name('transaksi.simpan');
         Route::get('/transaksi/selesai', [PenjualanController::class, 'selesai'])->name('transaksi.selesai');
         Route::get('/transaksi/nota-kecil', [PenjualanController::class, 'notaKecil'])->name('transaksi.nota_kecil');
         Route::get('/transaksi/nota-besar', [PenjualanController::class, 'notaBesar'])->name('transaksi.nota_besar');
@@ -83,6 +82,10 @@ Route::group(['middleware' => 'auth'], function () {
             ->except('create', 'show', 'edit');
         
         Route::get('transaksi/get-product', [PenjualanDetailController::class, 'getDataProduct'])->name('transaksi.autocomplete-product');
+        Route::post('transaksi/simpan', [PenjualanDetailController::class, 'store'])->name('transaksi.simpan');
+
+        // search member
+        Route::get('transaksi/get-member', [MemberController::class, 'searchMember'])->name('transaksi.autocomplete-member');
     });
 
     Route::group(['middleware' => 'level:1'], function () {

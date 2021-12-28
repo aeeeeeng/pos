@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Member;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use PDF;
 
 class MemberController extends Controller
@@ -144,5 +145,17 @@ class MemberController extends Controller
         $pdf = PDF::loadView('member.cetak', compact('datamember', 'no', 'setting'));
         $pdf->setPaper(array(0, 0, 566.93, 850.39), 'potrait');
         return $pdf->stream('member.pdf');
+    }
+
+    public function searchMember(Request $request)
+    {
+        $q = $request->get('q');
+        $sql = DB::table('member')->selectRaw('id_member as id, kode_member, nama as nama_member')
+               ->where('kode_member', 'like', '%'.strtoupper($q).'%')
+               ->orWhere('nama', 'like', '%'.$q.'%');
+        $result['incomplete_results'] = true;
+        $result['total_count'] = $sql->count();
+        $result['items'] = $sql->get();
+        return response()->json($result);
     }
 }
