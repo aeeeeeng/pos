@@ -24,7 +24,7 @@ class PenjualanDetailController extends Controller
     public function getDataProduct(Request $request)
     {
         $q = $request->get('q');
-        $sql = DB::table('produk')->selectRaw('id_produk as id, kode_produk, nama_produk')
+        $sql = DB::table('produk')->selectRaw('produk.id_produk as id, produk.*')
         ->where('kode_produk', 'like', '%'.strtoupper($q).'%')
         ->orWhere('nama_produk', 'like', '%'.$q.'%');
         $result['incomplete_results'] = true;
