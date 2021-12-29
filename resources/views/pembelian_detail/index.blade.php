@@ -216,15 +216,15 @@
     function storeOptionProduct(selected)
     {
         selected.qty_order = 1;
-        selected.subtotal = 1 * (selected.harga_jual - (selected.diskon/100*selected.harga_jual));
+        selected.subtotal = 1 * (selected.harga_beli - (selected.diskon/100*selected.harga_beli));
         const checkExist = dataDetail.filter(item => item.id === selected.id).length > 0 ? true : false;
         if(checkExist) {
             const indexExist = dataDetail.findIndex(item => item.id === selected.id);
             dataDetail[indexExist].qty_order = dataDetail[indexExist].qty_order + 1;
-            const harga_jual = dataDetail[indexExist].harga_jual;
+            const harga_beli = dataDetail[indexExist].harga_beli;
             const qty_order = dataDetail[indexExist].qty_order;
             const discount = dataDetail[indexExist].diskon;
-            dataDetail[indexExist].subtotal = qty_order * (harga_jual - (discount/100*harga_jual));
+            dataDetail[indexExist].subtotal = qty_order * (harga_beli - (discount/100*harga_beli));
         } else {
             dataDetail.push(selected);
         }
@@ -262,10 +262,10 @@
     function sumSubTotal(that, id)
     {
         const indexExist = dataDetail.findIndex(item => item.id == id);
-        const harga_jual = dataDetail[indexExist].harga_jual;
+        const harga_beli = dataDetail[indexExist].harga_beli;
         const qty_order = dataDetail[indexExist].qty_order;
         const discount = dataDetail[indexExist].diskon;
-        dataDetail[indexExist].subtotal = qty_order * harga_jual;
+        dataDetail[indexExist].subtotal = qty_order * harga_beli;
         $(that).closest('tr').find('td.subtotal').text(formatMoney(dataDetail[indexExist].subtotal));
         
     }
