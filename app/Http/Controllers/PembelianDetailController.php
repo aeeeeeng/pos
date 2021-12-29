@@ -10,18 +10,16 @@ use Illuminate\Http\Request;
 
 class PembelianDetailController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $id_pembelian = session('id_pembelian');
-        $produk = Produk::orderBy('nama_produk')->get();
+        $id_supplier = base64_decode($request->get('data'));
         $supplier = Supplier::find(session('id_supplier'));
-        $diskon = Pembelian::find($id_pembelian)->diskon ?? 0;
 
         if (! $supplier) {
             abort(404);
         }
 
-        return view('pembelian_detail.index', compact('id_pembelian', 'produk', 'supplier', 'diskon'));
+        return view('pembelian_detail.index', compact('supplier'));
     }
 
     public function data($id)
