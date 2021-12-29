@@ -118,7 +118,9 @@
             </div>
 
             <div class="box-footer">
-                <button type="submit" class="btn btn-primary btn-sm btn-flat pull-right btn-simpan"><i class="fa fa-floppy-o"></i> Simpan Transaksi</button>
+                <center>
+                    <button type="submit" onclick="simpan(this)" class="btn btn-primary btn-sm btn-flat pull-right btn-simpan"><i class="fa fa-floppy-o"></i> &nbsp; Simpan Transaksi</button>
+                </center>
             </div>
         </div>
     </div>
@@ -132,6 +134,7 @@
     let grandTotal = 0;
     let totalBayar = 0;
     let diskon = 0;
+    let id_supplier = `{{$supplier->id_supplier}}`;
 
     $(document).ready(function(){
         $('body').addClass('sidebar-collapse');
@@ -183,6 +186,9 @@
         const valDiskon = $(that).val();
         diskon = valDiskon == '' ? 0 : parseFloat(valDiskon);
         sumTotalBayar();
+        setTimeout(() => {
+            $(that).val(diskon);
+        }, 1000);
     }
 
     function changeQty(that, id)
@@ -294,6 +300,78 @@
 
     function formatResultSelection(item) {
      return item.text;
+    }
+
+    function simpan(that)
+    {
+        event.preventDefault();
+        const payloads = {dataDetail, grandTotal, totalBayar, diskon, id_supplier};
+        if(dataDetail.length == 0) {
+            showErrorAlert('Produk harus berisi minimal 1 baris');
+            return;
+        }
+        if(totalBayar < 0) {
+            showErrorAlert('Total bayar tidak valid');
+            return;
+        }
+        
+        $.ajax({
+            url: "{{url('pembelian_detail/store')}}" ,
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(payloads),
+            beforeSend: () => {
+                blockLoading();
+            }
+        }).done(response => {
+            showSuccessAlert(response.message);
+            unBlockLoading();
+            const id_penjualan = response.data.id_penjualan;
+            const row = response.data.map(item => {
+                return `<tr>
+                    <td><small class="label bg-primary">${item.kode_produk}</small></td>
+                    <td>${item.nama_produk}</td>
+                    <td class="text-right" ${parseFloat(item.stok_lama) < 0 ? `style="background-color:red;color:#fff;"` : ``}>${item.stok_lama}</td>
+                    <td class="text-right">${item.stok_tambah}</td>
+                    <td class="text-right">${item.stok_sekarang}</td>
+                </tr>`;
+            }).join();
+            const table = `<table class="table table-hover table-bordered" style="margin-top:10px;">
+            <thead>
+                <tr>
+                    <th>Kode Produk</th>
+                    <th>Nama Produk</th>
+                    <th class="text-right">Stok Lama</th>
+                    <th class="text-right">Stok Tambah</th>
+                    <th class="text-right">Stok Sekarang</th>
+                </tr>
+            </thead>
+            <tbody>${row}</tbody>
+            </table>`;
+            bootbox.dialog({
+                closeButton: false,
+                size: "large",
+                title: 'Info',
+                message: `
+                    <div class="alert alert-success alert-dismissible">
+                        <i class="fa fa-check icon"></i>
+                        Data Transaksi Pembelian Telah Selesai.
+                    </div>
+                    <hr>
+                    <span style="font-size:15px; font-weight:bold;">Informasi Perubahan Stok</span>
+                    ${table}
+                    <center>
+                        <a href="{{url('pembelian')}}" class="btn btn-primary btn-flat">Kembali</a>
+                    </center>
+                `
+            });
+        }).fail(error => {
+            const respJson = $.parseJSON(error.responseText);
+            showErrorAlert(respJson.message);
+            unBlockLoading();
+        });
+
     }
 
 </script>

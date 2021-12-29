@@ -406,6 +406,7 @@
         }).fail(error => {
             const respJson = $.parseJSON(error.responseText);
             showErrorAlert(respJson.message);
+            unBlockLoading();
         });
 
     }
