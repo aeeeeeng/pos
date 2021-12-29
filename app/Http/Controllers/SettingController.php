@@ -25,6 +25,7 @@ class SettingController extends Controller
         $setting->alamat = $request->alamat;
         $setting->diskon = $request->diskon;
         $setting->tipe_nota = $request->tipe_nota;
+        $setting->min_stok = $request->min_stok;
 
         if ($request->hasFile('path_logo')) {
             $file = $request->file('path_logo');

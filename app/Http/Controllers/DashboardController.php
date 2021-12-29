@@ -10,6 +10,7 @@ use App\Models\Penjualan;
 use App\Models\Produk;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use App\Models\Setting;
 
 class DashboardController extends Controller
 {
@@ -19,6 +20,9 @@ class DashboardController extends Controller
         $produk = Produk::count();
         $supplier = Supplier::count();
         $member = Member::count();
+
+        $stokMinimal = Setting::first()->min_stok ?? 0;
+        $produkStokMinimal = Produk::where('stok', '<', $stokMinimal)->take(10)->get();
 
         $tanggal_awal = date('Y-m-01');
         $tanggal_akhir = date('Y-m-d');
@@ -42,7 +46,7 @@ class DashboardController extends Controller
         $tanggal_awal = date('Y-m-01');
 
         if (auth()->user()->level == 1) {
-            return view('admin.dashboard', compact('kategori', 'produk', 'supplier', 'member', 'tanggal_awal', 'tanggal_akhir', 'data_tanggal', 'data_pendapatan'));
+            return view('admin.dashboard', compact('kategori', 'produk', 'supplier', 'member', 'tanggal_awal', 'tanggal_akhir', 'data_tanggal', 'data_pendapatan', 'produkStokMinimal'));
         } else {
             return view('kasir.dashboard');
         }

@@ -69,6 +69,13 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="min_stok" class="col-lg-2 control-label">Notif Minimal Stok</label>
+                        <div class="col-lg-2">
+                            <input type="number" name="min_stok" class="form-control" id="min_stok" required>
+                            <span class="help-block with-errors"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="tipe_nota" class="col-lg-2 control-label">Tipe Nota</label>
                         <div class="col-lg-2">
                             <select name="tipe_nota" class="form-control" id="tipe_nota" required>
@@ -126,6 +133,7 @@
                 $('[name=telepon]').val(response.telepon);
                 $('[name=alamat]').val(response.alamat);
                 $('[name=diskon]').val(response.diskon);
+                $('[name=min_stok]').val(response.min_stok);
                 $('[name=tipe_nota]').val(response.tipe_nota);
                 $('title').text(response.nama_perusahaan + ' | Pengaturan');
                 

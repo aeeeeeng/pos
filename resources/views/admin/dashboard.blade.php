@@ -100,13 +100,68 @@
     <!-- /.col -->
 </div>
 <!-- /.row (main row) -->
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">10 Produk Terlaris</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <canvas id="produkLarisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">10 List Produk Stok dibawah Minimal</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Kode Produk</th>
+                                    <th>Nama</th>
+                                    <th class="text-right">Stok</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($produkStokMinimal as $item)
+                                    <tr {{$item->stok < 0 ? 'class="bg-red"' : ''}}>
+                                        <td><span class="label bg-primary">{{$item->kode_produk}}</span></td>
+                                        <td>{{$item->nama_produk}}</td>
+                                        <td class="text-right">{{$item->stok}}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
 <!-- ChartJS -->
 <script src="{{ asset('AdminLTE-2/bower_components/chart.js/Chart.js') }}"></script>
 <script>
+
+$(document).ready(function(){
+    
+});
+
 $(function() {
+    
     // Get context with jQuery - using jQuery's .get() method.
     var salesChartCanvas = $('#salesChart').get(0).getContext('2d');
     // This will get the first returned node in the jQuery collection.
@@ -129,11 +184,48 @@ $(function() {
     };
 
     var salesChartOptions = {
-        pointDot : false,
+        pointDot : true,
         responsive : true
     };
 
     salesChart.Line(salesChartData, salesChartOptions);
+
+    
 });
+
+
+function renderPie()
+{
+    var dataProdukLaris = {
+        labels: [
+            'Red',
+            'Blue',
+            'Yellow'
+        ],
+        datasets: [{
+            label: 'My First Dataset',
+            data: [300, 50, 100],
+            backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)'
+            ],
+            hoverOffset: 4
+        }]
+    };
+
+    var configProdukLaris = {
+        type: 'pie',
+        data: dataProdukLaris,
+    };
+
+    var produkLarisCanvas = $('#produkLarisChart').get(0).getContext('2d');
+
+    new Chart(
+        produkLarisCanvas,
+        configProdukLaris
+    );
+}
+
 </script>
 @endpush
