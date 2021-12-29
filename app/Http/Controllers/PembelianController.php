@@ -36,7 +36,7 @@ class PembelianController extends Controller
                 return tanggal_indonesia($pembelian->created_at, false);
             })
             ->addColumn('supplier', function ($pembelian) {
-                return $pembelian->supplier->nama;
+                return isset($pembelian->supplier->nama) ? $pembelian->supplier->nama : '';
             })
             ->editColumn('diskon', function ($pembelian) {
                 return $pembelian->diskon . '%';
