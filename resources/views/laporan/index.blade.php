@@ -6,6 +6,15 @@
 
 @push('css')
 <link rel="stylesheet" href="{{ asset('/AdminLTE-2/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
+<style>
+    .red-row {
+        background-color: red;
+        color:#fff;
+    }
+    .yellow-row {
+        background-color: rgb(245, 245, 136);
+    }
+</style>
 @endpush
 
 @section('breadcrumb')
@@ -26,10 +35,10 @@
                     <thead>
                         <th width="5%">No</th>
                         <th>Tanggal</th>
-                        <th>Penjualan</th>
-                        <th>Pembelian</th>
-                        <th>Pengeluaran</th>
-                        <th>Pendapatan</th>
+                        <th class="text-right">Penjualan</th>
+                        <th class="text-right">Pembelian</th>
+                        <th class="text-right">Pengeluaran</th>
+                        <th class="text-right">Pendapatan</th>
                     </thead>
                 </table>
             </div>
@@ -54,13 +63,21 @@
             ajax: {
                 url: '{{ route('laporan.data', [$tanggalAwal, $tanggalAkhir]) }}',
             },
+            createdRow: function( row, data, dataIndex ) {
+              if(parseFloat(data.pendapatan) < 0) {
+                $(row).addClass('red-row');
+              }
+              if(parseFloat(data.pendapatan) == 0) {
+                  $(row).addClass('yellow-row');
+              }
+            },
             columns: [
                 {data: 'DT_RowIndex', searchable: false, sortable: false},
                 {data: 'tanggal'},
-                {data: 'penjualan'},
-                {data: 'pembelian'},
-                {data: 'pengeluaran'},
-                {data: 'pendapatan'}
+                {data: 'penjualan',  className: 'text-right'},
+                {data: 'pembelian', className: 'text-right'},
+                {data: 'pengeluaran', className: 'text-right'},
+                {data: 'pendapatan', className: 'text-right'}
             ],
             dom: 'Brt',
             bSort: false,
