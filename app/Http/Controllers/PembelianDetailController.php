@@ -17,7 +17,7 @@ class PembelianDetailController extends Controller
     public function index(Request $request)
     {
         $id_supplier = base64_decode($request->get('data'));
-        $supplier = Supplier::find(session('id_supplier'));
+        $supplier = Supplier::find($id_supplier);
 
         if (! $supplier) {
             abort(404);
