@@ -1,5 +1,18 @@
 @extends('layouts.auth')
 
+@push('css')
+<link rel="stylesheet" href="{{ asset('/AdminLTE-2/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
+<style>
+    body {
+        background-color: #dd4b39 !important;
+    }
+    .login-box-body {
+        background-color: #222d32;
+        box-shadow: 0 8px 12px 0 rgb(0 0 0 / 69%);
+    }
+</style>
+@endpush
+
 @section('login')
 <div class="login-box">
 

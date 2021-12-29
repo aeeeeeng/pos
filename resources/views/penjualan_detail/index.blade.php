@@ -7,9 +7,9 @@
 @push('css')
 <style>
     .tampil-bayar {
-        font-size: 5em;
+        font-size: 3em;
         text-align: center;
-        height: 100px;
+        height: 100%;
     }
 
     .tampil-terbilang {
@@ -19,6 +19,11 @@
 
     .table-penjualan tbody tr:last-child {
         display: none;
+    }
+
+    .select2-container--default .select2-selection--single {
+        border-radius: unset;
+        height: 35px;
     }
 
     @media(max-width: 768px) {
@@ -41,101 +46,103 @@
     <div class="col-lg-12">
         <div class="box">
             <div class="box-body">
-                    
-                <form class="form-produk">
-                    @csrf
-                    <div class="form-group row">
-                        <label for="kode_produk" class="col-lg-2">Kode Produk</label>
-                        <div class="col-lg-5">
-                            <div class="input-group">
-                                <input type="hidden" name="id_penjualan" id="id_penjualan" value="{{ $id_penjualan }}">
-                                <input type="hidden" name="id_produk" id="id_produk">
-                                <input type="text" class="form-control" name="kode_produk" id="kode_produk">
-                                <span class="input-group-btn">
-                                    <button onclick="tampilProduk()" class="btn btn-info btn-flat" type="button"><i class="fa fa-arrow-right"></i></button>
-                                </span>
-                            </div>
+                
+                <div class="form-group row">
+                    <label for="kode_produk" class="col-md-3">Cari Member Berdasar Kode / Nama Member -> </label>
+                    <div class="col-lg-8">
+                        <div class="input-group">
+                            <select class="pilih-member select2 form-control" style="width:500px;"></select>
                         </div>
                     </div>
-                </form>
+                </div>
 
-                <table class="table table-stiped table-bordered table-penjualan">
+                <div class="form-group row">
+                    <label for="kode_produk" class="col-md-3">Cari Produk Berdasar Kode / Nama Produk -> </label>
+                    <div class="col-lg-8">
+                        <div class="input-group">
+                            <select class="pilih-product select2 form-control" style="width:500px;"></select>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <table class="table table-bordered" id="tablePenjualan">
                     <thead>
                         <th width="5%">No</th>
                         <th>Kode</th>
                         <th>Nama</th>
-                        <th>Harga</th>
-                        <th width="15%">Jumlah</th>
-                        <th>Diskon</th>
-                        <th>Subtotal</th>
+                        <th class="text-right">Harga</th>
+                        <th class="text-right" width="15%">Jumlah</th>
+                        <th class="text-right">Diskon</th>
+                        <th class="text-right">Subtotal</th>
                         <th width="15%"><i class="fa fa-cog"></i></th>
                     </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="8" class="text-center">Belum ada data</td>
+                        </tr>
+                    </tbody>
                 </table>
-
+                <hr>
                 <div class="row" id="detailTransaksi">
                     <div class="col-lg-8">
-                        <div class="tampil-bayar bg-primary"></div>
+                        <div class="tampil-bayar bg-primary">Total Belanja<br>0</div>
                         <div class="tampil-terbilang"></div>
                     </div>
                     <div class="col-lg-4">
-                        <form action="{{ route('transaksi.simpan') }}" class="form-penjualan" method="post">
-                            @csrf
-                            <input type="hidden" name="id_penjualan" value="{{ $id_penjualan }}">
+                        
+                            
                             <input type="hidden" name="total" id="total">
                             <input type="hidden" name="total_item" id="total_item">
                             <input type="hidden" name="bayar" id="bayar">
-                            <input type="hidden" name="id_member" id="id_member" value="{{ $memberSelected->id_member }}">
 
                             <div class="form-group row">
                                 <label for="totalrp" class="col-lg-2 control-label">Total</label>
                                 <div class="col-lg-8">
-                                    <input type="text" id="totalrp" class="form-control" readonly>
+                                    <input type="text" id="totalrp" class="form-control text-right" readonly>
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            {{-- <div class="form-group row">
                                 <label for="kode_member" class="col-lg-2 control-label">Member</label>
                                 <div class="col-lg-8">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="kode_member" value="{{ $memberSelected->kode_member }}">
-                                        <span class="input-group-btn">
-                                            <button onclick="tampilMember()" class="btn btn-info btn-flat" type="button"><i class="fa fa-arrow-right"></i></button>
-                                        </span>
-                                    </div>
+                                    
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="form-group row">
                                 <label for="diskon" class="col-lg-2 control-label">Diskon</label>
                                 <div class="col-lg-8">
-                                    <input type="number" name="diskon" id="diskon" class="form-control" 
-                                        value="{{ ! empty($memberSelected->id_member) ? $diskon : 0 }}" 
+                                    <input type="number" name="diskon" id="diskon" class="form-control text-right" 
+                                        value="{{$diskon}}" 
                                         readonly>
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="bayar" class="col-lg-2 control-label">Bayar</label>
                                 <div class="col-lg-8">
-                                    <input type="text" id="bayarrp" class="form-control" readonly>
+                                    <input type="text" id="bayarrp" class="form-control text-right" readonly>
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="diterima" class="col-lg-2 control-label">Diterima</label>
                                 <div class="col-lg-8">
-                                    <input type="number" id="diterima" class="form-control" name="diterima" value="{{ $penjualan->diterima ?? 0 }}">
+                                    <input type="number" id="diterima" onchange="diterimaUang(this)" onkeyup="diterimaUang(this)" class="form-control text-right" name="diterima" value="{{ $penjualan->diterima ?? 0 }}">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="kembali" class="col-lg-2 control-label">Kembali</label>
                                 <div class="col-lg-8">
-                                    <input type="text" id="kembali" name="kembali" class="form-control" value="0" readonly>
+                                    <input type="text" id="kembali" name="kembali" class="form-control text-right" value="0" readonly>
                                 </div>
                             </div>
-                        </form>
+                        
                     </div>
                 </div>
             </div>
 
             <div class="box-footer">
-                <button type="submit" class="btn btn-primary btn-sm btn-flat pull-right btn-simpan"><i class="fa fa-floppy-o"></i> Simpan Transaksi</button>
+                <center>
+                    <button type="button" class="btn btn-primary btn-flat" onclick="simpan(this)"><i class="fa fa-floppy-o"></i> &nbsp; Simpan Transaksi</button>
+                </center>
             </div>
         </div>
     </div>
@@ -147,180 +154,356 @@
 
 @push('scripts')
 <script>
-    let table, table2;
 
-    $(function () {
+    let dataDetail = [];
+    let grandTotal = 0;
+    let totalBayar = 0;
+    let totalKembalian = 0;
+    let member = null
+
+    $(document).ready(function(){
         $('body').addClass('sidebar-collapse');
-
-        table = $('.table-penjualan').DataTable({
-            responsive: true,
-            processing: true,
-            serverSide: true,
-            autoWidth: false,
-            ajax: {
-                url: '{{ route('transaksi.data', $id_penjualan) }}',
-            },
-            columns: [
-                {data: 'DT_RowIndex', searchable: false, sortable: false},
-                {data: 'kode_produk'},
-                {data: 'nama_produk'},
-                {data: 'harga_jual'},
-                {data: 'jumlah'},
-                {data: 'diskon'},
-                {data: 'subtotal'},
-                {data: 'aksi', searchable: false, sortable: false},
-            ],
-            dom: 'Brt',
-            bSort: false,
-            paginate: false
-        })
-        .on('draw.dt', function () {
-            loadForm($('#diskon').val());
-            // setTimeout(() => {
-                $('#diterima').trigger('input');
-            // }, 300);
-        });
-        table2 = $('.table-produk').DataTable();
-
-        $(document).on('input', '.quantity', function () {
-            let id = $(this).data('id');
-            let jumlah = parseInt($(this).val());
-
-            if (jumlah < 1) {
-                $(this).val(1);
-                alert('Jumlah tidak boleh kurang dari 1');
-                return;
-            }
-            if (jumlah > 10000) {
-                $(this).val(10000);
-                alert('Jumlah tidak boleh lebih dari 10000');
-                return;
-            }
-
-            // $("#detailTransaksi").fadeOut(1000);
-
-            $.post(`{{ url('/transaksi') }}/${id}`, {
-                    '_token': $('[name=csrf-token]').attr('content'),
-                    '_method': 'put',
-                    'jumlah': jumlah
-                })
-                .done(response => {
-                    
-                    table.ajax.reload(() => loadForm($('#diskon').val()));
-                    
-                })
-                .fail(errors => {
-                    alert('Tidak dapat menyimpan data');
-                    return;
-                });
-        });
-
-        $(document).on('input', '#diskon', function () {
-            if ($(this).val() == "") {
-                $(this).val(0).select();
-            }
-
-            loadForm($(this).val());
-        });
-
-        $('#diterima').on('input', function () {
-            if ($(this).val() == "") {
-                $(this).val(0).select();
-            }
-
-            loadForm($('#diskon').val(), $(this).val());
-        }).focus(function () {
-            $(this).select();
-        });
-
-        $('.btn-simpan').on('click', function () {
-            $('.form-penjualan').submit();
-        });
     });
 
-    function tampilProduk() {
-        $('#modal-produk').modal('show');
+    $(".pilih-product").select2({
+        placeholder: "Pilih Barang Melalui Kode/Nama",
+        allowClear: true,
+        ajax: {
+            url: "{{url('transaksi/get-product')}}",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term
+                    page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.items,
+                    pagination: {
+                    more: (params.page * 30) < data.total_count
+                    }
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 2,
+        templateResult: formatResult,
+        templateSelection: formatResultSelection
+    });
+
+    $(".pilih-member").select2({
+        placeholder: "Pilih Member Melalui Kode/Nama",
+        allowClear: true,
+        ajax: {
+            url: "{{url('transaksi/get-member')}}",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // search term
+                    page: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.items,
+                    pagination: {
+                    more: (params.page * 30) < data.total_count
+                    }
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 2,
+        templateResult: formatResultMember,
+        templateSelection: formatResultSelectionMember
+    });
+
+    $('.pilih-product').on('select2:select', function (e) {
+        var data = e.params.data;
+        storeOptionProduct(data);
+        $(".pilih-product").val('').trigger('change');
+        renderTable();
+        console.log(dataDetail);
+    });
+
+    $('.pilih-member').on('select2:select', function (e) {
+        var data = e.params.data;
+    });
+
+    function storeOptionProduct(selected)
+    {
+        selected.qty_order = 1;
+        selected.subtotal = 1 * (selected.harga_jual - (selected.diskon/100*selected.harga_jual));
+        const checkExist = dataDetail.filter(item => item.id === selected.id).length > 0 ? true : false;
+        if(checkExist) {
+            const indexExist = dataDetail.findIndex(item => item.id === selected.id);
+            dataDetail[indexExist].qty_order = dataDetail[indexExist].qty_order + 1;
+            const harga_jual = dataDetail[indexExist].harga_jual;
+            const qty_order = dataDetail[indexExist].qty_order;
+            const discount = dataDetail[indexExist].diskon;
+            dataDetail[indexExist].subtotal = qty_order * (harga_jual - (discount/100*harga_jual));
+        } else {
+            dataDetail.push(selected);
+        }
+        sumGrandTotal();
+        sumTotalBayar();
+        renderTampilBayar();
     }
 
-    function hideProduk() {
-        $('#modal-produk').modal('hide');
+    function changeQty(that, id)
+    {
+        const indexEdit = dataDetail.findIndex(item => item.id == id);
+        if($(that).val() < 0) {
+            showErrorAlert('Quantity tidak boleh kurang dari 0');
+            $(that).val(1);
+        } 
+        dataDetail[indexEdit].qty_order = parseInt($(that).val());
+        sumSubTotal(that, id);
+        $("#diterima").val('0').trigger('change');
     }
 
-    function pilihProduk(id, kode) {
-        $('#id_produk').val(id);
-        $('#kode_produk').val(kode);
-        hideProduk();
-        tambahProduk();
+    function sumSubTotal(that, id)
+    {
+        const indexExist = dataDetail.findIndex(item => item.id == id);
+        const harga_jual = dataDetail[indexExist].harga_jual;
+        const qty_order = dataDetail[indexExist].qty_order;
+        const discount = dataDetail[indexExist].diskon;
+        dataDetail[indexExist].subtotal = qty_order * (harga_jual - (discount/100*harga_jual));
+        $(that).closest('tr').find('td.subtotal').text(formatMoney(dataDetail[indexExist].subtotal));
+        if(parseInt(qty_order) > dataDetail[indexExist].stok) {
+            console.log(parseInt(qty_order), dataDetail[indexExist].stok);
+            $(that).closest('tr').css('background-color', '#f5f588');
+            showErrorAlert('Stok Tersedia tidak Mencukupi, tetapi masih boleh menyimpan dengan Stok Tersedia Minus');
+        } else {
+            $(that).closest('tr').css('background-color', 'unset');
+        }
+        sumGrandTotal();
+        sumTotalBayar();
+        renderTampilBayar();
     }
 
-    function tambahProduk() {
-        $.post('{{ route('transaksi.store') }}', $('.form-produk').serialize())
-            .done(response => {
-                $('#kode_produk').focus();
-                table.ajax.reload(() => loadForm($('#diskon').val()));
-            })
-            .fail(errors => {
-                alert('Tidak dapat menyimpan data');
-                return;
-            });
-    }
-
-    function tampilMember() {
-        $('#modal-member').modal('show');
-    }
-
-    function pilihMember(id, kode) {
-        $('#id_member').val(id);
-        $('#kode_member').val(kode);
-        $('#diskon').val('{{ $diskon }}');
-        loadForm($('#diskon').val());
-        $('#diterima').val(0).focus().select();
-        hideMember();
-    }
-
-    function hideMember() {
-        $('#modal-member').modal('hide');
-    }
-
-    function deleteData(url) {
-        if (confirm('Yakin ingin menghapus data terpilih?')) {
-            $.post(url, {
-                    '_token': $('[name=csrf-token]').attr('content'),
-                    '_method': 'delete'
-                })
-                .done((response) => {
-                    table.ajax.reload(() => loadForm($('#diskon').val()));
-                })
-                .fail((errors) => {
-                    alert('Tidak dapat menghapus data');
-                    return;
-                });
+    function renderTable()
+    {
+        const table = $("#tablePenjualan");
+        if(dataDetail.length == 0) {
+            table.find('tbody').html(`<tr>
+                                        <td colspan="8" class="text-center">Belum ada data</td>
+                                    </tr>`);
+        } else {
+            const row = dataDetail.map((item, index) => `<tr ${item.qty_order > item.stok ? `style="background-color:#f5f588"` : ''}>
+                <td>${index+1}</td>
+                <td><small class="label bg-primary">${item.kode_produk}</small></td>
+                <td>${item.nama_produk}</td>
+                <td class="text-right">${formatMoney(item.harga_jual)}</td>
+                <td class="text-right">
+                    <input type="number" min="0" class="form-control text-right" value="${item.qty_order}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
+                </td>
+                <td class="text-right">${item.diskon}</td>
+                <td class="text-right subtotal">${formatMoney(item.subtotal)}</td>
+                <td><button type="button" class="btn btn-flat btn-danger btn-xs" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
+            </tr>`).join();
+            table.find('tbody').html(row);
         }
     }
 
-    function loadForm(diskon = 0, diterima = 0) {
-        $('#total').val($('.total').text());
-        $('#total_item').val($('.total_item').text());
-        $.get(`{{ url('/transaksi/loadform') }}/${diskon}/${$('.total').text()}/${diterima}`)
-            .done(response => {
-                $('#totalrp').val('Rp. '+ response.totalrp);
-                $('#bayarrp').val('Rp. '+ response.bayarrp);
-                $('#bayar').val(response.bayar);
-                $('.tampil-bayar').text('Bayar: Rp. '+ response.bayarrp);
-                $('.tampil-terbilang').text(response.terbilang);
-
-                $('#kembali').val('Rp.'+ response.kembalirp);
-                if ($('#diterima').val() != 0) {
-                    $('.tampil-bayar').text('Kembali: Rp. '+ response.kembalirp);
-                    $('.tampil-terbilang').text(response.kembali_terbilang);
-                }
-            })
-            .fail(errors => {
-                alert('Tidak dapat menampilkan data');
-                return;
-            }).always(() => {
-                $("#detailTransaksi").fadeIn(1000);
-            })
+    function sumGrandTotal()
+    {
+        grandTotal = dataDetail.reduce((prev, next) => prev + next.subtotal, 0);
+        $("#totalrp").val(formatMoney(grandTotal));
     }
+
+    function sumTotalBayar()
+    {
+        const diskon = parseFloat($("#diskon").val());
+        totalBayar = grandTotal - (grandTotal/100*diskon);
+        $("#bayarrp").val(formatMoney(totalBayar));
+    }
+
+    function renderTampilBayar()
+    {
+        if($("#diterima").val() == 0 || $("#diterima").val() == '' || $("#diterima").val() == null) {
+            $(".tampil-bayar").html(`Total Belanja <br> ${formatMoney(totalBayar)}`);
+        } else {
+            $(".tampil-bayar").html(`Kembalian <br> ${formatMoney(totalKembalian)}`);
+        }
+    }
+
+    function diterimaUang(that)
+    {
+        const value = $(that).val();
+        if(value == 0 || value == '' || value == null) {
+            totalKembalian = 0;
+        } else {
+            totalKembalian = value - totalBayar;
+        }
+        $("#kembali").val(formatMoney(totalKembalian));
+        renderTampilBayar();
+    }
+
+    function removeDetailArr(id)
+    {
+        const newData = dataDetail.filter(item => item.id != id);
+        console.log(newData);
+        dataDetail = newData;
+        renderTable();
+        sumGrandTotal();
+        sumTotalBayar();
+        renderTampilBayar();
+        $("#diterima").val('0').trigger('change');
+    }
+
+    function simpan(that)
+    {
+        event.preventDefault();
+        const diterima = $("#diterima").val();
+        const member = $(".pilih-member").val();
+        const diskon = `{{$diskon}}`;
+        const payloads = {dataDetail, grandTotal, totalBayar, totalKembalian, diterima, member, diskon};
+        if(dataDetail.length == 0) {
+            showErrorAlert('Produk harus berisi minimal 1 baris');
+            return;
+        }
+        if(totalKembalian < 0) {
+            showErrorAlert('Uang yang diterima tidak valid');
+            return;
+        }
+        if(totalBayar == 0) {
+            showErrorAlert('Total bayar tidak valid');
+            return;
+        }
+        
+        $.ajax({
+            url: "{{url('transaksi/simpan')}}" ,
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(payloads),
+            beforeSend: () => {
+                blockLoading();
+            }
+        }).done(response => {
+            showSuccessAlert(response.message);
+            unBlockLoading();
+            const id_penjualan = response.data.id_penjualan;
+            $.ajax({
+                url: `{{url('transaksi/selesai')}}?id_penjualan=${id_penjualan}`,
+                success: function(response) {
+                    bootbox.dialog({
+                        closeButton: false,
+                        size: "medium",
+                        title: 'Penjualan telah selesai',
+                        message: response
+                    });
+                }
+            });
+        }).fail(error => {
+            const respJson = $.parseJSON(error.responseText);
+            showErrorAlert(respJson.message);
+            unBlockLoading();
+        });
+
+    }
+
+    function mustBeNumber(that)
+    {
+        if($(that).val() == '' || $(that).val() == null) {
+            $(that).val('0');
+        }
+    }
+
+    function formatResult(item) {
+        if (item.loading) {
+            return item.text;
+        }
+
+        var $container = $(
+            "<div class='select2-result-repository clearfix'>" +
+                "<div class='select2-result-repository__meta'>" +
+                    "<div class='select2-result-repository__kode_produk'></div>" +
+                    "<div class='select2-result-repository__nama_produk'></div>" +
+                "</div>" +
+            "</div>"
+        );
+
+        $container.find(".select2-result-repository__kode_produk").text(item.kode_produk);
+        $container.find(".select2-result-repository__nama_produk").text(item.nama_produk);
+
+        return $container;
+    }
+
+    function formatResultSelection(item) {
+     return item.text;
+    }
+
+    function formatResultMember(item) {
+        if (item.loading) {
+            return item.text;
+        }
+
+        var $container = $(
+            "<div class='select2-result-repository clearfix'>" +
+                "<div class='select2-result-repository__meta'>" +
+                    "<div class='select2-result-repository__kode_member'></div>" +
+                    "<div class='select2-result-repository__nama_member'></div>" +
+                "</div>" +
+            "</div>"
+        );
+
+        $container.find(".select2-result-repository__kode_member").text(item.kode_member);
+        $container.find(".select2-result-repository__nama_member").text(item.nama_member);
+
+        return $container;
+    }
+
+    function formatResultSelectionMember(item) {
+        if(item.kode_member == undefined || item.nama_member == undefined) {
+            return item.text;
+        }
+        return item.kode_member + ' - ' + item.nama_member;
+    }
+
+
+    /// SELESAI
+
+    document.cookie = "innerHeight=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    
+    function notaKecil(url, title) {
+        popupCenter(url, title, 625, 500);
+    }
+
+    function notaBesar(url, title) {
+        popupCenter(url, title, 900, 675);
+    }
+
+    function popupCenter(url, title, w, h) {
+        const dualScreenLeft = window.screenLeft !==  undefined ? window.screenLeft : window.screenX;
+        const dualScreenTop  = window.screenTop  !==  undefined ? window.screenTop  : window.screenY;
+
+        const width  = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+        const height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+        const systemZoom = width / window.screen.availWidth;
+        const left       = (width - w) / 2 / systemZoom + dualScreenLeft
+        const top        = (height - h) / 2 / systemZoom + dualScreenTop
+        const newWindow  = window.open(url, title, 
+        `
+            scrollbars=yes,
+            width  = ${w / systemZoom}, 
+            height = ${h / systemZoom}, 
+            top    = ${top}, 
+            left   = ${left}
+        `
+        );
+
+        if (window.focus) newWindow.focus();
+    }
+
 </script>
 @endpush

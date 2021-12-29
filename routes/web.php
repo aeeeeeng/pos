@@ -63,6 +63,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/pembelian_detail/loadform/{diskon}/{total}', [PembelianDetailController::class, 'loadForm'])->name('pembelian_detail.load_form');
         Route::resource('/pembelian_detail', PembelianDetailController::class)
             ->except('create', 'show', 'edit');
+        Route::post('/pembelian_detail/store', [PembelianDetailController::class, 'store'])->name('pembelian_detail.store');
+        Route::get('/pembelian_detail', [PembelianDetailController::class, 'index'])->name('pembelian_detail.index');
 
         Route::get('/penjualan/data', [PenjualanController::class, 'data'])->name('penjualan.data');
         Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
@@ -72,7 +74,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::group(['middleware' => 'level:1,2'], function () {
         Route::get('/transaksi/baru', [PenjualanController::class, 'create'])->name('transaksi.baru');
-        Route::post('/transaksi/simpan', [PenjualanController::class, 'store'])->name('transaksi.simpan');
         Route::get('/transaksi/selesai', [PenjualanController::class, 'selesai'])->name('transaksi.selesai');
         Route::get('/transaksi/nota-kecil', [PenjualanController::class, 'notaKecil'])->name('transaksi.nota_kecil');
         Route::get('/transaksi/nota-besar', [PenjualanController::class, 'notaBesar'])->name('transaksi.nota_besar');
@@ -81,6 +82,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/transaksi/loadform/{diskon}/{total}/{diterima}', [PenjualanDetailController::class, 'loadForm'])->name('transaksi.load_form');
         Route::resource('/transaksi', PenjualanDetailController::class)
             ->except('create', 'show', 'edit');
+        
+        Route::get('transaksi/get-product', [PenjualanDetailController::class, 'getDataProduct'])->name('transaksi.autocomplete-product');
+        Route::post('transaksi/simpan', [PenjualanDetailController::class, 'store'])->name('transaksi.simpan');
+
+        // search member
+        Route::get('transaksi/get-member', [MemberController::class, 'searchMember'])->name('transaksi.autocomplete-member');
     });
 
     Route::group(['middleware' => 'level:1'], function () {

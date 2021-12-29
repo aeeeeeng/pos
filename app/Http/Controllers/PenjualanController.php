@@ -142,36 +142,38 @@ class PenjualanController extends Controller
         return response(null, 204);
     }
 
-    public function selesai()
+    public function selesai(Request $request)
     {
         $setting = Setting::first();
-
-        return view('penjualan.selesai', compact('setting'));
+        $id_penjualan = $request->get('id_penjualan');
+        return view('penjualan.selesai', compact('setting', 'id_penjualan'));
     }
 
-    public function notaKecil()
+    public function notaKecil(Request $request)
     {
+        $id_penjualan = $request->get('id_penjualan');
         $setting = Setting::first();
-        $penjualan = Penjualan::find(session('id_penjualan'));
+        $penjualan = Penjualan::find($id_penjualan);
         if (! $penjualan) {
             abort(404);
         }
         $detail = PenjualanDetail::with('produk')
-            ->where('id_penjualan', session('id_penjualan'))
+            ->where('id_penjualan', $id_penjualan)
             ->get();
         
         return view('penjualan.nota_kecil', compact('setting', 'penjualan', 'detail'));
     }
 
-    public function notaBesar()
+    public function notaBesar(Request $request)
     {
+        $id_penjualan = $request->get('id_penjualan');
         $setting = Setting::first();
-        $penjualan = Penjualan::find(session('id_penjualan'));
+        $penjualan = Penjualan::find($id_penjualan);
         if (! $penjualan) {
             abort(404);
         }
         $detail = PenjualanDetail::with('produk')
-            ->where('id_penjualan', session('id_penjualan'))
+            ->where('id_penjualan', $id_penjualan)
             ->get();
 
         $pdf = PDF::loadView('penjualan.nota_besar', compact('setting', 'penjualan', 'detail'));

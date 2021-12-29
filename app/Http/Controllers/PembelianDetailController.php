@@ -2,26 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Library\Response;
 use App\Models\Pembelian;
 use App\Models\PembelianDetail;
 use App\Models\Produk;
 use App\Models\Supplier;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\TryCatch;
 
 class PembelianDetailController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $id_pembelian = session('id_pembelian');
-        $produk = Produk::orderBy('nama_produk')->get();
-        $supplier = Supplier::find(session('id_supplier'));
-        $diskon = Pembelian::find($id_pembelian)->diskon ?? 0;
+        $id_supplier = base64_decode($request->get('data'));
+        $supplier = Supplier::find($id_supplier);
 
         if (! $supplier) {
             abort(404);
         }
 
-        return view('pembelian_detail.index', compact('id_pembelian', 'produk', 'supplier', 'diskon'));
+        return view('pembelian_detail.index', compact('supplier'));
     }
 
     public function data($id)
@@ -68,21 +70,76 @@ class PembelianDetailController extends Controller
 
     public function store(Request $request)
     {
-        $produk = Produk::where('id_produk', $request->id_produk)->first();
-        if (! $produk) {
-            return response()->json('Data gagal disimpan', 400);
+        $status = 200;
+        $responseJson = [];
+        
+        DB::beginTransaction();
+        try {
+            $payloads = $request->all();
+            $header = [];
+            $details = [];
+            $resultStok = [];
+
+            $header['id_supplier'] = $payloads['id_supplier'];
+            $header['total_item'] = count($payloads['dataDetail']);
+            $header['total_harga'] = $payloads['grandTotal'];
+            $header['diskon'] = $payloads['diskon'];
+            $header['bayar'] = $payloads['totalBayar'];
+            $header['created_at'] = date("Y-m-d H:i:s");
+            $header['updated_at'] = date("Y-m-d H:i:s");
+            $id_pembelian = DB::table('pembelian')->insertGetId($header);
+            foreach ($payloads['dataDetail'] as $item) {
+                $detail = [];
+                $detail['id_pembelian'] = $id_pembelian;
+                $detail['id_produk'] = $item['id_produk'];
+                $detail['harga_beli'] = $item['harga_beli'];
+                $detail['jumlah'] = $item['qty_order'];
+                $detail['subtotal'] = $item['subtotal'];
+                $detail['created_at'] = date("Y-m-d H:i:s");
+                $detail['updated_at'] = date("Y-m-d H:i:s");
+                $resultStok[] = [
+                    'id_produk' => $item['id_produk'],
+                    'kode_produk' => $item['kode_produk'],
+                    'nama_produk' => $item['nama_produk'],
+                    'stok_tambah' => $item['qty_order'],
+                    'stok_lama' => self::getStokLama($item['id_produk'])->stok,
+                    'stok_sekarang' => floatval(self::getStokLama($item['id_produk'])->stok) + floatval($detail['jumlah'])
+                ];
+                $details[] = $detail;
+                self::updateStock($item['id_produk'], $item['qty_order']);
+            }
+            DB::table('pembelian_detail')->insert($details);
+            $responseJson = Response::success('Berhasil menyimpan transaksi', $resultStok);
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
         }
-
-        $detail = new PembelianDetail();
-        $detail->id_pembelian = $request->id_pembelian;
-        $detail->id_produk = $produk->id_produk;
-        $detail->harga_beli = $produk->harga_beli;
-        $detail->jumlah = 1;
-        $detail->subtotal = $produk->harga_beli;
-        $detail->save();
-
-        return response()->json('Data berhasil disimpan', 200);
+        return response()->json($responseJson, $status);
     }
+
+    private static function updateStock($idProduct, $qty)
+    {
+        try {
+            DB::table('produk')->where('id_produk', $idProduct)
+            ->update([
+                'stok' => DB::raw('produk.stok + ' . $qty)
+            ]);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    private static function getStokLama($idProduct)
+    {
+        try {
+            return DB::table('produk')->selectRaw('stok')->where('id_produk', $idProduct)->first();
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
 
     public function update(Request $request, $id)
     {

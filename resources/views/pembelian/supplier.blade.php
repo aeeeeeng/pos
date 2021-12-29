@@ -23,7 +23,7 @@
                                 <td>{{ $item->telepon }}</td>
                                 <td>{{ $item->alamat }}</td>
                                 <td>
-                                    <a href="{{ route('pembelian.create', $item->id_supplier) }}" class="btn btn-primary btn-xs btn-flat">
+                                    <a href="{{ route('pembelian_detail.index') . '?data=' . base64_encode($item->id_supplier) }}" class="btn btn-primary btn-xs btn-flat">
                                         <i class="fa fa-check-circle"></i>
                                         Pilih
                                     </a>
