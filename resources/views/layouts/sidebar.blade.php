@@ -71,6 +71,11 @@
                     <i class="fa fa-file-pdf-o"></i> <span>Laporan</span>
                 </a>
             </li>
+            <li>
+                <a href="{{ route('laporan_laba_produk.index') }}">
+                    <i class="fa fa-file-pdf-o"></i> <span>Laporan Laba</span>
+                </a>
+            </li>
             <li class="header">SYSTEM</li>
             <li>
                 <a href="{{ route('user.index') }}">

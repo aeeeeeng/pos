@@ -4,6 +4,7 @@ use App\Http\Controllers\{
     DashboardController,
     KategoriController,
     LaporanController,
+    LaporanLabaProductController,
     ProdukController,
     MemberController,
     PengeluaranController,
@@ -94,6 +95,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
         Route::get('/laporan/data/{awal}/{akhir}', [LaporanController::class, 'data'])->name('laporan.data');
         Route::get('/laporan/pdf/{awal}/{akhir}', [LaporanController::class, 'exportPDF'])->name('laporan.export_pdf');
+
+        Route::get('/laporan-laba-produk', [LaporanLabaProductController::class, 'index'])->name('laporan_laba_produk.index');
+        Route::get('/laporan-laba-produk/data', [LaporanLabaProductController::class, 'getData'])->name('laporan_laba_produk.data');
 
         Route::get('/user/data', [UserController::class, 'data'])->name('user.data');
         Route::resource('/user', UserController::class);
