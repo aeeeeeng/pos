@@ -98,6 +98,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/laporan-laba-produk', [LaporanLabaProductController::class, 'index'])->name('laporan_laba_produk.index');
         Route::get('/laporan-laba-produk/data', [LaporanLabaProductController::class, 'getData'])->name('laporan_laba_produk.data');
+        Route::get('/laporan-laba-produk/export-pdf/{tglAwal}/{tglAkhir}', [LaporanLabaProductController::class, 'exportPDF'])->name('laporan_laba_produk.export_pdf');
 
         Route::get('/user/data', [UserController::class, 'data'])->name('user.data');
         Route::resource('/user', UserController::class);

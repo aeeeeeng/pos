@@ -56,7 +56,7 @@
         <div class="box">
             <div class="box-header with-border">
                 <button onclick="updatePeriode()" class="btn btn-info btn-xs btn-flat"><i class="fa fa-plus-circle"></i> Ubah Periode</button>
-                <a href="#" target="_blank" class="btn btn-success btn-xs btn-flat"><i class="fa fa-file-excel-o"></i> Export PDF</a>
+                <a href="#" target="_blank" onclick="exportPdf(this)" class="btn btn-success btn-xs btn-flat"><i class="fa fa-file-excel-o"></i> Export PDF</a>
                 <span class="filter-label"></span>
             </div>
             <div class="box-body table-responsive">
@@ -187,6 +187,11 @@
         $(".filter-label").text(label);
     }
 
+    function exportPdf(that)
+    {
+        const url = `{{url('laporan-laba-produk/export-pdf')}}/${tglAwal}/${tglAkhir}`;
+        window.open(url, '_blank');
+    }
     
 </script>
 @endpush
