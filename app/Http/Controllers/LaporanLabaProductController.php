@@ -108,7 +108,7 @@ class LaporanLabaProductController extends Controller
         $pdf = PDF::loadView('laporan-laba-product.pdf', compact('tglAwal', 'tglAkhir', 'data'));
         $pdf->setPaper('a4', 'landscape');
 
-        return $pdf->stream('Laporan-laba-produk-'. date('Y-m-d-his') .'.pdf');
+        return $pdf->stream('Laporan-penjualan-produk-'. date('Y-m-d-his') .'.pdf');
 
     }
 }

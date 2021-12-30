@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Laporan Laba Produk</title>
+    <title>Laporan Penjualan Produk</title>
     <style>
         .yellow-row {
             background-color: rgb(245, 245, 136);
@@ -49,7 +49,7 @@
     </style>
 </head>
 <body>
-    <h2 class="title text-center">Laporan Laba Produk</h2>
+    <h2 class="title text-center">Laporan Penjualan Produk</h2>
     <h4 class="title text-center">
         (Tanggal {{ tanggal_indonesia($tglAwal, false) }}
         s/d
@@ -79,9 +79,9 @@
                     <th class="text-right">Rp. {{format_uang($item['allLabaBersih'])}}</th>
                 </tr>
                 @foreach ($item['details'] as $detail)
-                    @if ($detail->labaBersih != 0)
-                        <tr <?= $detail->labaBersih == 0 ? 'class="yellow-row' : '' ?>>
-                            <td class="text-right">{{$detail->nama_produk}}</td>
+                    @if ($item['allLabaBersih'] != 0)
+                        <tr <?= $detail->labaBersih == 0 ? 'class="yellow-row"' : '' ?>>
+                            <td class="text-left">{{$detail->nama_produk}}</td>
                             <td class="text-right">{{$detail->diskon}}</td>
                             <td class="text-right">{{format_uang($detail->harga_jual)}}</td>
                             <td class="text-right">{{format_uang($detail->harga_beli)}}</td>

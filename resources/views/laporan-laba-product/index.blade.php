@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title')
-    Laporan Laba Produk
+    Laporan Penjualan Produk
 @endsection
 
 @push('css')
@@ -47,7 +47,7 @@
 
 @section('breadcrumb')
     @parent
-    <li class="active">Laporan Laba Produk</li>
+    <li class="active">Laporan Penjualan Produk</li>
 @endsection
 
 @section('content')
@@ -125,10 +125,10 @@
                     <th class="text-right">Rp. ${formatMoney(item.allLabaBersih)}</th>
                 </tr>`;
                 item.details.map(detail => {
-                    if(detail.labaBersih != 0) {
+                    if(item.allLabaBersih != 0) {
                         row += `
                         <tr ${detail.labaBersih == 0 ? `class="yellow-row"` : ''}>
-                            <td class="text-right">${detail.nama_produk}</td>
+                            <td class="text-left">${detail.nama_produk}</td>
                             <td class="text-right">${detail.diskon}</td>
                             <td class="text-right">Rp. ${formatMoney(detail.harga_jual)}</td>
                             <td class="text-right">Rp. ${formatMoney(detail.harga_beli)}</td>

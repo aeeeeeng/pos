@@ -73,7 +73,7 @@
             </li>
             <li>
                 <a href="{{ route('laporan_laba_produk.index') }}">
-                    <i class="fa fa-file-pdf-o"></i> <span>Laporan Laba</span>
+                    <i class="fa fa-file-pdf-o"></i> <span>Laporan Penjualan Produk</span>
                 </a>
             </li>
             <li class="header">SYSTEM</li>
