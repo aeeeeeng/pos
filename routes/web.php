@@ -67,6 +67,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/pembelian_detail/store', [PembelianDetailController::class, 'store'])->name('pembelian_detail.store');
         Route::get('/pembelian_detail', [PembelianDetailController::class, 'index'])->name('pembelian_detail.index');
 
+        Route::get('/pembelian_detail/price-adjustment', [PembelianDetailController::class, 'getDataProductAdj'])->name('transaksi.price_adjustment');
+        Route::post('/pembelian_detail/store-adjustment', [PembelianDetailController::class, 'storeAdjustment'])->name('transaksi.price_adjustment');
+
         Route::get('/penjualan/data', [PenjualanController::class, 'data'])->name('penjualan.data');
         Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
         Route::get('/penjualan/{id}', [PenjualanController::class, 'show'])->name('penjualan.show');

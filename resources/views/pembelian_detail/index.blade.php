@@ -46,20 +46,32 @@
     <div class="col-lg-12">
         <div class="box">
             <div class="box-header with-border">
-                <table>
-                    <tr>
-                        <td>Supplier</td>
-                        <td>: {{ $supplier->nama }}</td>
-                    </tr>
-                    <tr>
-                        <td>Telepon</td>
-                        <td>: {{ $supplier->telepon }}</td>
-                    </tr>
-                    <tr>
-                        <td>Alamat</td>
-                        <td>: {{ $supplier->alamat }}</td>
-                    </tr>
-                </table>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table>
+                            <tr>
+                                <td>Supplier</td>
+                                <td>: {{ $supplier->nama }}</td>
+                            </tr>
+                            <tr>
+                                <td>Telepon</td>
+                                <td>: {{ $supplier->telepon }}</td>
+                            </tr>
+                            <tr>
+                                <td>Alamat</td>
+                                <td>: {{ $supplier->alamat }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="pull-right">
+                            <button class="btn btn-flat btn-md btn-warning" onclick="priceAdjustment()"> <i class="fa fa-money"></i> &nbsp; Penyesuaian Harga Produk</button>
+                        </div>
+                        {{-- <div class="pull-right">
+                            <span>Jangan Lupa, sesuaikan harga terlebih dahulu sebelum melakukan transaksi pembelian</span>
+                        </div> --}}
+                    </div>
+                </div>
             </div>
             <div class="box-body">
                 <div class="form-group row">
@@ -180,6 +192,21 @@
         sumGrandTotal();
         sumTotalBayar();
     });
+
+    function priceAdjustment()
+    {
+        $.ajax({
+            url: `{{url('pembelian_detail/price-adjustment')}}`,
+            success: function(response) {
+                bootbox.dialog({
+                    closeButton: false,
+                    size: "large",
+                    title: 'Penyesuaian Harga Produk',
+                    message: response
+                });
+            }
+        });
+    }
 
     function updateDiskon(that)
     {

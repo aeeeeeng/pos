@@ -169,4 +169,35 @@ class PembelianDetailController extends Controller
 
         return response()->json($data);
     }
+
+    public function getDataProductAdj()
+    {
+        return view('pembelian/price-adjustment');
+    }
+
+    public function storeAdjustment(Request $request)
+    {
+
+        $status = 200;
+        $responseJson = [];
+
+        DB::beginTransaction();
+        try {
+            $product = $request->post('productAdj');
+            foreach ($product as $item) {
+                DB::table('produk')->where('id_produk', $item['id_produk'])
+                ->update([
+                    'harga_beli' => $item['new_harga_beli'],
+                    'harga_jual' => $item['new_harga_jual']
+                ]);
+            }
+            $responseJson = Response::success('Berhasil menyimpan harga terbaru', $request->all());
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
+    }
 }

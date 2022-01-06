@@ -63,6 +63,7 @@
                 <table class="table table-stiped table-bordered" id="tableLaporan">
                     <thead>
                         <tr class="bg-gray">
+                            <th>Jam</th>
                             <th>Nama Produk</th>
                             <th class="text-right">Diskon</th>
                             <th class="text-right">Harga Jual</th>
@@ -118,7 +119,7 @@
 
             response.data.row.map(item => {
                 row += `<tr class="bg-gray">
-                    <th colspan="4">${tglIndonesia(item.tanggal)} ${item.allLabaBersih == 0 ? '<span class="text-red"> (TIDAK ADA TRANSAKSI) </span>' : ''}</th>
+                    <th colspan="5">${tglIndonesia(item.tanggal)} ${item.allLabaBersih == 0 ? '<span class="text-red"> (TIDAK ADA TRANSAKSI) </span>' : ''}</th>
                     <th class="text-right">${item.allJumlah}</th>
                     <th class="text-right">Rp. ${formatMoney(item.allSubtotalJual)}</th>
                     <th class="text-right">Rp. ${formatMoney(item.allSubtotalBeli)}</th>
@@ -128,6 +129,7 @@
                     if(item.allLabaBersih != 0) {
                         row += `
                         <tr ${detail.labaBersih == 0 ? `class="yellow-row"` : ''}>
+                            <td class="text-left">${detail.jam_penjualan}</td>
                             <td class="text-left">${detail.nama_produk}</td>
                             <td class="text-right">${detail.diskon}</td>
                             <td class="text-right">Rp. ${formatMoney(detail.harga_jual)}</td>
@@ -143,7 +145,7 @@
             });
 
             row += `<tr class="bg-gray">
-                <th colspan="4">TOTAL SEMUA</th>
+                <th colspan="5">TOTAL SEMUA</th>
                 <th class="text-right">${response.data.finalJumlah}</th>
                 <th class="text-right">Rp. ${formatMoney(response.data.finalSubTotalJual)}</th>
                 <th class="text-right">Rp. ${formatMoney(response.data.finalSubTotalBeli)}</th>

@@ -59,6 +59,7 @@
     <table class="table table-stiped table-bordered" id="tableLaporan">
         <thead>
             <tr class="bg-gray">
+                <th class="text-left">Jam</th>
                 <th class="text-left">Nama Produk</th>
                 <th class="text-right">Diskon</th>
                 <th class="text-right">Harga Jual</th>
@@ -72,7 +73,7 @@
         <tbody>
             @foreach ($data['row'] as $item)
                 <tr class="bg-gray">
-                    <th colspan="4" class="text-left">{{tanggal_indonesia($item['tanggal'], false)}} <?= $item['allLabaBersih'] == 0 ? '<span class="text-red"> (TIDAK ADA TRANSAKSI) </span>' : '' ?></th>
+                    <th colspan="5" class="text-left">{{tanggal_indonesia($item['tanggal'], false)}} <?= $item['allLabaBersih'] == 0 ? '<span class="text-red"> (TIDAK ADA TRANSAKSI) </span>' : '' ?></th>
                     <th class="text-right">{{$item['allJumlah']}}</th>
                     <th class="text-right">Rp. {{format_uang($item['allSubtotalJual'])}}</th>
                     <th class="text-right">Rp. {{format_uang($item['allSubtotalBeli'])}}</th>
@@ -81,6 +82,7 @@
                 @foreach ($item['details'] as $detail)
                     @if ($item['allLabaBersih'] != 0)
                         <tr <?= $detail->labaBersih == 0 ? 'class="yellow-row"' : '' ?>>
+                            <td class="text-left">{{$detail->jam_penjualan}}</td>
                             <td class="text-left">{{$detail->nama_produk}}</td>
                             <td class="text-right">{{$detail->diskon}}</td>
                             <td class="text-right">{{format_uang($detail->harga_jual)}}</td>
@@ -92,13 +94,13 @@
                         </tr>
                     @else
                         <tr>
-                            <td colspan="8" class="text-center">-------------- Tidak ada transaksi --------------</td>
+                            <td colspan="9" class="text-center">-------------- Tidak ada transaksi --------------</td>
                         </tr>
                     @endif
                 @endforeach
             @endforeach
             <tr class="bg-gray">
-                <th colspan="4" class="class="text-left"">TOTAL SEMUA</th>
+                <th colspan="5" class="class="text-left"">TOTAL SEMUA</th>
                 <th class="text-right">{{$data['finalJumlah']}}</th>
                 <th class="text-right">{{format_uang($data['finalSubTotalJual'])}}</th>
                 <th class="text-right">{{format_uang($data['finalSubTotalBeli'])}}</th>

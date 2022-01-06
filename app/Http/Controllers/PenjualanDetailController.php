@@ -61,6 +61,7 @@ class PenjualanDetailController extends Controller
                 $detail['id_penjualan'] = $id_penjualan;
                 $detail['id_produk'] = $item['id_produk'];
                 $detail['harga_jual'] = $item['harga_jual'];
+                $detail['harga_beli'] = $item['harga_beli'];
                 $detail['jumlah'] = $item['qty_order'];
                 $detail['diskon'] = $item['diskon'];
                 $detail['subtotal'] = $item['subtotal'];

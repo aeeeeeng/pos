@@ -23,17 +23,18 @@ class LaporanLabaProduct extends Model
         ->leftJoin('penjualan_detail as pd', DB::raw('date(pd.created_at)'), '=', 'v.selected_date')
         ->leftJoin('produk as p', 'p.id_produk', '=', 'pd.id_produk')
         ->whereBetween('v.selected_date', [$tglAwal, $tglAkhir])
-        ->groupBy('v.selected_date', 'p.nama_produk', 'p.harga_jual', 'pd.diskon', 'p.harga_beli')
+        ->groupBy('v.selected_date', 'p.nama_produk', 'pd.harga_jual', 'pd.diskon', 'pd.harga_beli', DB::raw("DATE_FORMAT(pd.created_at, '%H:%i')"))
         ->selectRaw("
             v.selected_date as tanggalJual,
+            DATE_FORMAT(pd.created_at, '%H:%i') as jam_penjualan,
             IFNULL(p.nama_produk, '-') AS nama_produk,
-            IFNULL(p.harga_jual, 0) as harga_jual, 
+            IFNULL(pd.harga_jual, 0) as harga_jual, 
             IFNULL(pd.diskon, 0) as diskon, 
             IFNULL(sum(pd.jumlah), 0)  as jumlahPenjualan,
             IFNULL(sum(pd.subtotal), 0) as totalSubtotalJual,
-            IFNULL(p.harga_beli, 0) as harga_beli,
-            IFNULL(sum(pd.jumlah * (p.harga_beli - (p.harga_beli/100*pd.diskon))), 0) as totalSubtotalBeli,
-            IFNULL(sum(pd.subtotal - (pd.jumlah * (p.harga_beli - (p.harga_beli/100*pd.diskon)))), 0) as labaBersih
+            IFNULL(pd.harga_beli, 0) as harga_beli,
+            IFNULL(sum(pd.jumlah * (pd.harga_beli - (pd.harga_beli/100*pd.diskon))), 0) as totalSubtotalBeli,
+            IFNULL(sum(pd.subtotal - (pd.jumlah * (pd.harga_beli - (pd.harga_beli/100*pd.diskon)))), 0) as labaBersih
         ");
 
         return $query->get();
