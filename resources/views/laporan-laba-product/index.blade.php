@@ -129,15 +129,15 @@
                     if(item.allLabaBersih != 0) {
                         row += `
                         <tr ${detail.labaBersih == 0 ? `class="yellow-row"` : ''}>
-                            <td class="text-left">${detail.jam_penjualan}</td>
-                            <td class="text-left">${detail.nama_produk}</td>
-                            <td class="text-right">${detail.diskon}</td>
-                            <td class="text-right">Rp. ${formatMoney(detail.harga_jual)}</td>
-                            <td class="text-right">Rp. ${formatMoney(detail.harga_beli)}</td>
-                            <td class="text-right">${detail.jumlahPenjualan}</td>
-                            <td class="text-right">Rp. ${formatMoney(detail.totalSubtotalJual)}</td>
-                            <td class="text-right">Rp. ${formatMoney(detail.totalSubtotalBeli)}</td>
-                            <td class="text-right">Rp. ${formatMoney(detail.labaBersih)}</td>
+                            <td class="text-left text-nowrap">${detail.jam_penjualan}</td>
+                            <td class="text-left text-nowrap">${detail.nama_produk}</td>
+                            <td class="text-right text-nowrap">${detail.diskon}</td>
+                            <td class="text-right text-nowrap">Rp. ${formatMoney(detail.harga_jual)}</td>
+                            <td class="text-right text-nowrap">Rp. ${formatMoney(detail.harga_beli)}</td>
+                            <td class="text-right text-nowrap">${detail.jumlahPenjualan}</td>
+                            <td class="text-right text-nowrap">Rp. ${formatMoney(detail.totalSubtotalJual)}</td>
+                            <td class="text-right text-nowrap">Rp. ${formatMoney(detail.totalSubtotalBeli)}</td>
+                            <td class="text-right text-nowrap">Rp. ${formatMoney(detail.labaBersih)}</td>
                         </tr>
                         `;
                     }
