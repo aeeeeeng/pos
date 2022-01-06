@@ -79,7 +79,10 @@
     <div class="col-lg-12">
         <div class="box">
             <div class="box-header with-border">
-                <h3 class="box-title">Grafik Pendapatan {{ tanggal_indonesia($tanggal_awal, false) }} s/d {{ tanggal_indonesia($tanggal_akhir, false) }}</h3>
+                <h3 class="box-title">Grafik Pendapatan & Grafik Laba Penjualan {{ tanggal_indonesia($tanggal_awal, false) }} s/d {{ tanggal_indonesia($tanggal_akhir, false) }}</h3>
+                <a href="{{ route('laporan.index') }}" target="__blank" class="btn btn-sm btn-flat btn-danger pull-right">Lihat Detail Pendapatan</a>
+                &nbsp;
+                <a href="{{ route('laporan_laba_produk.index') }}" target="__blank" class="btn btn-sm btn-flat btn-danger pull-right">Lihat Detail Penjualan</a>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -99,6 +102,8 @@
     </div>
     <!-- /.col -->
 </div>
+
+
 <!-- /.row (main row) -->
 
 <div class="row">
@@ -110,7 +115,7 @@
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <canvas id="produkLarisChart"></canvas>
+                        <canvas id="produkLarisChart" style="height: 180px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -133,13 +138,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($produkStokMinimal as $item)
+                                @if ($produkStokMinimal->count() > 0)
+                                    @foreach ($produkStokMinimal as $item)
                                     <tr {{$item->stok < 0 ? 'class="bg-red"' : ''}}>
                                         <td><span class="label bg-primary">{{$item->kode_produk}}</span></td>
                                         <td>{{$item->nama_produk}}</td>
                                         <td class="text-right">{{$item->stok}}</td>
                                     </tr>
                                 @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="3" class="text-center">Tidak stok dibawah minimal</td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -153,79 +164,86 @@
 
 @push('scripts')
 <!-- ChartJS -->
-<script src="{{ asset('AdminLTE-2/bower_components/chart.js/Chart.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js" integrity="sha512-TW5s0IT/IppJtu76UbysrBH9Hy/5X41OTAbQuffZFU6lQ1rdcLHzpU5BzVvr/YFykoiMYZVWlr/PX1mDcfM9Qg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 
 $(document).ready(function(){
-    
+    renderChartLine();
+    renderPie();
 });
 
-$(function() {
-    
-    // Get context with jQuery - using jQuery's .get() method.
-    var salesChartCanvas = $('#salesChart').get(0).getContext('2d');
-    // This will get the first returned node in the jQuery collection.
-    var salesChart = new Chart(salesChartCanvas);
-
-    var salesChartData = {
-        labels: {{ json_encode($data_tanggal) }},
-        datasets: [
-            {
-                label: 'Pendapatan',
-                fillColor           : 'rgba(60,141,188,0.9)',
-                strokeColor         : 'rgba(60,141,188,0.8)',
-                pointColor          : '#3b8bba',
-                pointStrokeColor    : 'rgba(60,141,188,1)',
-                pointHighlightFill  : '#fff',
-                pointHighlightStroke: 'rgba(60,141,188,1)',
-                data: {{ json_encode($data_pendapatan) }}
-            }
-        ]
-    };
-
-    var salesChartOptions = {
-        pointDot : true,
-        responsive : true
-    };
-
-    salesChart.Line(salesChartData, salesChartOptions);
-
-    
-});
 
 
 function renderPie()
 {
-    var dataProdukLaris = {
-        labels: [
-            'Red',
-            'Blue',
-            'Yellow'
-        ],
-        datasets: [{
-            label: 'My First Dataset',
-            data: [300, 50, 100],
-            backgroundColor: [
-            'rgb(255, 99, 132)',
-            'rgb(54, 162, 235)',
-            'rgb(255, 205, 86)'
-            ],
-            hoverOffset: 4
-        }]
-    };
-
-    var configProdukLaris = {
+    var ctx = document.getElementById('produkLarisChart').getContext('2d');
+    var myDoughnutChart = new Chart(ctx, {
         type: 'pie',
-        data: dataProdukLaris,
-    };
+        data: {
+            datasets: [{
+                data: <?= json_encode($terlaris['data']) ?>,
+                backgroundColor: [
+                    '#F44336',
+                    '#2196F3',
+                    '#9c27b0',
+                    '#673ab7',
+                    '#3f51b5',
+                    '#03a9f4',
+                    '#009688',
+                    '#4caf50',
+                    '#ffeb3b',
+                    '#e91e63',
+                ],
+                borderColor: [
+                    '#F44336',
+                    '#2196F3',
+                    '#9c27b0',
+                    '#673ab7',
+                    '#3f51b5',
+                    '#03a9f4',
+                    '#009688',
+                    '#4caf50',
+                    '#ffeb3b',
+                    '#e91e63',
+                ]
+            }],
 
-    var produkLarisCanvas = $('#produkLarisChart').get(0).getContext('2d');
-
-    new Chart(
-        produkLarisCanvas,
-        configProdukLaris
-    );
+            // These labels appear in the legend and in the tooltips when hovering different arcs
+            labels: <?= json_encode($terlaris['labels']) ?>
+        },
+    });
 }
+
+function renderChartLine()
+{
+    var ctx = document.getElementById('salesChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+            labels: {{ json_encode($data_tanggal) }},
+            datasets: [{
+                label: "Pendapatan",
+                backgroundColor: '#36a2eb',
+                borderColor: '#36a2eb',
+                data: {{ json_encode($data_pendapatan) }}
+            }, 
+            {
+                label: "Laba Penjualan",
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: {{json_encode($laba_penjualan)}},
+            }
+            ]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+}
+
 
 </script>
 @endpush

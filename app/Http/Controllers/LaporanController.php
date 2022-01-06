@@ -34,8 +34,8 @@ class LaporanController extends Controller
             $tanggal = $awal;
             $awal = date('Y-m-d', strtotime("+1 day", strtotime($awal)));
 
-            $total_penjualan = Penjualan::where('created_at', 'LIKE', "%$tanggal%")->sum('bayar');
-            $total_pembelian = Pembelian::where('created_at', 'LIKE', "%$tanggal%")->sum('bayar');
+            $total_penjualan = Penjualan::where('created_at', 'LIKE', "%$tanggal%")->sum('total_harga');
+            $total_pembelian = Pembelian::where('created_at', 'LIKE', "%$tanggal%")->sum('total_harga');
             $total_pengeluaran = Pengeluaran::where('created_at', 'LIKE', "%$tanggal%")->sum('nominal');
 
             $pendapatan = $total_penjualan - $total_pembelian - $total_pengeluaran;
@@ -77,7 +77,7 @@ class LaporanController extends Controller
     {
         $data = $this->getData($awal, $akhir);
         $pdf  = PDF::loadView('laporan.pdf', compact('awal', 'akhir', 'data'));
-        $pdf->setPaper('a4', 'potrait');
+        $pdf->setPaper('a4', 'landscape');
         
         return $pdf->stream('Laporan-pendapatan-'. date('Y-m-d-his') .'.pdf');
     }
