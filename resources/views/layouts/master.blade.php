@@ -187,6 +187,56 @@
             }
         }
 
+        function formToJson(element) {
+            let formData = element.serializeArray();
+            let unindexed_array = formData;
+            let indexed_array = {};
+
+            $.map(unindexed_array, function(n, i) {
+                indexed_array[n['name']] = n['value'];
+            });
+
+            return JSON.stringify(indexed_array);
+        }
+
+        function buttonLoading(button, text = null)
+        {
+            if(text != null) {
+                button.html(`<i class="fas fa-circle-notch fa-spin"></i>`);
+            } else {
+                button.html(`<i class="fas fa-circle-notch fa-spin"></i> Memuat ..`);
+            }
+            button.attr('disabled', 'disabled');
+        }
+
+        function buttonUnloading(button, buttonText)
+        {
+            button.attr('disabled', false);
+            button.html(buttonText);
+        }
+
+        function errorInput(errorResponse)
+        {
+            if(typeof(errorResponse) === 'object') {
+                Object.keys(errorResponse.message).map(function(key, index) {
+                    const formGroup = $("#" + key).closest('div.form-group')
+                    formGroup.addClass('has-error');
+                    $("#" + key).addClass('is-invalid')
+                    const message = `<span class="help-block">${errorResponse.message[key]}</span>`;
+                    formGroup.append(message);
+                });
+            } else {
+                showErrorAlert(errorResponse.message)
+            }
+        }
+
+        function removeErrorInput(form)
+        {
+            form.find('div.form-group .form-control').removeClass('is-invalid');
+            form.find('div.form-group').removeClass('has-error');
+            form.find('div.form-group span.help-block').remove();
+        }
+
     </script>
     @stack('scripts')
 </body>

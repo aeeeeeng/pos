@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\{
     DashboardController,
+    GudangController,
     KategoriController,
     LaporanController,
     LaporanLabaProductController,
@@ -114,5 +115,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => 'level:1,2'], function () {
         Route::get('/profil', [UserController::class, 'profil'])->name('user.profil');
         Route::post('/profil', [UserController::class, 'updateProfil'])->name('user.update_profil');
+    });
+    Route::prefix('persediaan')->middleware('level:1')->group(function(){
+        Route::prefix('gudang')->group(function(){
+            Route::get('/', [GudangController::class, 'index'])->name('gudang.index');
+            Route::get('create', [GudangController::class, 'create'])->name('gudang.create');
+            Route::get('edit/{id}', [GudangController::class, 'edit'])->name('gudang.edit');
+            Route::get('get-data', [GudangController::class, 'getData'])->name('gudang.data');
+            Route::post('inactive/{id}', [GudangController::class, 'inActive'])->name('gudang.inactive');
+            Route::post('store', [GudangController::class, 'store'])->name('gudang.store');
+            Route::post('update/{id}', [GudangController::class, 'update'])->name('gudang.update');
+            Route::get('last-code', [GudangController::class, 'getLastCode'])->name('gudang.lastcode');
+        }); 
     });
 });

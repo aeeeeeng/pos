@@ -23,7 +23,7 @@
             </li>
 
             @if (auth()->user()->level == 1)
-            <li class="header">MASTER</li>
+            <li class="header">INVENTORI</li>
             <li>
                 <a href="{{ route('kategori.index') }}">
                     <i class="fa fa-cube"></i> <span>Kategori</span>
@@ -43,6 +43,22 @@
                 <a href="{{ route('supplier.index') }}">
                     <i class="fa fa-truck"></i> <span>Supplier</span>
                 </a>
+            </li>
+            <li class="treeview" style="height: auto;">
+                <a href="#">
+                    <i class="fa fa-university"></i> <span>Persediaan</span>
+                    <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu" style="">
+                    <li><a href="{{ url('persediaan/gudang/') }}"><i class="fa fa-circle-o"></i> Gudang </a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Transfer Stok </a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Kartu Stok</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Stok Masuk</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Stok Keluar</a></li>
+                    <li><a href="#"><i class="fa fa-circle-o"></i> Stok Opname</a></li>
+                </ul>
             </li>
             <li class="header">TRANSAKSI</li>
             <li>
