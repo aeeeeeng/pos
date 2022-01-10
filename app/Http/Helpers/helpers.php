@@ -59,3 +59,12 @@ function tambah_nol_didepan($value, $threshold = null)
 {
     return sprintf("%0". $threshold . "s", $value);
 }
+
+function labelStatusStok($status)
+{
+    switch ($status) {
+        case '1': return '<span class="label label-success"> AKTIF </span>';
+        case '0': return '<span class="label label-danger"> BATAL </span>';
+        default: return '';
+    }
+}

@@ -19,6 +19,8 @@
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+    <link rel="stylesheet" href="{{asset('libs/flatpickr/flatpickr.min.css')}}">
+
     <link rel="stylesheet" href="{{asset('libs/snackbar/snackbar.min.css')}}">
         
     <!-- Theme style -->
@@ -88,6 +90,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <script src="{{asset('libs/flatpickr/flatpickr.min.js')}}"></script>
     <script src="{{asset('libs/snackbar/snackbar.min.js')}}"></script>
     <script src="{{asset('libs/bootbox/bootbox.min.js')}}"></script>
 
@@ -235,6 +238,30 @@
             form.find('div.form-group .form-control').removeClass('is-invalid');
             form.find('div.form-group').removeClass('has-error');
             form.find('div.form-group span.help-block').remove();
+        }
+
+        function labelStatusStok(status)
+        {
+            switch (status) {
+                case 1 : return `<span class="label label-success"> AKTIF </span>`;
+                case 0 : return `<span class="label label-danger"> BATAL </span>`;
+                default: return '';
+            }
+        }
+
+        function formatDateIso(date) 
+        {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [year, month, day].join('-');
         }
 
     </script>

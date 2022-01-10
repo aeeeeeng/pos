@@ -14,6 +14,7 @@ use App\Http\Controllers\{
     PenjualanController,
     PenjualanDetailController,
     SettingController,
+    StokMasukController,
     SupplierController,
     UserController,
 };
@@ -127,5 +128,15 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('update/{id}', [GudangController::class, 'update'])->name('gudang.update');
             Route::get('last-code', [GudangController::class, 'getLastCode'])->name('gudang.lastcode');
         }); 
+
+        Route::prefix('stok-masuk')->group(function(){
+            Route::get('/', [StokMasukController::class, 'index']);
+            Route::get('create', [StokMasukController::class, 'create']);
+            Route::get('get-data', [StokMasukController::class, 'getData']);
+            Route::get('detail/{id}', [StokMasukController::class, 'showDetail']);
+            Route::post('store', [StokMasukController::class, 'store']);
+            Route::post('cancel/{id}', [StokMasukController::class, 'cancel']);
+        });
     });
+    
 });

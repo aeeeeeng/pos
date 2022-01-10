@@ -55,7 +55,7 @@
                     <li><a href="{{ url('persediaan/gudang/') }}"><i class="fa fa-circle-o"></i> Gudang </a></li>
                     <li><a href="#"><i class="fa fa-circle-o"></i> Transfer Stok </a></li>
                     <li><a href="#"><i class="fa fa-circle-o"></i> Kartu Stok</a></li>
-                    <li><a href="#"><i class="fa fa-circle-o"></i> Stok Masuk</a></li>
+                    <li><a href="{{url('persediaan/stok-masuk')}}"><i class="fa fa-circle-o"></i> Stok Masuk</a></li>
                     <li><a href="#"><i class="fa fa-circle-o"></i> Stok Keluar</a></li>
                     <li><a href="#"><i class="fa fa-circle-o"></i> Stok Opname</a></li>
                 </ul>
