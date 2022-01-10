@@ -60,6 +60,37 @@ class StokProduk extends Model
         }
     }
 
+    public static function getStokKeluar($payloads, $type)
+    {
+        try {
+            $stokMasuk = DB::table('stok_produk as sp')
+                         ->join('gudang as g', function($join) {
+                             $join->on('sp.id_gudang', '=', 'g.id_gudang');
+                             $join->where('g.status', '1');
+                         })
+                         ->selectRaw("sp.*, g.nama_gudang, g.kode_gudang")
+                         ->where('sp.jenis', 'KELUAR');
+            if(isset($payloads['gudang'])) {
+                $stokMasuk->where('sp.id_gudang', $payloads['gudang']);
+            }
+
+            if(isset($payloads['status'])) {
+                $stokMasuk->where('sp.status', $payloads['status']);
+            }
+
+            if(isset($payloads['dateStart']) && isset($payloads['dateEnd'])) {
+                $stokMasuk->whereBetween('tanggal', [$payloads['dateStart'], $payloads['dateEnd']]);
+            }
+
+            if($type == 'datatable') {
+                return $stokMasuk;
+            }
+            return $stokMasuk->get();
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
     public static function cancelAllJenis($id)
     {
         DB::beginTransaction();
@@ -67,7 +98,7 @@ class StokProduk extends Model
             DB::table('stok_produk')->where('id_stok_produk', $id)->update(['status' => '0']);
             DB::table('stok_produk_detail')->where('id_reference', $id)
                                            ->where('sumber', 'stok_produk')
-                                           ->update(['nilai' => 0]);
+                                           ->update(['nilai' => 0, 'sub_total' => 0]);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -83,7 +114,10 @@ class StokProduk extends Model
                       ->selectRaw('sp.*, g.nama_gudang, g.kode_gudang')->first();
             $details = DB::table('stok_produk_detail as spd')->join('produk as p', 'spd.id_produk', '=', 'p.id_produk')
                        ->where('spd.id_reference', $id)->where('spd.sumber', 'stok_produk')->get();
-            return compact('header', 'details');
+            $grandTotal = $details->reduce(function($prev, $next){
+                return $prev + $next->sub_total;
+            });
+            return compact('header', 'details', 'grandTotal');
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }

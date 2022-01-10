@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-sm-2">
             <div class="text-gropuping">
-                <h5 style="font-weight: bold;">Kode Stok Masuk</h5>
+                <h5 style="font-weight: bold;">Kode Stok Keluar</h5>
                 <span class="">:</span>
             </div>            
         </div>

@@ -1,4 +1,4 @@
-<form onsubmit="store(this)" id="formStokMasuk" class="">    
+<form onsubmit="store(this)" id="formStokKeluar" class="">    
     <div class="form-horizontal">
         <div class="form-group">
             <label for="id_gudang" class="col-sm-2 control-label text-left">Gudang <span class="text-red">*</span> </label>
@@ -27,6 +27,7 @@
     <hr>
     <div class="row">
         <div class="col-lg-12">
+            <span style="font-size: 12px;font-style: italic;color: red;">Produk yang bisa dipilih, hanya produk yang mempunyai stok</span>
             <select class="pilih-product-adjustment select2 form-control"></select>
         </div>
     </div>
@@ -37,10 +38,10 @@
                     <tr>
                         <th class="text-left">No</th>
                         <th class="text-left">Kode Produk</th>
-                        <th class="text-left" width="30%">Nama Produk</th>
-                        <th class="text-right" width="10%">Stok Masuk</th>
-                        <th class="text-right" width="15%">Harga</th>
-                        <th class="text-right">Subtotal</th>
+                        <th class="text-left" width="40%">Nama Produk</th>
+                        <th class="text-right" width="15%">Stok Sisa</th>
+                        <th class="text-right" width="15%">Stok Keluar</th>
+                        <th class="text-right">Nilai Stok</th>
                         <th class="text-left">#</th>
                     </tr>
                 </thead>
@@ -82,7 +83,7 @@
         allowClear: true,
         width: '100%',
         ajax: {
-            url: "{{url('transaksi/get-product')}}",
+            url: "{{url('persediaan/stok-keluar/get-product')}}",
             dataType: 'json',
             delay: 250,
             data: function (params) {
@@ -120,7 +121,7 @@
     {
         event.preventDefault();
         
-        const form = $("#formStokMasuk");
+        const form = $("#formStokKeluar");
 
         const id_gudang = $("#id_gudang").val();
         const tanggal = $("#tanggal").val();
@@ -138,13 +139,9 @@
             showErrorAlert('Produk harus berisi minimal 1 baris');
             return;
         }
-        if(dataDetail.reduce((prev, next) => prev + next.subtotal, 0) == 0) {
-            showErrorAlert('Grand total tidak valid');
-            return;
-        }
         const payloads = {dataDetail, id_gudang, tanggal, catatan};
         $.ajax({
-            url: "{{url('persediaan/stok-masuk/store')}}" ,
+            url: "{{url('persediaan/stok-keluar/store')}}" ,
             type: "POST",
             dataType: "json",
             contentType: "application/json",
@@ -167,28 +164,25 @@
     function storeOptionProduct(selected)
     {
         selected.qty_stok = 1;
-        selected.harga_beli = 0;
-        selected.subtotal = 1 * selected.harga_beli;
+        selected.subtotal = 1 * -1 * selected.nilai_stok
         const checkExist = dataDetail.filter(item => item.id === selected.id).length > 0 ? true : false;
         if(checkExist) {
             const indexExist = dataDetail.findIndex(item => item.id === selected.id);
             dataDetail[indexExist].qty_stok = dataDetail[indexExist].qty_stok + 1;
-            const harga_beli = dataDetail[indexExist].harga_beli;
-            const qty_stok = dataDetail[indexExist].qty_stok;
-            dataDetail[indexExist].subtotal = qty_stok * harga_beli;
+            const nilai_stok = dataDetail[indexExist].nilai_stok;
+            dataDetail[indexExist].subtotal = qty_stok * nilai_stok;
         } else {
             dataDetail.push(selected);
         }
         sumGrandTotal();
     }
-    
 
     function sumSubTotal(that, id)
     {
         const indexExist = dataDetail.findIndex(item => item.id == id);
-        const harga_beli = dataDetail[indexExist].harga_beli;
+        const nilai_stok = dataDetail[indexExist].nilai_stok;
         const qty_stok = dataDetail[indexExist].qty_stok;
-        dataDetail[indexExist].subtotal = qty_stok * harga_beli;
+        dataDetail[indexExist].subtotal = qty_stok * -1 * nilai_stok;
         $(that).closest('tr').find('td.subtotal').text(formatMoney(dataDetail[indexExist].subtotal));
         sumGrandTotal();
     }
@@ -209,11 +203,9 @@
                 <td>${index+1}</td>
                 <td><small class="label bg-primary">${item.kode_produk}</small></td>
                 <td>${item.nama_produk}</td>
+                <td class="text-right">${item.stok}</td>
                 <td class="text-right">
                     <input type="number" min="0" class="form-control text-right" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
-                </td>
-                <td class="text-right">
-                    <input type="number" min="0" class="form-control text-right" value="${item.harga_beli}" onkeyup="changeHargaBeli(this, '${item.id}')" onchange="changeHargaBeli(this, '${item.id}')">
                 </td>
                 <td class="text-right subtotal">${formatMoney(item.subtotal)}</td>
                 <td><button type="button" class="btn btn-flat btn-danger btn-xs" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
@@ -226,22 +218,15 @@
     {
         const indexEdit = dataDetail.findIndex(item => item.id == id);
         if($(that).val() < 1 && $(that).val() != '') {
-            showErrorAlert('Quantity tidak boleh kurang dari 0');
+            showErrorAlert('Quantity tidak boleh kurang dari 1');
             $(that).val(1);
+        } 
+        if($(that).val() > dataDetail[indexEdit].stok) {
+            showErrorAlert('Stok tidak mencukupi');
+            $(that).val(dataDetail[indexEdit].stok);
         } 
         dataDetail[indexEdit].qty_stok = parseInt($(that).val());
-        sumSubTotal(that, id);
-    }
-
-    function changeHargaBeli(that, id)
-    {
-        const indexEdit = dataDetail.findIndex(item => item.id == id);
-        if($(that).val() < 1 && $(that).val() != '') {
-            showErrorAlert('Harga tidak boleh kurang dari 0');
-            $(that).val(1);
-        } 
-        dataDetail[indexEdit].harga_beli = parseInt($(that).val());
-        sumSubTotal(that, id);
+        sumSubTotal(that, id)
     }
 
     function removeDetailArr(id)

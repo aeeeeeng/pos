@@ -14,6 +14,7 @@ use App\Http\Controllers\{
     PenjualanController,
     PenjualanDetailController,
     SettingController,
+    StokKeluarController,
     StokMasukController,
     SupplierController,
     UserController,
@@ -136,6 +137,16 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('detail/{id}', [StokMasukController::class, 'showDetail']);
             Route::post('store', [StokMasukController::class, 'store']);
             Route::post('cancel/{id}', [StokMasukController::class, 'cancel']);
+        });
+
+        Route::prefix('stok-keluar')->group(function(){
+            Route::get('/', [StokKeluarController::class, 'index']);
+            Route::get('create', [StokKeluarController::class, 'create']);
+            Route::get('get-data', [StokKeluarController::class, 'getData']);
+            Route::get('get-product', [StokKeluarController::class, 'getProduct']);
+            Route::get('detail/{id}', [StokKeluarController::class, 'showDetail']);
+            Route::post('store', [StokKeluarController::class, 'store']);
+            Route::post('cancel/{id}', [StokKeluarController::class, 'cancel']);
         });
     });
     

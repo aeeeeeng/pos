@@ -4,19 +4,24 @@
 
     class UniqueCode {
 
-        private $model, $field, $prefix, $long;
+        private $model, $field, $prefix, $long, $codeDiff;
 
-        public function __construct($model, $field, $prefix, $long)
+        public function __construct($model, $field, $prefix, $long, $codeDiff = null)
         {
             $this->model = $model;
             $this->field = $field;
             $this->prefix = $prefix;
             $this->long = $long;
+            $this->codeDiff = $codeDiff;
         }
 
         public function get()
         {
-            $maxCode = $this->model::max($this->field);
+            if($this->codeDiff == null) {
+                $maxCode = $this->model::max($this->field);
+            } else {
+                $maxCode = $this->model::where($this->field, 'like', $this->prefix . '%')->max($this->field);
+            }
 
             if($maxCode) {
                 preg_match('!\d+!', $maxCode, $matches);
