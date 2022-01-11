@@ -54,6 +54,7 @@ class StokKeluarController extends Controller
             $stokProduk['tanggal'] = Carbon::createFromFormat('d/m/Y', $payloads['tanggal'])->format('Y-m-d');
             $stokProduk['catatan'] = $payloads['catatan'];
             $stokProduk['jenis'] = 'KELUAR';
+            $stokProduk['reference'] = 'STOKKELUAR';
             $stokProduk['kode'] = (new UniqueCode(StokProduk::class, 'kode', 'ST-K-', 4, true))->get();
             $stokProduk['created_at'] = date("Y-m-d H:i:s");
             $stokProduk['created_by'] = auth()->user()->name;
