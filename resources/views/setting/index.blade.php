@@ -62,6 +62,17 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="gudang_prioritas" class="col-lg-2 control-label">Gudang Prioritas</label>
+                        <div class="col-lg-4">
+                            <select name="gudang_prioritas" id="gudang_prioritas" class="form-control">
+                                <option value="">Pilih Gudang</option>
+                                @foreach ($gudang as $item)
+                                    <option value="{{$item->id_gudang}}">{{$item->kode_gudang . ' - ' . $item->nama_gudang}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="diskon" class="col-lg-2 control-label">Diskon</label>
                         <div class="col-lg-2">
                             <input type="number" name="diskon" class="form-control" id="diskon" required>
@@ -97,6 +108,9 @@
 
 @push('scripts')
 <script>
+    $(document).ready(function(){
+        $("#gudang_prioritas").select2({width:'100%'});
+    });
     $(function () {
         showData();
 
@@ -129,12 +143,14 @@
     function showData() {
         $.get('{{ route('setting.show') }}')
             .done(response => {
+                console.log(response);
                 $('[name=nama_perusahaan]').val(response.nama_perusahaan);
                 $('[name=telepon]').val(response.telepon);
                 $('[name=alamat]').val(response.alamat);
                 $('[name=diskon]').val(response.diskon);
                 $('[name=min_stok]').val(response.min_stok);
                 $('[name=tipe_nota]').val(response.tipe_nota);
+                $('[name=gudang_prioritas]').val(response.gudang_prioritas).trigger('change');
                 $('title').text(response.nama_perusahaan + ' | Pengaturan');
                 
                 let words = response.nama_perusahaan.split(' ');

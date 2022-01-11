@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Gudang;
 use Illuminate\Http\Request;
 use App\Models\Setting;
 
@@ -9,7 +10,8 @@ class SettingController extends Controller
 {
     public function index()
     {
-        return view('setting.index');
+        $gudang = Gudang::getAllGudangActive('row');
+        return view('setting.index', compact('gudang'));
     }
 
     public function show()
@@ -26,6 +28,7 @@ class SettingController extends Controller
         $setting->diskon = $request->diskon;
         $setting->tipe_nota = $request->tipe_nota;
         $setting->min_stok = $request->min_stok;
+        $setting->gudang_prioritas = $request->gudang_prioritas;
 
         if ($request->hasFile('path_logo')) {
             $file = $request->file('path_logo');
