@@ -87,6 +87,8 @@
                         <th width="5%">No</th>
                         <th>Kode</th>
                         <th>Nama</th>
+                        <th class="text-right">HPP (SISTEM)</th>
+                        <th class="text-right">Stok Akhir</th>
                         <th class="text-right">Harga</th>
                         <th width="15%" class="text-right">Jumlah</th>
                         <th class="text-right">Subtotal</th>
@@ -223,9 +225,22 @@
         const indexEdit = dataDetail.findIndex(item => item.id == id);
         if($(that).val() < 0) {
             showErrorAlert('Quantity tidak boleh kurang dari 0');
-            $(that).val(1);
+            $(that).val(0);
         } 
         dataDetail[indexEdit].qty_order = parseInt($(that).val());
+        sumSubTotal(that, id);
+        sumGrandTotal();
+        sumTotalBayar();
+    }
+
+    function changeHargaBeli(that, id) 
+    {  
+        const indexEdit = dataDetail.findIndex(item => item.id == id);
+        if($(that).val() < 0) {
+            showErrorAlert('Harga Beli tidak boleh kurang dari 0');
+            $(that).val(0);
+        } 
+        dataDetail[indexEdit].harga_beli = parseInt($(that).val());
         sumSubTotal(that, id);
         sumGrandTotal();
         sumTotalBayar();
@@ -243,6 +258,7 @@
     function storeOptionProduct(selected)
     {
         selected.qty_order = 1;
+        selected.harga_beli = 0;
         selected.subtotal = 1 * (selected.harga_beli - (selected.diskon/100*selected.harga_beli));
         const checkExist = dataDetail.filter(item => item.id === selected.id).length > 0 ? true : false;
         if(checkExist) {
@@ -275,7 +291,11 @@
                 <td>${index+1}</td>
                 <td><small class="label bg-primary">${item.kode_produk}</small></td>
                 <td>${item.nama_produk}</td>
-                <td class="text-right">${formatMoney(item.harga_beli)}</td>
+                <td class="text-right">${formatMoney(item.hpp)}</td>
+                <td class="text-right">${item.stok}</td>
+                <td class="text-right">
+                    <input type="number" min="0" class="form-control text-right" value="${item.harga_beli}" onkeyup="changeHargaBeli(this, '${item.id}')" onchange="changeHargaBeli(this, '${item.id}')">
+                </td>
                 <td class="text-right">
                     <input type="number" min="0" class="form-control text-right" value="${item.qty_order}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
                 </td>

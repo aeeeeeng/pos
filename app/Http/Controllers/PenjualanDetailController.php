@@ -26,9 +26,23 @@ class PenjualanDetailController extends Controller
     public function getDataProduct(Request $request)
     {
         $q = $request->get('q');
-        $sql = DB::table('produk')->selectRaw('produk.id_produk as id, produk.*')
-        ->where('kode_produk', 'like', '%'.strtoupper($q).'%')
-        ->orWhere('nama_produk', 'like', '%'.$q.'%');
+        $sql = DB::table('produk as p')->selectRaw('
+                                                p.id_produk as id, 
+                                                p.id_produk,
+                                                p.id_kategori, 
+                                                p.kode_produk, p.nama_produk, 
+                                                p.merk, p.harga_beli, 
+                                                p.harga_jual, p.created_at, p.updated_at,
+                                                IFNULL(sum(nilai),0) as stok,
+                                                IFNULL(sum(sub_total) / sum(nilai),0) as hpp')
+        ->leftJoin('stok_produk_detail as spd', 'p.id_produk', '=', 'spd.id_produk')
+        ->where('p.kode_produk', 'like', '%'.strtoupper($q).'%')
+        ->orWhere('p.nama_produk', 'like', '%'.$q.'%')
+        ->groupBy('p.id_produk', 'p.id_kategori', 
+                'p.kode_produk', 'p.nama_produk', 
+                'p.merk', 'p.harga_beli', 
+                'p.harga_jual', 'p.created_at', 'p.updated_at');
+
         $result['incomplete_results'] = true;
         $result['total_count'] = $sql->count();
         $result['items'] = $sql->get();

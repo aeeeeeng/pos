@@ -186,5 +186,15 @@ class StokProduk extends Model
             throw new Exception($e->getMessage());
         }
     }
+
+    public static function getLastStockProduct($id)
+    {
+        try {
+            $data = DB::table('stok_produk_detail')->selectRaw("ifnull(sum(nilai),0) as last_stock")->where('id_produk', $id)->first();
+            return $data->last_stock;
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
     
 }

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Library\Response;
+use App\Library\UniqueCode;
 use App\Models\Pembelian;
 use App\Models\PembelianDetail;
 use App\Models\Produk;
+use App\Models\Setting;
+use App\Models\StokProduk;
 use App\Models\Supplier;
 use Exception;
 use Illuminate\Http\Request;
@@ -102,13 +105,14 @@ class PembelianDetailController extends Controller
                     'kode_produk' => $item['kode_produk'],
                     'nama_produk' => $item['nama_produk'],
                     'stok_tambah' => $item['qty_order'],
-                    'stok_lama' => self::getStokLama($item['id_produk'])->stok,
-                    'stok_sekarang' => floatval(self::getStokLama($item['id_produk'])->stok) + floatval($detail['jumlah'])
+                    'stok_lama' => StokProduk::getLastStockProduct($item['id_produk']),
+                    'stok_sekarang' => floatval(StokProduk::getLastStockProduct($item['id_produk'])) + floatval($detail['jumlah'])
                 ];
                 $details[] = $detail;
                 self::updateStock($item['id_produk'], $item['qty_order']);
             }
             DB::table('pembelian_detail')->insert($details);
+            self::storeStock($details);
             $responseJson = Response::success('Berhasil menyimpan transaksi', $resultStok);
             DB::commit();
         } catch (Exception $e) {
@@ -117,6 +121,37 @@ class PembelianDetailController extends Controller
             $responseJson = Response::error($e->getMessage());
         }
         return response()->json($responseJson, $status);
+    }
+
+    private static function storeStock($detail)
+    {
+        try {
+            $stokProduk = [];
+            $stokProduk['id_gudang'] = Setting::first()->gudang_prioritas;
+            $stokProduk['tanggal'] = date("Y-m-d");
+            $stokProduk['jenis'] = 'PEMBELIAN';
+            $stokProduk['reference'] = 'STOKPEMBELIAN';
+            $stokProduk['kode'] = (new UniqueCode(StokProduk::class, 'kode', 'ST-B-', 4))->get();;
+            $stokProduk['created_at'] = date("Y-m-d H:i:s");
+            $stokProduk['created_by'] = auth()->user()->name;
+            $id_reference = DB::table('stok_produk')->insertGetId($stokProduk);
+            $stokProdukDetail = [];
+            foreach ($detail as $item) {
+                $detail = [];
+                $detail['id_produk'] = $item['id_produk'];
+                $detail['nilai'] = $item['jumlah'];
+                $detail['harga'] = $item['harga_beli'];
+                $detail['sub_total'] = $item['subtotal'];
+                $detail['jenis'] = 'MASUK';
+                $detail['sumber'] = 'stok_produk';
+                $detail['id_reference'] = $id_reference;
+                $detail['kode_reference'] = $stokProduk['kode'];
+                $stokProdukDetail[] = $detail;
+            }
+            DB::table('stok_produk_detail')->insert($stokProdukDetail);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 
     private static function updateStock($idProduct, $qty)
