@@ -11,6 +11,8 @@ use App\Models\Member;
 use App\Models\Setting;
 use App\Library\Response;
 use Exception;
+use App\Library\UniqueCode;
+use App\Models\StokProduk;
 
 class PenjualanDetailController extends Controller
 {
@@ -32,7 +34,8 @@ class PenjualanDetailController extends Controller
                                                 p.id_kategori, 
                                                 p.kode_produk, p.nama_produk, 
                                                 p.merk, p.harga_beli, 
-                                                p.harga_jual, p.created_at, p.updated_at,
+                                                p.harga_jual, p.diskon,
+                                                p.created_at, p.updated_at,
                                                 IFNULL(sum(nilai),0) as stok,
                                                 IFNULL(sum(sub_total) / sum(nilai),0) as hpp')
         ->leftJoin('stok_produk_detail as spd', 'p.id_produk', '=', 'spd.id_produk')
@@ -41,7 +44,7 @@ class PenjualanDetailController extends Controller
         ->groupBy('p.id_produk', 'p.id_kategori', 
                 'p.kode_produk', 'p.nama_produk', 
                 'p.merk', 'p.harga_beli', 
-                'p.harga_jual', 'p.created_at', 'p.updated_at');
+                'p.harga_jual', 'p.diskon', 'p.created_at', 'p.updated_at');
 
         $result['incomplete_results'] = true;
         $result['total_count'] = $sql->count();
@@ -75,7 +78,7 @@ class PenjualanDetailController extends Controller
                 $detail['id_penjualan'] = $id_penjualan;
                 $detail['id_produk'] = $item['id_produk'];
                 $detail['harga_jual'] = $item['harga_jual'];
-                $detail['harga_beli'] = $item['harga_beli'];
+                $detail['harga_beli'] = $item['hpp'];
                 $detail['jumlah'] = $item['qty_order'];
                 $detail['diskon'] = $item['diskon'];
                 $detail['subtotal'] = $item['subtotal'];
@@ -85,6 +88,7 @@ class PenjualanDetailController extends Controller
                 self::updateStock($item['id_produk'], $item['qty_order']);
             }
             DB::table('penjualan_detail')->insert($details);
+            self::storeStock($details);
             $responseJson = Response::success('Berhasil menyimpan transaksi', ['id_penjualan' => $id_penjualan]);
             DB::commit();
         } catch (Exception $e) {
@@ -94,6 +98,38 @@ class PenjualanDetailController extends Controller
         }
         return response()->json($responseJson, $status);
     }
+
+    private static function storeStock($detail)
+    {
+        try {
+            $stokProduk = [];
+            $stokProduk['id_gudang'] = Setting::first()->gudang_prioritas;
+            $stokProduk['tanggal'] = date("Y-m-d");
+            $stokProduk['jenis'] = 'PENJUALAN';
+            $stokProduk['reference'] = 'STOKPENJUALAN';
+            $stokProduk['kode'] = (new UniqueCode(StokProduk::class, 'kode', 'ST-P-', 4))->get();;
+            $stokProduk['created_at'] = date("Y-m-d H:i:s");
+            $stokProduk['created_by'] = auth()->user()->name;
+            $id_reference = DB::table('stok_produk')->insertGetId($stokProduk);
+            $stokProdukDetail = [];
+            foreach ($detail as $item) {
+                $detail = [];
+                $detail['id_produk'] = $item['id_produk'];
+                $detail['nilai'] = -1 * floatval($item['jumlah']);
+                $detail['harga'] = $item['harga_beli'];
+                $detail['sub_total'] = $detail['nilai'] * $item['harga_beli'];
+                $detail['jenis'] = 'KELUAR';
+                $detail['sumber'] = 'stok_produk';
+                $detail['id_reference'] = $id_reference;
+                $detail['kode_reference'] = $stokProduk['kode'];
+                $stokProdukDetail[] = $detail;
+            }
+            DB::table('stok_produk_detail')->insert($stokProdukDetail);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+    
 
     private static function updateStock($idProduct, $qty)
     {
