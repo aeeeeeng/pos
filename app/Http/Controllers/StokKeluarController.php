@@ -65,7 +65,7 @@ class StokKeluarController extends Controller
                 $detail['id_produk'] = $item['id_produk'];
                 $detail['nilai'] = -1 * abs($item['qty_stok']);
                 $detail['jenis'] = 'KELUAR';
-                $detail['harga'] = $item['subtotal'] / $item['qty_stok'];
+                $detail['harga'] = $item['subtotal'] / $detail['nilai'];
                 $detail['sub_total'] = $item['subtotal'];
                 $detail['sumber'] = 'stok_produk';
                 $detail['id_reference'] = $id_reference;

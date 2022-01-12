@@ -91,6 +91,37 @@ class StokProduk extends Model
         }
     }
 
+    public static function getStokOpname($payloads, $type)
+    {
+        try {
+            $stokOpname = DB::table('stok_produk as sp')
+                         ->join('gudang as g', function($join) {
+                             $join->on('sp.id_gudang', '=', 'g.id_gudang');
+                             $join->where('g.status', '1');
+                         })
+                         ->selectRaw("sp.*, g.nama_gudang, g.kode_gudang")
+                         ->where('sp.jenis', 'OPNAME');
+            if(isset($payloads['gudang'])) {
+                $stokOpname->where('sp.id_gudang', $payloads['gudang']);
+            }
+
+            if(isset($payloads['status'])) {
+                $stokOpname->where('sp.status', $payloads['status']);
+            }
+
+            if(isset($payloads['dateStart']) && isset($payloads['dateEnd'])) {
+                $stokOpname->whereBetween('tanggal', [$payloads['dateStart'], $payloads['dateEnd']]);
+            }
+
+            if($type == 'datatable') {
+                return $stokOpname;
+            }
+            return $stokOpname->get();
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
     public static function cancelAllJenis($id)
     {
         DB::beginTransaction();
@@ -118,6 +149,39 @@ class StokProduk extends Model
                 return $prev + $next->sub_total;
             });
             return compact('header', 'details', 'grandTotal');
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public static function showDetailOpname($id)
+    {
+        try {
+            $header = DB::table('stok_produk as sp')->join('gudang as g', 'sp.id_gudang', '=', 'g.id_gudang')
+                      ->where('id_stok_produk', $id)
+                      ->selectRaw('sp.*, g.nama_gudang, g.kode_gudang')->first();
+
+            $subSpd = DB::table('stok_produk_detail')->selectRaw("id_produk, id_reference, sum(nilai) as jumlah_barang_sistem ")
+                      ->groupBy('id_produk', 'id_reference');
+
+            $details = DB::table('stok_produk_detail as spd')
+                       ->selectRaw("
+                            p.kode_produk,
+                            p.nama_produk, 
+                            sum(subSpd.jumlah_barang_sistem) as jumlah_barang_sistem,
+                            sum(subSpd.jumlah_barang_sistem) + spd.nilai  as jumlah_barang_aktual,
+                            spd.nilai as selisih,
+                            spd.harga
+                       ")
+                       ->join('produk as p', 'spd.id_produk', '=', 'p.id_produk')
+                       ->joinSub($subSpd, 'subSpd', function($joinSub) use ($id) {
+                            $joinSub->on('spd.id_produk', '=', 'subSpd.id_produk');
+                            $joinSub->where('subSpd.id_reference', '<', $id);
+                       })
+                       ->where('spd.id_reference', $id)->where('sumber', 'stok_produk')
+                       ->groupBy('p.kode_produk', 'p.nama_produk', 'spd.nilai', 'spd.harga')
+                       ->get();
+            return compact('header', 'details');
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }

@@ -12,4 +12,14 @@ class Setting extends Model
     protected $table = 'setting';
     protected $primaryKey = 'id_setting';
     protected $guarded = [];
+
+    public static function getNamaGudang()
+    {
+        $gudang = self::join('gudang', 'gudang_prioritas', '=', 'id_gudang')->first();
+        if($gudang->nama_gudang) {
+            return $gudang->nama_gudang;
+        }
+        return '';
+    }
+
 }
