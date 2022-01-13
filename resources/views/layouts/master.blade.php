@@ -1,270 +1,448 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
+
+    
+<!-- Mirrored from themesbrand.com/minia/layouts/pages-starter.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 13 Jan 2022 06:27:11 GMT -->
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ $setting->nama_perusahaan }} | @yield('title')</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-
-    <link rel="icon" href="{{ url($setting->path_logo) }}" type="image/png">
-
-    <!-- Bootstrap 3.3.7 -->
-    <link rel="stylesheet" href="{{ asset('/AdminLTE-2/bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ asset('/AdminLTE-2/bower_components/font-awesome/css/font-awesome.min.css') }}">
-    <!-- DataTables -->
-    <link rel="stylesheet" href="{{ asset('/AdminLTE-2/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
-
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-    <link rel="stylesheet" href="{{asset('libs/flatpickr/flatpickr.min.css')}}">
-
-    <link rel="stylesheet" href="{{asset('libs/snackbar/snackbar.min.css')}}">
         
-    <!-- Theme style -->
-    <link rel="stylesheet" href="{{ asset('/AdminLTE-2/dist/css/AdminLTE.min.css') }}">
-    <!-- AdminLTE Skins. Choose a skin from the css/skins
-       folder instead of downloading all of them to reduce the load. -->
-    <link rel="stylesheet" href="{{ asset('/AdminLTE-2/dist/css/skins/_all-skins.min.css') }}">
+        <meta charset="utf-8" />
+        <title>{{ $setting->nama_perusahaan }} | @yield('title')</title>
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="Point Of Sale" name="description" />
+        <meta content="Syahril Ardi" name="author" />
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="{{asset('template/images/favicon.ico')}}">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-  <![endif]-->
+        <!-- DataTables -->
+        <link href="{{asset('template/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" />
+        <link href="{{asset('template/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" />
 
-    <!-- Google Font -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+        <!-- Responsive datatable examples -->
+        <link href="{{asset('template/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" /> 
 
-    @stack('css')
-</head>
-<body class="hold-transition skin-red sidebar-mini">
-    <div class="wrapper">
+        <!-- preloader css -->
+        <link rel="stylesheet" href="{{asset('template/css/preloader.min.css')}}" type="text/css" />
 
-        @includeIf('layouts.header')
+        <!-- Bootstrap Css -->
+        <link href="{{asset('template/css/bootstrap.min.css')}}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link href="{{asset('template/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="{{asset('libs/flatpickr/flatpickr.min.css')}}">
+        <link rel="stylesheet" href="{{asset('libs/snackbar/snackbar.min.css')}}">
+        <!-- App Css-->
+        <link href="{{asset('template/css/app.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
 
-        @includeIf('layouts.sidebar')
+    </head>
 
-        <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-                <h1>
-                    @yield('title')
-                </h1>
-                <ol class="breadcrumb">
-                    @section('breadcrumb')
-                        <li><a href="{{ url('/') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-                    @show
-                </ol>
-            </section>
+    <body data-sidebar-size="lg">
 
-            <!-- Main content -->
-            <section class="content">
+    <!-- <body data-layout="horizontal"> -->
+
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+
+            @includeIf('layouts.header')
+            @includeIf('layouts.sidebar')
+            
+
+            
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+
+                <div class="page-content">
+                    <div class="container-fluid">
+
+                        <!-- start page title -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                    <h4 class="mb-sm-0 font-size-18">@yield('title')</h4>
+
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            @section('breadcrumb')
+                                                <li class="breadcrumb-item"><a href="{{ url('/') }}">Beranda</a></li>
+                                            @show
+                                        </ol>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+
+                        @yield('content')
+                        
+                    </div> <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+
+                @includeIf('layouts.footer')
                 
-                @yield('content')
+            </div>
+            <!-- end main content-->
 
-            </section>
-            <!-- /.content -->
         </div>
-        <!-- /.content-wrapper -->
+        <!-- END layout-wrapper -->
 
-        @includeIf('layouts.footer')
-    </div>
-    <!-- ./wrapper -->
+        
+        <!-- Right Sidebar -->
+        <div class="right-bar">
+            <div data-simplebar class="h-100">
+                <div class="rightbar-title d-flex align-items-center bg-dark p-3">
 
-    <!-- jQuery 3 -->
-    <script src="{{ asset('AdminLTE-2/bower_components/jquery/dist/jquery.min.js') }}"></script>
-    <!-- Bootstrap 3.3.7 -->
-    <script src="{{ asset('AdminLTE-2/bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-    <!-- Moment -->
-    <script src="{{ asset('AdminLTE-2/bower_components/moment/min/moment.min.js') }}"></script>
+                    <h5 class="m-0 me-2 text-white">Theme Customizer</h5>
 
-    <!-- DataTables -->
-    <script src="{{ asset('AdminLTE-2/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('AdminLTE-2/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+                    <a href="javascript:void(0);" class="right-bar-toggle ms-auto">
+                        <i class="mdi mdi-close noti-icon"></i>
+                    </a>
+                </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+                <!-- Settings -->
+                <hr class="m-0" />
 
-    <script src="{{asset('libs/flatpickr/flatpickr.min.js')}}"></script>
-    <script src="{{asset('libs/snackbar/snackbar.min.js')}}"></script>
-    <script src="{{asset('libs/bootbox/bootbox.min.js')}}"></script>
+                <div class="p-4">
+                    <h6 class="mb-3">Layout</h6>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="layout"
+                            id="layout-vertical" value="vertical">
+                        <label class="form-check-label" for="layout-vertical">Vertical</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="layout"
+                            id="layout-horizontal" value="horizontal">
+                        <label class="form-check-label" for="layout-horizontal">Horizontal</label>
+                    </div>
 
-    <!-- AdminLTE App -->
-    <script src="{{ asset('AdminLTE-2/dist/js/adminlte.min.js') }}"></script>
-    <!-- Validator -->
-    <script src="{{ asset('js/validator.min.js') }}"></script>
+                    <h6 class="mt-4 mb-3 pt-2">Layout Mode</h6>
 
-    <script>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="layout-mode"
+                            id="layout-mode-light" value="light">
+                        <label class="form-check-label" for="layout-mode-light">Light</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="layout-mode"
+                            id="layout-mode-dark" value="dark">
+                        <label class="form-check-label" for="layout-mode-dark">Dark</label>
+                    </div>
 
-        $(document).ready(function(){
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-        });
+                    <h6 class="mt-4 mb-3 pt-2">Layout Width</h6>
 
-        function preview(selector, temporaryFile, width = 200)  {
-            $(selector).empty();
-            $(selector).append(`<img src="${window.URL.createObjectURL(temporaryFile)}" width="${width}">`);
-        }
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="layout-width"
+                            id="layout-width-fuild" value="fuild" onchange="document.body.setAttribute('data-layout-size', 'fluid')">
+                        <label class="form-check-label" for="layout-width-fuild">Fluid</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="layout-width"
+                            id="layout-width-boxed" value="boxed" onchange="document.body.setAttribute('data-layout-size', 'boxed')">
+                        <label class="form-check-label" for="layout-width-boxed">Boxed</label>
+                    </div>
 
-        function formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") 
-        {
-            try {
-                decimalCount = Math.abs(decimalCount);
-                decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+                    <h6 class="mt-4 mb-3 pt-2">Layout Position</h6>
 
-                const negativeSign = amount < 0 ? "-" : "";
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="layout-position"
+                            id="layout-position-fixed" value="fixed" onchange="document.body.setAttribute('data-layout-scrollable', 'false')">
+                        <label class="form-check-label" for="layout-position-fixed">Fixed</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="layout-position"
+                            id="layout-position-scrollable" value="scrollable" onchange="document.body.setAttribute('data-layout-scrollable', 'true')">
+                        <label class="form-check-label" for="layout-position-scrollable">Scrollable</label>
+                    </div>
 
-                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
-                let j = (i.length > 3) ? i.length % 3 : 0;
+                    <h6 class="mt-4 mb-3 pt-2">Topbar Color</h6>
 
-                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
-            } catch (e) {
-                console.log(e)
-            }
-        };
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="topbar-color"
+                            id="topbar-color-light" value="light" onchange="document.body.setAttribute('data-topbar', 'light')">
+                        <label class="form-check-label" for="topbar-color-light">Light</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="topbar-color"
+                            id="topbar-color-dark" value="dark" onchange="document.body.setAttribute('data-topbar', 'dark')">
+                        <label class="form-check-label" for="topbar-color-dark">Dark</label>
+                    </div>
 
-        function showErrorAlert(message)
-        {
-            Snackbar.show({
-                text: message,
-                actionTextColor: '#fff',
-                backgroundColor: '#e7515a'
-            });
-        }
+                    <h6 class="mt-4 mb-3 pt-2 sidebar-setting">Sidebar Size</h6>
 
-        function showSuccessAlert(message)
-        {
-            Snackbar.show({
-                text: message,
-                actionTextColor: '#fff',
-                backgroundColor: '#8dbf42'
-            });
-        }
+                    <div class="form-check sidebar-setting">
+                        <input class="form-check-input" type="radio" name="sidebar-size" 
+                            id="sidebar-size-default" value="default" onchange="document.body.setAttribute('data-sidebar-size', 'lg')">
+                        <label class="form-check-label" for="sidebar-size-default">Default</label>
+                    </div>
+                    <div class="form-check sidebar-setting">
+                        <input class="form-check-input" type="radio" name="sidebar-size"
+                            id="sidebar-size-compact" value="compact" onchange="document.body.setAttribute('data-sidebar-size', 'md')">
+                        <label class="form-check-label" for="sidebar-size-compact">Compact</label>
+                    </div>
+                    <div class="form-check sidebar-setting">
+                        <input class="form-check-input" type="radio" name="sidebar-size"
+                            id="sidebar-size-small" value="small" onchange="document.body.setAttribute('data-sidebar-size', 'sm')">
+                        <label class="form-check-label" for="sidebar-size-small">Small (Icon View)</label>
+                    </div>
 
-        function blockLoading()
-        {
-            bootbox.dialog({
-                message: '<div class="text-center"><i class="fa fa-spin fa-spinner"></i> Sedang Memuat...</div>',
-                closeButton: false,
-                centerVertical: true
-            });
-        }
+                    <h6 class="mt-4 mb-3 pt-2 sidebar-setting">Sidebar Color</h6>
 
-        function unBlockLoading()
-        {
-            bootbox.hideAll();
-        }
+                    <div class="form-check sidebar-setting">
+                        <input class="form-check-input" type="radio" name="sidebar-color"
+                            id="sidebar-color-light" value="light" onchange="document.body.setAttribute('data-sidebar', 'light')">
+                        <label class="form-check-label" for="sidebar-color-light">Light</label>
+                    </div>
+                    <div class="form-check sidebar-setting">
+                        <input class="form-check-input" type="radio" name="sidebar-color"
+                            id="sidebar-color-dark" value="dark" onchange="document.body.setAttribute('data-sidebar', 'dark')">
+                        <label class="form-check-label" for="sidebar-color-dark">Dark</label>
+                    </div>
+                    <div class="form-check sidebar-setting">
+                        <input class="form-check-input" type="radio" name="sidebar-color"
+                            id="sidebar-color-brand" value="brand" onchange="document.body.setAttribute('data-sidebar', 'brand')">
+                        <label class="form-check-label" for="sidebar-color-brand">Brand</label>
+                    </div>
 
-        function tglIndonesia(dateText)
-        {
-            if(dateText != '' && dateText != null) {
-                let arrDateText = dateText.split('-');
-                return `${arrDateText[2]}/${month(arrDateText[1])}/${arrDateText[0]}`;
-            }
-            return '';
-        }
+                    <h6 class="mt-4 mb-3 pt-2">Direction</h6>
 
-        function month(month)
-        {
-            switch (month) {
-                case '01': return 'Januari';
-                case '02': return 'Februari';
-                case '03': return 'Maret';
-                case '04': return 'April';
-                case '05': return 'Mei';
-                case '06': return 'Juni';
-                case '07': return 'Juli';
-                case '08': return 'Agustus';
-                case '09': return 'September';
-                case '10': return 'Oktober';
-                case '11': return 'November';
-                case '12': return 'Desember';
-            }
-        }
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="layout-direction"
+                            id="layout-direction-ltr" value="ltr">
+                        <label class="form-check-label" for="layout-direction-ltr">LTR</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="layout-direction"
+                            id="layout-direction-rtl" value="rtl">
+                        <label class="form-check-label" for="layout-direction-rtl">RTL</label>
+                    </div>
 
-        function formToJson(element) {
-            let formData = element.serializeArray();
-            let unindexed_array = formData;
-            let indexed_array = {};
+                </div>
 
-            $.map(unindexed_array, function(n, i) {
-                indexed_array[n['name']] = n['value'];
-            });
+            </div> <!-- end slimscroll-menu-->
+        </div>
+        <!-- /Right-bar -->
 
-            return JSON.stringify(indexed_array);
-        }
+        <!-- Right bar overlay-->
+        <div class="rightbar-overlay"></div>
 
-        function buttonLoading(button, text = null)
-        {
-            if(text != null) {
-                button.html(`<i class="fas fa-circle-notch fa-spin"></i>`);
-            } else {
-                button.html(`<i class="fas fa-circle-notch fa-spin"></i> Memuat ..`);
-            }
-            button.attr('disabled', 'disabled');
-        }
+        <!-- JAVASCRIPT -->
+        <script src="{{asset('template/libs/jquery/jquery.min.js')}}"></script>
+        <script src="{{asset('template/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+        <script src="{{asset('template/libs/metismenu/metisMenu.min.js')}}"></script>
+        <script src="{{asset('template/libs/simplebar/simplebar.min.js')}}"></script>
+        <script src="{{asset('template/libs/node-waves/waves.min.js')}}"></script>
+        <script src="{{asset('template/libs/feather-icons/feather.min.js')}}"></script>
 
-        function buttonUnloading(button, buttonText)
-        {
-            button.attr('disabled', false);
-            button.html(buttonText);
-        }
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="{{asset('libs/flatpickr/flatpickr.min.js')}}"></script>
+        <script src="{{asset('libs/snackbar/snackbar.min.js')}}"></script>
+        <script src="{{asset('libs/bootbox/bootbox.min.js')}}"></script>
+        <script src="{{ asset('js/validator.min.js') }}"></script>
 
-        function errorInput(errorResponse)
-        {
-            if(typeof(errorResponse) === 'object') {
-                Object.keys(errorResponse.message).map(function(key, index) {
-                    const formGroup = $("#" + key).closest('div.form-group')
-                    formGroup.addClass('has-error');
-                    $("#" + key).addClass('is-invalid')
-                    const message = `<span class="help-block">${errorResponse.message[key]}</span>`;
-                    formGroup.append(message);
+        <!-- pace js -->
+        <script src="{{asset('template/libs/pace-js/pace.min.js')}}"></script>
+
+         <!-- Required datatable js -->
+         <script src="{{asset('template/libs/datatables.net/js/jquery.dataTables.min.js')}}"></script>
+         <script src="{{asset('template/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
+         <!-- Buttons examples -->
+         <script src="{{asset('template/libs/datatables.net-buttons/js/dataTables.buttons.min.js')}}"></script>
+         <script src="{{asset('template/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js')}}"></script>
+         <script src="{{asset('template/libs/jszip/jszip.min.js')}}"></script>
+         <script src="{{asset('template/libs/pdfmake/build/pdfmake.min.js')}}"></script>
+         <script src="{{asset('template/libs/pdfmake/build/vfs_fonts.js')}}"></script>
+         <script src="{{asset('template/libs/datatables.net-buttons/js/buttons.html5.min.js')}}"></script>
+         <script src="{{asset('template/libs/datatables.net-buttons/js/buttons.print.min.js')}}"></script>
+         <script src="{{asset('template/libs/datatables.net-buttons/js/buttons.colVis.min.js')}}"></script>
+ 
+         <!-- Responsive examples -->
+         <script src="{{asset('template/libs/datatables.net-responsive/js/dataTables.responsive.min.js')}}"></script>
+         <script src="{{asset('template/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js')}}"></script>
+
+         <script>
+             $("#sidebar-size-default").prop('checked', true).trigger('change');
+         </script>
+
+        <script src="{{asset('template/js/app.js')}}"></script>
+
+        <script>
+
+            $(document).ready(function(){
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
                 });
-            } else {
-                showErrorAlert(errorResponse.message)
+
+                setTimeout(() => {
+                    
+                }, 1000);
+            });
+    
+            function preview(selector, temporaryFile, width = 200)  {
+                $(selector).empty();
+                $(selector).append(`<img src="${window.URL.createObjectURL(temporaryFile)}" width="${width}">`);
             }
-        }
-
-        function removeErrorInput(form)
-        {
-            form.find('div.form-group .form-control').removeClass('is-invalid');
-            form.find('div.form-group').removeClass('has-error');
-            form.find('div.form-group span.help-block').remove();
-        }
-
-        function labelStatusStok(status)
-        {
-            switch (status) {
-                case 1 : return `<span class="label label-success"> AKTIF </span>`;
-                case 0 : return `<span class="label label-danger"> BATAL </span>`;
-                default: return '';
+    
+            function formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") 
+            {
+                try {
+                    decimalCount = Math.abs(decimalCount);
+                    decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+    
+                    const negativeSign = amount < 0 ? "-" : "";
+    
+                    let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                    let j = (i.length > 3) ? i.length % 3 : 0;
+    
+                    return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+                } catch (e) {
+                    console.log(e)
+                }
+            };
+    
+            function showErrorAlert(message)
+            {
+                Snackbar.show({
+                    text: message,
+                    actionTextColor: '#fff',
+                    backgroundColor: '#e7515a'
+                });
             }
-        }
+    
+            function showSuccessAlert(message)
+            {
+                Snackbar.show({
+                    text: message,
+                    actionTextColor: '#fff',
+                    backgroundColor: '#8dbf42'
+                });
+            }
+    
+            function blockLoading()
+            {
+                bootbox.dialog({
+                    message: '<div class="text-center"><i class="fa fa-spin fa-spinner"></i> Sedang Memuat...</div>',
+                    closeButton: false,
+                    centerVertical: true
+                });
+            }
+    
+            function unBlockLoading()
+            {
+                bootbox.hideAll();
+            }
+    
+            function tglIndonesia(dateText)
+            {
+                if(dateText != '' && dateText != null) {
+                    let arrDateText = dateText.split('-');
+                    return `${arrDateText[2]}/${month(arrDateText[1])}/${arrDateText[0]}`;
+                }
+                return '';
+            }
+    
+            function month(month)
+            {
+                switch (month) {
+                    case '01': return 'Januari';
+                    case '02': return 'Februari';
+                    case '03': return 'Maret';
+                    case '04': return 'April';
+                    case '05': return 'Mei';
+                    case '06': return 'Juni';
+                    case '07': return 'Juli';
+                    case '08': return 'Agustus';
+                    case '09': return 'September';
+                    case '10': return 'Oktober';
+                    case '11': return 'November';
+                    case '12': return 'Desember';
+                }
+            }
+    
+            function formToJson(element) {
+                let formData = element.serializeArray();
+                let unindexed_array = formData;
+                let indexed_array = {};
+    
+                $.map(unindexed_array, function(n, i) {
+                    indexed_array[n['name']] = n['value'];
+                });
+    
+                return JSON.stringify(indexed_array);
+            }
+    
+            function buttonLoading(button, text = null)
+            {
+                if(text != null) {
+                    button.html(`<i class="fas fa-circle-notch fa-spin"></i>`);
+                } else {
+                    button.html(`<i class="fas fa-circle-notch fa-spin"></i> Memuat ..`);
+                }
+                button.attr('disabled', 'disabled');
+            }
+    
+            function buttonUnloading(button, buttonText)
+            {
+                button.attr('disabled', false);
+                button.html(buttonText);
+            }
+    
+            function errorInput(errorResponse)
+            {
+                if(typeof(errorResponse) === 'object') {
+                    Object.keys(errorResponse.message).map(function(key, index) {
+                        const formGroup = $("#" + key).closest('div.form-group')
+                        formGroup.addClass('has-error');
+                        $("#" + key).addClass('is-invalid')
+                        const message = `<span class="help-block">${errorResponse.message[key]}</span>`;
+                        formGroup.append(message);
+                    });
+                } else {
+                    showErrorAlert(errorResponse.message)
+                }
+            }
+    
+            function removeErrorInput(form)
+            {
+                form.find('div.form-group .form-control').removeClass('is-invalid');
+                form.find('div.form-group').removeClass('has-error');
+                form.find('div.form-group span.help-block').remove();
+            }
+    
+            function labelStatusStok(status)
+            {
+                switch (status) {
+                    case 1 : return `<span class="label label-success"> AKTIF </span>`;
+                    case 0 : return `<span class="label label-danger"> BATAL </span>`;
+                    default: return '';
+                }
+            }
+    
+            function formatDateIso(date) 
+            {
+                var d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+    
+                if (month.length < 2)
+                    month = '0' + month;
+                if (day.length < 2)
+                    day = '0' + day;
+    
+                return [year, month, day].join('-');
+            }
+    
+        </script>
+        @stack('scripts')
 
-        function formatDateIso(date) 
-        {
-            var d = new Date(date),
-                month = '' + (d.getMonth() + 1),
-                day = '' + d.getDate(),
-                year = d.getFullYear();
+    </body>
 
-            if (month.length < 2)
-                month = '0' + month;
-            if (day.length < 2)
-                day = '0' + day;
-
-            return [year, month, day].join('-');
-        }
-
-    </script>
-    @stack('scripts')
-</body>
+<!-- Mirrored from themesbrand.com/minia/layouts/pages-starter.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 13 Jan 2022 06:27:11 GMT -->
 </html>
+

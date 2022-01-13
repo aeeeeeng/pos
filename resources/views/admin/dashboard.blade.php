@@ -6,129 +6,135 @@
 
 @section('breadcrumb')
     @parent
-    <li class="active">Dashboard</li>
+    <li class="breadcrumb-item active">Dashboard</li>
 @endsection
 
 @section('content')
 <!-- Small boxes (Stat box) -->
 <div class="row">
-    <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
-        <div class="small-box bg-aqua">
-            <div class="inner">
-                <h3>{{ $kategori }}</h3>
+    <div class="col-xl-3 col-md-6">
+        <!-- card -->
+        <div class="card card-h-100 bg-primary border-primary text-white">
+            <!-- card body -->
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-12">
+                        <span class="text-white mb-3 lh-1 d-block text-truncate">Total Kategori</span>
+                        <h4 class="mb-3 text-white">
+                            <span class="counter-value" data-target="{{ $kategori }}">0</span>
+                        </h4>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <a href="{{ route('kategori.index') }}" class="ms-1 text-white font-size-13">Lihat <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
 
-                <p>Total Kategori</p>
-            </div>
-            <div class="icon">
-                <i class="fa fa-cube"></i>
-            </div>
-            <a href="{{ route('kategori.index') }}" class="small-box-footer">Lihat <i class="fa fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
-        <div class="small-box bg-green">
-            <div class="inner">
-                <h3>{{ $produk }}</h3>
+    <div class="col-xl-3 col-md-6">
+        <!-- card -->
+        <div class="card card-h-100 bg-success border-success text-white">
+            <!-- card body -->
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-12">
+                        <span class="text-white mb-3 lh-1 d-block text-truncate">Total Produk</span>
+                        <h4 class="mb-3 text-white">
+                            <span class="counter-value" data-target="{{ $produk }}">0</span>
+                        </h4>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <a href="{{ route('produk.index') }}" class="ms-1 text-white font-size-13">Lihat <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
 
-                <p>Total Produk</p>
-            </div>
-            <div class="icon">
-                <i class="fa fa-cubes"></i>
-            </div>
-            <a href="{{ route('produk.index') }}" class="small-box-footer">Lihat <i class="fa fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
-        <div class="small-box bg-yellow">
-            <div class="inner">
-                <h3>{{ $member }}</h3>
+    <div class="col-xl-3 col-md-6">
+        <!-- card -->
+        <div class="card card-h-100 bg-warning border-warning text-white">
+            <!-- card body -->
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-12">
+                        <span class="text-white mb-3 lh-1 d-block text-truncate">Total Member</span>
+                        <h4 class="mb-3 text-white">
+                            <span class="counter-value" data-target="{{ $member }}">0</span>
+                        </h4>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <a href="{{ route('member.index') }}" class="ms-1 text-white font-size-13">Lihat <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
 
-                <p>Total Member</p>
-            </div>
-            <div class="icon">
-                <i class="fa fa-id-card"></i>
-            </div>
-            <a href="{{ route('member.index') }}" class="small-box-footer">Lihat <i class="fa fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
-        <div class="small-box bg-red">
-            <div class="inner">
-                <h3>{{ $supplier }}</h3>
+    <div class="col-xl-3 col-md-6">
+        <!-- card -->
+        <div class="card card-h-100 bg-danger border-danger text-white">
+            <!-- card body -->
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-12">
+                        <span class="text-white mb-3 lh-1 d-block text-truncate">Total Supplier</span>
+                        <h4 class="mb-3 text-white">
+                            <span class="counter-value" data-target="{{ $supplier }}">0</span>
+                        </h4>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <a href="{{ route('supplier.index') }}" class="ms-1 text-white font-size-13">Lihat <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
 
-                <p>Total Supplier</p>
-            </div>
-            <div class="icon">
-                <i class="fa fa-truck"></i>
-            </div>
-            <a href="{{ route('supplier.index') }}" class="small-box-footer">Lihat <i class="fa fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-    <!-- ./col -->
 </div>
-<!-- /.row -->
-<!-- Main row -->
+
 <div class="row">
-    <div class="col-lg-12">
-        <div class="box">
-            <div class="box-header with-border">
-                <h3 class="box-title">Grafik Pendapatan & Grafik Laba Penjualan {{ tanggal_indonesia($tanggal_awal, false) }} s/d {{ tanggal_indonesia($tanggal_akhir, false) }}</h3>
-                <a href="{{ route('laporan.index') }}" target="__blank" class="btn btn-sm btn-flat btn-danger pull-right">Lihat Detail Pendapatan</a>
-                &nbsp;
-                <a href="{{ route('laporan_laba_produk.index') }}" target="__blank" class="btn btn-sm btn-flat btn-danger pull-right">Lihat Detail Penjualan</a>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="chart">
-                            <!-- Sales Chart Canvas -->
-                            <canvas id="salesChart" style="height: 180px;"></canvas>
+    <div class="col-xl-12">
+        <div class="card card-h-100">
+            <div class="card-body">
+                <div class="d-flex flex-wrap align-items-center mb-4">
+                    <h5 class="card-title me-2">Grafik Pendapatan & Grafik Laba Penjualan {{ tanggal_indonesia($tanggal_awal, false) }} s/d {{ tanggal_indonesia($tanggal_akhir, false) }}</h5>
+                    <div class="ms-auto">
+                        <div>
+                            <a href="{{ route('laporan.index') }}" target="__blank" class="btn btn-sm btn-flat btn-danger pull-right">Lihat Detail Pendapatan</a>
+                            &nbsp;
+                            <a href="{{ route('laporan_laba_produk.index') }}" target="__blank" class="btn btn-sm btn-flat btn-danger pull-right">Lihat Detail Penjualan</a>
                         </div>
-                        <!-- /.chart-responsive -->
-                    </div>
+                    </div>                
                 </div>
-                <!-- /.row -->
+                <div class="chart">
+                    <canvas id="salesChart" style="max-height: 250px;"></canvas>
+                </div>
             </div>
         </div>
-        <!-- /.box -->
     </div>
-    <!-- /.col -->
 </div>
 
-
-<!-- /.row (main row) -->
-
 <div class="row">
-    <div class="col-lg-6">
-        <div class="box">
-            <div class="box-header with-border">
-                <h3 class="box-title">10 Produk Terlaris</h3>
-            </div>
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <canvas id="produkLarisChart" style="height: 180px;"></canvas>
-                    </div>
+    <div class="col-xl-6">
+        <div class="card card-h-100">
+            <div class="card-body">
+                <div class="d-flex flex-wrap align-items-center mb-4">
+                    <h5 class="card-title me-2">10 Produk Terlaris</h5>
                 </div>
+                <canvas id="produkLarisChart" style="max-height: 250px;"></canvas>
             </div>
         </div>
     </div>
-    <div class="col-lg-6">
-        <div class="box">
-            <div class="box-header with-border">
-                <h3 class="box-title">10 List Produk Stok dibawah Minimal</h3>
-            </div>
-            <div class="box-body">
+    <div class="col-xl-6">
+        <div class="card card-h-100">
+            <div class="card-body">
+                <div class="d-flex flex-wrap align-items-center mb-4">
+                    <h5 class="card-title me-2">10 List Produk Stok dibawah Minimal</h5>
+                </div>
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-sm-12">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
@@ -155,11 +161,11 @@
                         </table>
                     </div>
                 </div>
-                <!-- /.row -->
             </div>
         </div>
     </div>
 </div>
+
 @endsection
 
 @push('scripts')

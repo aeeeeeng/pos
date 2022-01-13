@@ -6,18 +6,18 @@
 
 @section('breadcrumb')
     @parent
-    <li class="active">Daftar Kategori</li>
+    <li class="breadcrumb-item active">Daftar Kategori</li>
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <div class="box">
-            <div class="box-header with-border">
+        <div class="card">
+            <div class="card-header">
                 <button onclick="addForm('{{ route('kategori.store') }}')" class="btn btn-success btn-xs btn-flat"><i class="fa fa-plus-circle"></i> Tambah</button>
             </div>
-            <div class="box-body table-responsive">
-                <table class="table table-stiped table-bordered">
+            <div class="card-body">
+                <table class="table table-bordered dt-responsive  nowrap w-100">
                     <thead>
                         <th width="5%">No</th>
                         <th>Kategori</th>

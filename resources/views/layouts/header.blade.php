@@ -1,59 +1,65 @@
-<header class="main-header">
-    <!-- Logo -->
-    <a href="index2.html" class="logo">
-        <!-- mini logo for sidebar mini 50x50 pixels -->
-        @php
-            $words = explode(' ', $setting->nama_perusahaan);
-            $word  = '';
-            foreach ($words as $w) {
-                $word .= $w[0];
-            }
-        @endphp
-        <span class="logo-mini">{{ $word }}</span>
-        <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>{{ $setting->nama_perusahaan }}</b></span>
-    </a>
-    <!-- Header Navbar: style can be found in header.less -->
-    <nav class="navbar navbar-static-top">
-        <!-- Sidebar toggle button-->
-        <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-            <span class="sr-only">Toggle navigation</span>
-        </a>
+<header id="page-topbar">
+    <div class="navbar-header">
+        <div class="d-flex">
+            <!-- LOGO -->
+            <div class="navbar-brand-box">
+                <a href="index.html" class="logo logo-dark">
+                    <span class="logo-sm">
+                        <img src="{{url($setting->path_logo)}}" alt="" height="24">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="{{url($setting->path_logo)}}" alt="" height="24"> <span class="logo-txt">{{ $setting->nama_perusahaan }}</span>
+                    </span>
+                </a>
 
-        <div class="navbar-custom-menu">
-            <ul class="nav navbar-nav">
-                <!-- User Account: style can be found in dropdown.less -->
-                <li class="dropdown user user-menu">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="{{ url(auth()->user()->foto ?? '') }}" class="user-image img-profil"
-                            alt="User Image">
-                        <span class="hidden-xs">{{ auth()->user()->name }}</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <!-- User image -->
-                        <li class="user-header">
-                            <img src="{{ url(auth()->user()->foto ?? '') }}" class="img-circle img-profil"
-                                alt="User Image">
+                <a href="index.html" class="logo logo-light">
+                    <span class="logo-sm">
+                        <img src="{{url($setting->path_logo)}}" alt="" height="24">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="{{url($setting->path_logo)}}" alt="" height="24"> <span class="logo-txt">{{ $setting->nama_perusahaan }}</span>
+                    </span>
+                </a>
+            </div>
 
-                            <p>
-                                {{ auth()->user()->name }} - {{ auth()->user()->email }}
-                            </p>
-                        </li>
-                        <!-- Menu Footer-->
-                        <li class="user-footer">
-                            <div class="pull-left">
-                                <a href="{{ route('user.profil') }}" class="btn btn-default btn-flat">Profil</a>
-                            </div>
-                            <div class="pull-right">
-                                <a href="#" class="btn btn-default btn-flat"
-                                    onclick="$('#logout-form').submit()">Keluar</a>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+            <button type="button" class="btn btn-sm px-3 font-size-16 header-item" id="vertical-menu-btn">
+                <i class="fa fa-fw fa-bars"></i>
+            </button>
+
+            
         </div>
-    </nav>
+
+        <div class="d-flex">
+
+            <div class="dropdown d-none d-sm-inline-block">
+                <button type="button" class="btn header-item" id="mode-setting-btn">
+                    <i data-feather="moon" class="icon-lg layout-mode-dark"></i>
+                    <i data-feather="sun" class="icon-lg layout-mode-light"></i>
+                </button>
+            </div>
+
+            <div class="dropdown d-inline-block">
+                <button type="button" class="btn header-item right-bar-toggle me-2">
+                    <i data-feather="settings" class="icon-lg"></i>
+                </button>
+            </div>
+
+            <div class="dropdown d-inline-block">
+                <button type="button" class="btn header-item bg-soft-light border-start border-end" id="page-header-user-dropdown"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img class="rounded-circle header-profile-user" src="{{ url(auth()->user()->foto ?? '') }}"
+                        alt="Header Avatar">
+                    <span class="d-none d-xl-inline-block ms-1 fw-medium">{{ auth()->user()->name }}</span>
+                    <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a class="dropdown-item" href="#" onclick="$('#logout-form').submit()"><i class="mdi mdi-logout font-size-16 align-middle me-1"></i> Logout</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </header>
 
 <form action="{{ route('logout') }}" method="post" id="logout-form" style="display: none;">
