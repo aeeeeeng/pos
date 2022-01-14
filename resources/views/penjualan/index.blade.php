@@ -6,25 +6,25 @@
 
 @section('breadcrumb')
     @parent
-    <li class="active">Daftar Penjualan</li>
+    <li class="breadcrumb-item">Daftar Penjualan</li>
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <div class="box">
-            <div class="box-body table-responsive">
-                <table class="table table-stiped table-bordered table-penjualan">
+        <div class="card">
+            <div class="card-body table-responsive">
+                <table class="table table-sm table-stiped table-bordered table-penjualan">
                     <thead>
-                        <th width="5%">No</th>
+                        <th class="text-center" width="5%">No</th>
                         <th>Tanggal</th>
                         <th>Kode Member</th>
-                        <th>Total Item</th>
-                        <th>Total Harga</th>
-                        <th>Diskon</th>
-                        <th>Total Bayar</th>
+                        <th class="text-end">Total Item</th>
+                        <th class="text-end">Total Harga</th>
+                        <th class="text-end">Diskon</th>
+                        <th class="text-end">Total Bayar</th>
                         <th>Kasir</th>
-                        <th width="15%"><i class="fa fa-cog"></i></th>
+                        <th class="text-center"><i class="fa fa-cog"></i></th>
                     </thead>
                 </table>
             </div>
@@ -49,15 +49,15 @@
                 url: '{{ route('penjualan.data') }}',
             },
             columns: [
-                {data: 'DT_RowIndex', searchable: false, sortable: false},
+                {data: 'DT_RowIndex', searchable: false, sortable: false, className: 'text-center'},
                 {data: 'tanggal'},
                 {data: 'kode_member'},
-                {data: 'total_item'},
-                {data: 'total_harga'},
-                {data: 'diskon'},
-                {data: 'bayar'},
+                {data: 'total_item', className: 'text-end'},
+                {data: 'total_harga', className: 'text-end'},
+                {data: 'diskon', className: 'text-end'},
+                {data: 'bayar', className: 'text-end'},
                 {data: 'kasir'},
-                {data: 'aksi', searchable: false, sortable: false},
+                {data: 'aksi', searchable: false, sortable: false, className: 'text-center'},
             ]
         });
 
@@ -69,9 +69,9 @@
                 {data: 'DT_RowIndex', searchable: false, sortable: false},
                 {data: 'kode_produk'},
                 {data: 'nama_produk'},
-                {data: 'harga_jual'},
-                {data: 'jumlah'},
-                {data: 'subtotal'},
+                {data: 'harga_jual', className: 'text-end'},
+                {data: 'jumlah', className: 'text-end'},
+                {data: 'subtotal',className: 'text-end'},
             ]
         })
     });
