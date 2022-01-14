@@ -6,8 +6,8 @@
 
 @section('breadcrumb')
     @parent
-    <li class="">Persediaan</li>
-    <li class="active">Stok Masuk</li>
+    <li class="breadcrumb-item">Persediaan</li>
+    <li class="breadcrumb-item active">Stok Masuk</li>
 @endsection
 
 @push('css')
@@ -23,17 +23,7 @@
             width: 100%;
             justify-content: space-between;
         }
-        .text-gropuping span {
-            margin-top: 6px;
-        }
-        .code-badge {
-            background-color: #00a65a !important;
-            padding: 10px;
-            text-align: center;
-            color: #fff;
-            font-weight: bold;
-            border-radius: 6px;
-        }
+       
         @media (min-width: 768px) {
             .form-horizontal .control-label {
                 padding-top: 7px;
@@ -47,16 +37,18 @@
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <div class="box">
-            <div class="box-header with-border">
-                <button onclick="create()" class="btn btn-success btn-xs btn-flat"><i class="fa fa-plus-circle"></i> Tambah Stok Masuk</button>
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <button onclick="create()" class="btn btn-success btn-sm btn-flat"><i class="fa fa-plus-circle"></i> Tambah Stok Masuk</button>
+                </div>
             </div>
-            <div class="box-body table-responsive">
+            <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="tanggal">Range Tanggal</label>
-                            <input type="text" class="form-control" id="tanggalFilter" name="tanggal">
+                            <input type="text" class="form-control form-control-sm" id="tanggalFilter" name="tanggal">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -90,15 +82,17 @@
                 <hr>
                 <div class="row">
                     <div class="col-md-12">
-                        <table class="table table-stiped table-bordered" id="tableStokMasuk">
+                        <table class="table table-sm table-stiped table-bordered" id="tableStokMasuk">
                             <thead>
-                                <th width="5%">No</th>
-                                <th>Kode</th>
-                                <th>Gudang</th>
-                                <th>Tanggal</th>
-                                <th>Catatan</th>
-                                <th>Status</th>
-                                <th>#</th>
+                                <tr class="bg-primary text-white">
+                                    <th width="5%">No</th>
+                                    <th>Kode</th>
+                                    <th>Gudang</th>
+                                    <th>Tanggal</th>
+                                    <th>Catatan</th>
+                                    <th>Status</th>
+                                    <th>#</th>
+                                </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -141,6 +135,7 @@
     function tableStokMasukDT()
     {
         tableDT = $("#tableStokMasuk").DataTable({
+            responsive: true,
             processing: true,
             serverSide: true,
             searching: true,
@@ -166,7 +161,7 @@
             },
             columns: [
                 {
-                    data: '',
+                    data: 'reference',
                     name: 'no',
                     render: function(data, type, row, attr) {
                         return attr.row + attr.settings._iDisplayStart + 1;
@@ -180,7 +175,7 @@
                     name: 'sp.kode',
                     className: "text-center",
                     render: function(d,t,r) {
-                        return `<span style="cursor: pointer;" onclick="showDetail('${r.id_stok_produk}')" class="label label-success">${d}</span>`;
+                        return `<span style="cursor: pointer;" onclick="showDetail('${r.id_stok_produk}')" class="badge bg-primary">${d}</span>`;
                     }
                 },
                 {
@@ -200,7 +195,13 @@
                 {
                     data: 'catatan',
                     name: 'sp.catatan',
-                    className: "text-left"
+                    className: "text-left",
+                    render: function(d) {
+                        if(d == '' || d == null) {
+                            return '-';
+                        }
+                        return d;
+                    }
                 },
                 {
                     data: 'status',
@@ -217,7 +218,7 @@
                     searchable: false,
                     orderable: false,
                     render(d,t,r){
-                        const cancel = `<button type="button" class="btn btn-danger btn-flat btn-sm" onclick="cancel(this, '${d}')" ><i class="fa fa-close"></i></button>`;
+                        const cancel = `<button type="button" class="btn btn-danger btn-flat btn-sm" onclick="cancel(this, '${d}')" ><i class="fas fa-times-circle"></i></button>`;
                         return cancel;
                     }
                 }
@@ -236,9 +237,9 @@
         $.ajax({
             url: "{{url('persediaan/stok-masuk/create')}}",
             success: function(response) {
-                bootbox.dialog({
+                const dialog = bootbox.dialog({
                     closeButton: false,
-                    size: "large",
+                    size: "xl",
                     title: 'Tambah Stok Masuk',
                     message: response
                 });
@@ -254,7 +255,7 @@
             success: function(response) {
                 bootbox.dialog({
                     closeButton: false,
-                    size: "large",
+                    size: "xl",
                     title: 'Detail Stok Masuk',
                     message: response
                 });
@@ -268,6 +269,7 @@
         bootbox.confirm({
             title: "Batalkan Stok Masuk ini ?",
             message: "Semua stok didalam stok masuk ini akan dijadikan 0",
+            closeButton: false,
             buttons: {
                 cancel: {
                     label: '<i class="fa fa-times"></i> Batal'

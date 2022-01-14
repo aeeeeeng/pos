@@ -63,8 +63,8 @@ function tambah_nol_didepan($value, $threshold = null)
 function labelStatusStok($status)
 {
     switch ($status) {
-        case '1': return '<span class="label label-success"> AKTIF </span>';
-        case '0': return '<span class="label label-danger"> BATAL </span>';
+        case '1': return '<span class="badge bg-success"> AKTIF </span>';
+        case '0': return '<span class="badge bg-danger"> BATAL </span>';
         default: return '';
     }
 }

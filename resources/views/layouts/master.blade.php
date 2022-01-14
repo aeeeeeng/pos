@@ -29,6 +29,7 @@
         <!-- Icons Css -->
         <link href="{{asset('template/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        
         <link rel="stylesheet" href="{{asset('libs/flatpickr/flatpickr.min.css')}}">
         <link rel="stylesheet" href="{{asset('libs/snackbar/snackbar.min.css')}}">
         <!-- App Css-->
@@ -40,6 +41,16 @@
             }
             .with-errors {
                 color: red;
+            }
+            .select2-container--default .select2-selection--single {
+                background-color: unset !important;
+                border: 1px solid #ced4da !important;
+                border-radius: 3px !important;
+                font-size: 12px !important;
+            }  
+            .table-bordered thead tr, .table-hover thead tr {
+                background-color: #5156be;
+                color: #ffffff;
             }
         </style>
 
@@ -293,7 +304,7 @@
                     
                 }, 1000);
             });
-    
+
             function preview(selector, temporaryFile, width = 200)  {
                 $(selector).empty();
                 $(selector).append(`<img src="${window.URL.createObjectURL(temporaryFile)}" width="${width}">`);
@@ -428,8 +439,8 @@
             function labelStatusStok(status)
             {
                 switch (status) {
-                    case 1 : return `<span class="label label-success"> AKTIF </span>`;
-                    case 0 : return `<span class="label label-danger"> BATAL </span>`;
+                    case 1 : return `<span class="badge bg-success"> AKTIF </span>`;
+                    case 0 : return `<span class="badge bg-danger"> BATAL </span>`;
                     default: return '';
                 }
             }
