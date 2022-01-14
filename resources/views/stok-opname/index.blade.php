@@ -6,8 +6,8 @@
 
 @section('breadcrumb')
     @parent
-    <li class="">Persediaan</li>
-    <li class="active">Stok Opname</li>
+    <li class="breadcrumb-item">Persediaan</li>
+    <li class="breadcrumb-item active">Stok Opname</li>
 @endsection
 
 @push('css')
@@ -23,17 +23,6 @@
             width: 100%;
             justify-content: space-between;
         }
-        .text-gropuping span {
-            margin-top: 6px;
-        }
-        .code-badge {
-            background-color: #00a65a !important;
-            padding: 10px;
-            text-align: center;
-            color: #fff;
-            font-weight: bold;
-            border-radius: 6px;
-        }
         @media (min-width: 768px) {
             .form-horizontal .control-label {
                 padding-top: 7px;
@@ -47,22 +36,22 @@
 @section('content')
 <div class="row">
     <div class="col-md-12">
-        <div class="box">
-            <div class="box-header with-border">
-                <button onclick="create()" class="btn btn-success btn-xs btn-flat"><i class="fa fa-plus-circle"></i> Tambah Stok Opname</button>
+        <div class="card">
+            <div class="card-header with-border">
+                <button onclick="create()" class="btn btn-success btn-sm btn-flat"><i class="fa fa-plus-circle"></i> Tambah Stok Opname</button>
             </div>
-            <div class="box-body table-responsive">
+            <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="tanggal">Range Tanggal</label>
-                            <input type="text" class="form-control" id="tanggalFilter" name="tanggal">
+                            <input type="text" class="form-control form-control-sm" id="tanggalFilter" name="tanggal">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="tanggal">Gudang</label>
-                            <select name="gudang" id="gudang" class="form-control">
+                            <select name="gudang" id="gudang" class="form-control form-control-sm">
                                 <option value="">Semua Gudang</option>
                                 @foreach ($gudang as $item)
                                     <option value="{{$item->id_gudang}}">{{$item->kode_gudang . ' - ' . $item->nama_gudang}}</option>
@@ -73,7 +62,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="tanggal">Status</label>
-                            <select name="status" id="status" class="form-control">
+                            <select name="status" id="status" class="form-control form-control-sm">
                                 <option value="">Semua Status</option>
                                 <option value="1">AKTIF</option>
                                 <option value="0">BATAL</option>
@@ -90,7 +79,7 @@
                 <hr>
                 <div class="row">
                     <div class="col-md-12">
-                        <table class="table table-stiped table-bordered" id="tableStokOpname">
+                        <table class="table table-sm table-stiped table-bordered" id="tableStokOpname">
                             <thead>
                                 <th width="5%">No</th>
                                 <th>Kode</th>
@@ -141,6 +130,7 @@
     function tableStokOpnameDT()
     {
         tableDT = $("#tableStokOpname").DataTable({
+            responsive: true,
             processing: true,
             serverSide: true,
             searching: true,
@@ -166,7 +156,7 @@
             },
             columns: [
                 {
-                    data: '',
+                    data: 'reference',
                     name: 'no',
                     render: function(data, type, row, attr) {
                         return attr.row + attr.settings._iDisplayStart + 1;
@@ -180,18 +170,18 @@
                     name: 'sp.kode',
                     className: "text-center",
                     render: function(d,t,r) {
-                        return `<span style="cursor: pointer;" onclick="showDetail('${r.id_stok_produk}')" class="label label-success">${d}</span>`;
+                        return `<span style="cursor: pointer;" onclick="showDetail('${r.id_stok_produk}')" class="badge bg-primary">${d}</span>`;
                     }
                 },
                 {
                     data: 'nama_gudang',
                     name: 'g.nama_gudang',
-                    className: "text-left"
+                    className: "text-start"
                 },
                 {
                     data: 'tanggal',
                     name: 'sp.tanggal',
-                    className: "text-left",
+                    className: "text-start",
                     searchable: false,
                     render: function (d) {
                         return tglIndonesia(d);
@@ -200,7 +190,7 @@
                 {
                     data: 'catatan',
                     name: 'sp.catatan',
-                    className: "text-left"
+                    className: "text-start"
                 },
                 {
                     data: 'status',
@@ -217,7 +207,7 @@
                     searchable: false,
                     orderable: false,
                     render(d,t,r){
-                        const cancel = `<button type="button" class="btn btn-danger btn-flat btn-sm" onclick="cancel(this, '${d}')" ><i class="fa fa-close"></i></button>`;
+                        const cancel = `<button type="button" class="btn btn-danger btn-flat btn-sm" onclick="cancel(this, '${d}')" ><i class="fa fa-times-circle"></i></button>`;
                         return cancel;
                     }
                 }
@@ -233,6 +223,7 @@
     function create(that)
     {
         bootbox.confirm({
+            closeButton: false,
             title: "Apakah anda yakin ?",
             message: `Anda akan melakukan <span style="font-weight:bold;color:red;">Stok Opname</span> ?`,
             buttons: {
@@ -259,7 +250,7 @@
             success: function(response) {
                 bootbox.dialog({
                     closeButton: false,
-                    size: "lg",
+                    size: "xl",
                     title: 'Detail Stok Opname',
                     message: response
                 });
@@ -271,6 +262,7 @@
     {
 
         bootbox.confirm({
+            closeButton: false,
             title: "Batalkan Stok Opname ini ?",
             message: "Semua stok didalam stok opname ini akan dijadikan 0",
             buttons: {

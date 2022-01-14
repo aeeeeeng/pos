@@ -6,9 +6,9 @@
 
 @section('breadcrumb')
     @parent
-    <li class="">Persediaan</li>
-    <li class="">Stok Opname</li>
-    <li class="active">Buat Stok Opname</li>
+    <li class="breadcrumb-item">Persediaan</li>
+    <li class="breadcrumb-item">Stok Opname</li>
+    <li class="breadcrumb-item active">Buat Stok Opname</li>
 @endsection
 
 
@@ -25,17 +25,6 @@
             width: 100%;
             justify-content: space-between;
         }
-        .text-gropuping span {
-            margin-top: 6px;
-        }
-        .code-badge {
-            background-color: #00a65a !important;
-            padding: 10px;
-            text-align: center;
-            color: #fff;
-            font-weight: bold;
-            border-radius: 6px;
-        }
         @media (min-width: 768px) {
             .form-horizontal .control-label {
                 padding-top: 7px;
@@ -50,17 +39,14 @@
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <div class="box">
-            <div class="box-header with-border">
-                &nbsp;
-            </div>
-            <div class="box-body table-responsive">
+        <div class="card">
+            <div class="card-body">
                 <form onsubmit="store(this)" id="formStokOpname" class="">    
-                    <div class="form-horizontal">
-                        <div class="form-group">
-                            <label for="id_gudang" class="col-sm-2 control-label text-left">Gudang <span class="text-red">*</span> </label>
-                            <div class="col-sm-5">
-                                <select name="id_gudang" id="id_gudang" class="form-control">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_gudang" class="control-label text-start">Gudang <span class="text-danger">*</span> </label>
+                                <select name="id_gudang" id="id_gudang" class="form-control form-control-sm">
                                     <option value="">Pilih Gudang</option>
                                     @foreach ($gudang as $item)
                                         <option value="{{$item->id_gudang}}">{{$item->kode_gudang . ' - ' . $item->nama_gudang}}</option>
@@ -68,32 +54,32 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="catatan" class="col-sm-2 control-label text-left">Catatan</label>
-                            <div class="col-sm-5">
-                                <textarea name="catatan" id="catatan" class="form-control"></textarea>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="catatan" class="control-label text-start">Catatan</label>
+                                <textarea name="catatan" id="catatan" class="form-control form-control-sm"></textarea>
                             </div>
                         </div>
                     </div>
                     <hr>
                     <div class="row">
                         <div class="col-lg-12">
-                            <select class="pilih-product-adjustment select2 form-control"></select>
+                            <select class="pilih-product-adjustment select2 form-control form-control-sm"></select>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-12">
-                            <table class="table table-hover" id="productTable">
+                            <table class="table table-sm table-hover" id="productTable">
                                 <thead>
                                     <tr>
-                                        <th class="text-left">No</th>
-                                        <th class="text-left">Kode Produk</th>
-                                        <th class="text-left">Nama Produk</th>
-                                        <th class="text-right">Jumlah Barang (SISTEM)</th>
-                                        <th class="text-right">Jumlah Barang (AKTUAL)</th>
-                                        <th class="text-right">Silisih</th>
-                                        <th class="text-right">Harga Unit (SISTEM)</th>
-                                        <th class="text-left">#</th>
+                                        <th class="text-start">No</th>
+                                        <th class="text-start">Kode Produk</th>
+                                        <th class="text-start">Nama Produk</th>
+                                        <th class="text-end">Jumlah Barang (SISTEM)</th>
+                                        <th class="text-end">Jumlah Barang (AKTUAL)</th>
+                                        <th class="text-end">Silisih</th>
+                                        <th class="text-end">Harga Unit (SISTEM)</th>
+                                        <th class="text-start">#</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -105,9 +91,9 @@
                     <hr>
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="pull-right">
-                                <button type="button" class="btn btn-flat btn-secondary" onclick="window.location.href = '{{url('persediaan/stok-opname')}}'"> Batal </button>
-                                <button type="submit" class="btn btn-flat btn-primary"> Simpan </button>
+                            <div class="float-end">
+                                <button type="button" class="btn btn-flat btn-sm btn-secondary" onclick="window.location.href = '{{url('persediaan/stok-opname')}}'"> Batal </button>
+                                <button type="submit" class="btn btn-flat btn-sm btn-primary"> Simpan </button>
                             </div>
                         </div>
                     </div>
@@ -175,6 +161,7 @@
         event.preventDefault();
 
         bootbox.confirm({
+            closeButton: false,
             title: "Apakah anda yakin ?",
             message: "Semua stok opname akan disimpan",
             buttons: {
@@ -248,17 +235,17 @@
         } else {
             const row = dataDetail.map((item, index) => `<tr>
                 <td>${index+1}</td>
-                <td><small class="label bg-primary">${item.kode_produk}</small></td>
+                <td><small class="badge bg-primary">${item.kode_produk}</small></td>
                 <td>${item.nama_produk}</td>
-                <td class="text-right">${item.stok}</td>
-                <td class="text-right">
-                    <input type="number" min="0" class="form-control text-right" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
+                <td class="text-end">${item.stok}</td>
+                <td class="text-end">
+                    <input type="number" min="0" class="form-control form-control-sm text-end" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
                 </td>
-                <td class="text-right stok_selisih">
-                    ${item.stok_selisih >= 0 ? `<span class="text-success"> <i class="fa fa-angle-up"></i> ${item.stok_selisih}</span>` : `<span class="text-red"> <i class="fa fa-angle-down"></i> ${item.stok_selisih}</span>`}
+                <td class="text-end stok_selisih">
+                    ${item.stok_selisih >= 0 ? `<span class="text-success"> <i class="fa fa-angle-up"></i> ${item.stok_selisih}</span>` : `<span class="text-danger"> <i class="fa fa-angle-down"></i> ${item.stok_selisih}</span>`}
                 </td>
-                <td class="text-right">${formatMoney(item.nilai_stok)}</td>
-                <td><button type="button" class="btn btn-flat btn-danger btn-xs" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
+                <td class="text-end">${formatMoney(item.nilai_stok)}</td>
+                <td><button type="button" class="btn btn-flat btn-danger btn-sm" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
             </tr>`).join();
             table.find('tbody').html(row);
         }
@@ -271,7 +258,7 @@
         const qty_stok = dataDetail[indexExist].qty_stok;
         dataDetail[indexExist].stok_selisih = isNaN(parseInt(qty_stok - Math.abs(stok))) ? 0 : parseInt(qty_stok - Math.abs(stok));
         $(that).closest('tr').find('td.stok_selisih').html(
-            `${dataDetail[indexExist].stok_selisih >= 0 ? `<span class="text-green"> <i class="fa fa-angle-up"></i> ${dataDetail[indexExist].stok_selisih}</span>` : `<span class="text-red"> <i class="fa fa-angle-down"></i> ${dataDetail[indexExist].stok_selisih}</span>`}`
+            `${dataDetail[indexExist].stok_selisih >= 0 ? `<span class="text-green"> <i class="fa fa-angle-up"></i> ${dataDetail[indexExist].stok_selisih}</span>` : `<span class="text-danger"> <i class="fa fa-angle-down"></i> ${dataDetail[indexExist].stok_selisih}</span>`}`
         );
     }
 
