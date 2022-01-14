@@ -408,9 +408,9 @@
                 if(typeof(errorResponse) === 'object') {
                     Object.keys(errorResponse.message).map(function(key, index) {
                         const formGroup = $("#" + key).closest('div.form-group')
-                        formGroup.addClass('has-error');
+                        formGroup.addClass('has-danger');
                         $("#" + key).addClass('is-invalid')
-                        const message = `<span class="help-block">${errorResponse.message[key]}</span>`;
+                        const message = `<span class="invalid-feedback">${errorResponse.message[key]}</span>`;
                         formGroup.append(message);
                     });
                 } else {
@@ -421,8 +421,8 @@
             function removeErrorInput(form)
             {
                 form.find('div.form-group .form-control').removeClass('is-invalid');
-                form.find('div.form-group').removeClass('has-error');
-                form.find('div.form-group span.help-block').remove();
+                form.find('div.form-group').removeClass('has-danger');
+                form.find('div.form-group span.invalid-feedback').remove();
             }
     
             function labelStatusStok(status)

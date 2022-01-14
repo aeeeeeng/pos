@@ -1,17 +1,17 @@
 <form onsubmit="store(this);" id="formGudang">
     <div class="row">
         <div class="col-md-12">
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label for="nama_gudang">Kode Gudang</label>
                 <input type="text" class="form-control" id="kode_gudang" name="kode_gudang">
                 <input type="checkbox" id="isAutoCode" name="isAutoCode" onchange="autoCode(this)" value="1">
                 <span class="checkbox-kode">Centang untuk generate kode gudang otomatis dari sistem </span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label for="nama_gudang">Nama Gudang</label>
                 <input type="text" class="form-control" id="nama_gudang" name="nama_gudang">
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label for="alamat_gudang">Alamat Gudang</label>
                 <textarea type="text" class="form-control" id="alamat_gudang" name="alamat_gudang"></textarea>
             </div>

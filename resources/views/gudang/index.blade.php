@@ -6,8 +6,8 @@
 
 @section('breadcrumb')
     @parent
-    <li class="">Persediaan</li>
-    <li class="active">Gudang</li>
+    <li class="breadcrumb-item">Persediaan</li>
+    <li class="breadcrumb-item active">Gudang</li>
 @endsection
 
 @push('css')
@@ -30,14 +30,16 @@
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <div class="box">
-            <div class="box-header with-border">
-                <button onclick="create()" class="btn btn-success btn-xs btn-flat"><i class="fa fa-plus-circle"></i> Tambah</button>
+        <div class="card">
+            <div class="card-header with-border">
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <button onclick="create()" class="btn btn-success btn-sm btn-flat"><i class="fa fa-plus-circle"></i> Tambah</button>
+                </div>
             </div>
-            <div class="box-body table-responsive">
-                <table class="table table-stiped table-bordered" id="tableGudang">
+            <div class="card-body table-responsive">
+                <table class="table table-sm table-stiped table-bordered" id="tableGudang">
                     <thead>
-                        <th width="5%">No</th>
+                        <th>No</th>
                         <th>Kode</th>
                         <th>Nama</th>
                         <th>Alamat</th>
@@ -116,7 +118,7 @@
                         orderable: false,
                         render(d,t,r){
                             const inactive = `<button type="button" class="btn btn-danger btn-flat btn-sm" onclick="inactive('${d}')" ><i class="fa fa-trash"></i></button>`;
-                            const edit = `<button type="button" class="btn btn-primary btn-flat btn-sm" onclick="edit(this, '${d}')" ><i class="fa fa-pencil"></i></button>`
+                            const edit = `<button type="button" class="btn btn-primary btn-flat btn-sm" onclick="edit(this, '${d}')" ><i class="fa fa-wrench"></i></button>`
                             return inactive + '&nbsp;' + edit;
                         }
                     }
