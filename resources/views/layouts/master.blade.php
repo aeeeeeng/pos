@@ -34,6 +34,17 @@
         <!-- App Css-->
         <link href="{{asset('template/css/app.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
 
+        <style>
+            .help-block {
+                display: block;
+            }
+            .with-errors {
+                color: red;
+            }
+        </style>
+
+        @stack('css')
+
     </head>
 
     <body data-sidebar-size="lg">

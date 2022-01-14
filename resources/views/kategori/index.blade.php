@@ -14,10 +14,10 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <button onclick="addForm('{{ route('kategori.store') }}')" class="btn btn-success btn-xs btn-flat"><i class="fa fa-plus-circle"></i> Tambah</button>
+                <button onclick="addForm('{{ route('kategori.store') }}')" class="btn btn-success btn-sm btn-flat"><i class="fa fa-plus-circle"></i> Tambah</button>
             </div>
             <div class="card-body">
-                <table class="table table-bordered dt-responsive  nowrap w-100">
+                <table class="table table-sm table-bordered dt-responsive  nowrap w-100">
                     <thead>
                         <th width="5%">No</th>
                         <th>Kategori</th>
