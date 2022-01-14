@@ -6,8 +6,8 @@
 
 @section('breadcrumb')
     @parent
-    <li class="">Persediaan</li>
-    <li class="active">Stok Keluar</li>
+    <li class="breadcrumb-item">Persediaan</li>
+    <li class="breadcrumb-item active">Stok Keluar</li>
 @endsection
 
 @push('css')
@@ -23,17 +23,6 @@
             width: 100%;
             justify-content: space-between;
         }
-        .text-gropuping span {
-            margin-top: 6px;
-        }
-        .code-badge {
-            background-color: #00a65a !important;
-            padding: 10px;
-            text-align: center;
-            color: #fff;
-            font-weight: bold;
-            border-radius: 6px;
-        }
         @media (min-width: 768px) {
             .form-horizontal .control-label {
                 padding-top: 7px;
@@ -47,22 +36,22 @@
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <div class="box">
-            <div class="box-header with-border">
-                <button onclick="create()" class="btn btn-success btn-xs btn-flat"><i class="fa fa-plus-circle"></i> Tambah Stok Keluar</button>
+        <div class="card">
+            <div class="card-header">
+                <button onclick="create()" class="btn btn-success btn-sm btn-flat"><i class="fa fa-plus-circle"></i> Tambah Stok Keluar</button>
             </div>
-            <div class="box-body table-responsive">
+            <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="tanggal">Range Tanggal</label>
-                            <input type="text" class="form-control" id="tanggalFilter" name="tanggal">
+                            <input type="text" class="form-control form-control-sm" id="tanggalFilter" name="tanggal">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="tanggal">Gudang</label>
-                            <select name="gudang" id="gudang" class="form-control">
+                            <select name="gudang" id="gudang" class="form-control form-control-sm">
                                 <option value="">Semua Gudang</option>
                                 @foreach ($gudang as $item)
                                     <option value="{{$item->id_gudang}}">{{$item->kode_gudang . ' - ' . $item->nama_gudang}}</option>
@@ -73,7 +62,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="tanggal">Status</label>
-                            <select name="status" id="status" class="form-control">
+                            <select name="status" id="status" class="form-control form-control-sm">
                                 <option value="">Semua Status</option>
                                 <option value="1">AKTIF</option>
                                 <option value="0">BATAL</option>
@@ -90,15 +79,17 @@
                 <hr>
                 <div class="row">
                     <div class="col-md-12">
-                        <table class="table table-stiped table-bordered" id="tableStokKeluar">
+                        <table class="table table-sm table-stiped table-bordered" id="tableStokKeluar">
                             <thead>
-                                <th width="5%">No</th>
-                                <th>Kode</th>
-                                <th>Gudang</th>
-                                <th>Tanggal</th>
-                                <th>Catatan</th>
-                                <th>Status</th>
-                                <th>#</th>
+                                <tr>
+                                    <th width="5%">No</th>
+                                    <th>Kode</th>
+                                    <th>Gudang</th>
+                                    <th>Tanggal</th>
+                                    <th>Catatan</th>
+                                    <th>Status</th>
+                                    <th>#</th>
+                                </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -180,7 +171,7 @@
                     name: 'sp.kode',
                     className: "text-center",
                     render: function(d,t,r) {
-                        return `<span style="cursor: pointer;" onclick="showDetail('${r.id_stok_produk}')" class="label label-success">${d}</span>`;
+                        return `<span style="cursor: pointer;" onclick="showDetail('${r.id_stok_produk}')" class="badge bg-primary">${d}</span>`;
                     }
                 },
                 {
@@ -217,7 +208,7 @@
                     searchable: false,
                     orderable: false,
                     render(d,t,r){
-                        const cancel = `<button type="button" class="btn btn-danger btn-flat btn-sm" onclick="cancel(this, '${d}')" ><i class="fa fa-close"></i></button>`;
+                        const cancel = `<button type="button" class="btn btn-danger btn-flat btn-sm" onclick="cancel(this, '${d}')" ><i class="fas fa-times-circle"></i></button>`;
                         return cancel;
                     }
                 }
@@ -238,7 +229,7 @@
             success: function(response) {
                 bootbox.dialog({
                     closeButton: false,
-                    size: "large",
+                    size: "xl",
                     title: 'Tambah Stok Keluar',
                     message: response
                 });
@@ -254,7 +245,7 @@
             success: function(response) {
                 bootbox.dialog({
                     closeButton: false,
-                    size: "large",
+                    size: "xl",
                     title: 'Detail Stok Keluar',
                     message: response
                 });
@@ -268,6 +259,7 @@
         bootbox.confirm({
             title: "Batalkan Stok Keluar ini ?",
             message: "Semua stok didalam stok keluar ini akan dijadikan 0",
+            closeButton: false,
             buttons: {
                 cancel: {
                     label: '<i class="fa fa-times"></i> Batal'

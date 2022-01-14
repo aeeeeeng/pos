@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-group mb-2">
-                <label for="id_gudang" class="control-label text-left">Gudang <span class="text-red">*</span> </label>
+                <label for="id_gudang" class="control-label text-start">Gudang <span class="text-danger">*</span> </label>
                 <select name="id_gudang" id="id_gudang" class="form-control">
                     <option value="">Pilih Gudang</option>
                     @foreach ($gudang as $item)
@@ -13,7 +13,7 @@
         </div>
         <div class="col-md-6">
             <div class="form-group mb-2">
-                <label for="tanggal" class="control-label text-left ">Tanggal <span class="text-red">*</span></label>
+                <label for="tanggal" class="control-label text-start ">Tanggal <span class="text-danger">*</span></label>
                 <input type="text" class="form-control form-control-sm" id="tanggal" name="tanggal">
             </div>
         </div>
@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-group mb-2">
-                <label for="catatan" class="control-label text-left">Catatan</label>
+                <label for="catatan" class="control-label text-start">Catatan</label>
                 <textarea name="catatan" id="catatan" class="form-control form-control-sm"></textarea>
             </div>
         </div>
@@ -38,13 +38,13 @@
                 <table class="table table-sm table-hover" id="productTable">
                     <thead>
                         <tr>
-                            <th class="text-left">No</th>
-                            <th class="text-left">Kode Produk</th>
-                            <th class="text-left" width="30%">Nama Produk</th>
+                            <th class="text-start">No</th>
+                            <th class="text-start">Kode Produk</th>
+                            <th class="text-start" width="30%">Nama Produk</th>
                             <th class="text-end" width="10%">Stok Masuk</th>
                             <th class="text-end" width="15%">Harga</th>
                             <th class="text-end">Subtotal</th>
-                            <th class="text-left">#</th>
+                            <th class="text-start">#</th>
                         </tr>
                     </thead>
                     <tbody>

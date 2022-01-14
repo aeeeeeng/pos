@@ -1,9 +1,9 @@
 <form onsubmit="store(this)" id="formStokKeluar" class="">    
-    <div class="form-horizontal">
-        <div class="form-group">
-            <label for="id_gudang" class="col-sm-2 control-label text-left">Gudang <span class="text-red">*</span> </label>
-            <div class="col-sm-5">
-                <select name="id_gudang" id="id_gudang" class="form-control">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-2">
+                <label for="id_gudang" class="control-label text-start">Gudang <span class="text-danger">*</span> </label>
+                <select name="id_gudang" id="id_gudang" class="form-control form-control-sm">
                     <option value="">Pilih Gudang</option>
                     @foreach ($gudang as $item)
                         <option value="{{$item->id_gudang}}">{{$item->kode_gudang . ' - ' . $item->nama_gudang}}</option>
@@ -11,16 +11,18 @@
                 </select>
             </div>
         </div>
-        <div class="form-group">
-            <label for="tanggal" class="col-sm-2 control-label text-left ">Tanggal <span class="text-red">*</span></label>
-            <div class="col-sm-5">
-                <input type="text" class="form-control" id="tanggal" name="tanggal">
+        <div class="col-md-6">
+            <div class="form-group mb-2">
+                <label for="tanggal" class="control-label text-start ">Tanggal <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-sm" id="tanggal" name="tanggal">
             </div>
         </div>
-        <div class="form-group">
-            <label for="catatan" class="col-sm-2 control-label text-left">Catatan</label>
-            <div class="col-sm-5">
-                <textarea name="catatan" id="catatan" class="form-control"></textarea>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-2">
+                <label for="catatan" class="control-label text-start">Catatan</label>
+                <textarea name="catatan" id="catatan" class="form-control form-control-sm"></textarea>
             </div>
         </div>
     </div>
@@ -28,25 +30,25 @@
     <div class="row">
         <div class="col-lg-12">
             <span style="font-size: 12px;font-style: italic;color: red;">Produk yang bisa dipilih, hanya produk yang mempunyai stok</span>
-            <select class="pilih-product-adjustment select2 form-control"></select>
+            <select class="pilih-product-adjustment select2 form-control form-control-sm"></select>
         </div>
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <table class="table table-hover" id="productTable">
+            <table class="table table-sm table-hover" id="productTable">
                 <thead>
                     <tr>
-                        <th class="text-left">No</th>
-                        <th class="text-left">Kode Produk</th>
-                        <th class="text-left" width="40%">Nama Produk</th>
-                        <th class="text-right" width="15%">Stok Sisa</th>
-                        <th class="text-right" width="15%">Stok Keluar</th>
-                        <th class="text-right">Nilai Stok</th>
-                        <th class="text-left">#</th>
+                        <th class="text-start">No</th>
+                        <th class="text-start">Kode Produk</th>
+                        <th class="text-start" width="40%">Nama Produk</th>
+                        <th class="text-end" width="15%">Stok Sisa</th>
+                        <th class="text-end" width="15%">Stok Keluar</th>
+                        <th class="text-end">Nilai Stok (SISTEM)</th>
+                        <th class="text-start">#</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td colspan="5" class="text-center">Data masih kosong, pilih produk pada combobox diatas</td></tr>
+                    <tr><td colspan="7" class="text-center">Data masih kosong, pilih produk pada combobox diatas</td></tr>
                 </tbody>
             </table>
         </div>
@@ -54,12 +56,12 @@
     <hr>
     <div class="row">
         <div class="col-md-6">
-            <h4>Grand Total : <span id="grandTotal"></span></h4>
+            <h5>Grand Total : <span id="grandTotal"></span></h5>
         </div>
         <div class="col-md-6">
-            <div class="pull-right">
-                <button type="button" class="btn btn-flat btn-secondary" onclick="bootbox.hideAll()"> Batal </button>
-                <button type="submit" class="btn btn-flat btn-primary"> Simpan </button>
+            <div class="float-end">
+                <button type="button" class="btn btn-flat btn-sm btn-secondary" onclick="bootbox.hideAll()"> Batal </button>
+                <button type="submit" class="btn btn-flat btn-sm btn-primary"> Simpan </button>
             </div>
         </div>
     </div>
@@ -75,11 +77,12 @@
             dateFormat: "d/m/Y"
         });
 
-        $("#id_gudang").select2({ width: '100%' });
+        $("#id_gudang").select2({ width: '100%', dropdownParent: $('.modal') });
     });
 
     $(".pilih-product-adjustment").select2({
         placeholder: "Pilih Barang Melalui Kode/Nama",
+        dropdownParent: $('.modal'),
         allowClear: true,
         width: '100%',
         ajax: {
@@ -197,18 +200,18 @@
     {
         const table = $("#productTable");
         if(dataDetail.length == 0) {
-            table.find('tbody').html(`<tr><td colspan="5" class="text-center">Data masih kosong, pilih produk pada combobox diatas</td></tr>`);
+            table.find('tbody').html(`<tr><td colspan="7" class="text-center">Data masih kosong, pilih produk pada combobox diatas</td></tr>`);
         } else {
             const row = dataDetail.map((item, index) => `<tr>
                 <td>${index+1}</td>
-                <td><small class="label bg-primary">${item.kode_produk}</small></td>
+                <td><small class="badge bg-primary">${item.kode_produk}</small></td>
                 <td>${item.nama_produk}</td>
-                <td class="text-right">${item.stok}</td>
-                <td class="text-right">
-                    <input type="number" min="0" class="form-control text-right" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
+                <td class="text-end">${item.stok}</td>
+                <td class="text-end">
+                    <input type="number" min="0" class="form-control form-control-sm text-end" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
                 </td>
-                <td class="text-right subtotal">${formatMoney(item.subtotal)}</td>
-                <td><button type="button" class="btn btn-flat btn-danger btn-xs" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
+                <td class="text-end subtotal">${formatMoney(item.subtotal)}</td>
+                <td><button type="button" class="btn btn-sm btn-flat btn-danger btn-xs" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
             </tr>`).join();
             table.find('tbody').html(row);
         }

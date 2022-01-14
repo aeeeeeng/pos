@@ -2,60 +2,60 @@
     <div class="row">
         <div class="col-sm-2">
             <div class="text-gropuping">
-                <h5 style="font-weight: bold;">Kode Stok Keluar</h5>
+                <h6 style="font-weight: bold;">Kode Stok Keluar</h6>
                 <span class="">:</span>
             </div>            
         </div>
         <div class="col-sm-2">
-            <h5 class="code-badge">{{$header->kode}}</h5>
+            <h6 class="code-badge">{{$header->kode}}</h6>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-2">
             <div class="text-gropuping">
-                <h5 style="font-weight: bold;">Gudang</h5>
+                <h6 style="font-weight: bold;">Gudang</h6>
                 <span class="">:</span>
             </div>            
         </div>
         <div class="col-sm-5">
-            <h5>{{$header->kode_gudang .  ' - ' . $header->nama_gudang}}</h5>
+            <h6>{{$header->kode_gudang .  ' - ' . $header->nama_gudang}}</h6>
         </div>
         <div class="col-sm-2">
             <div class="text-gropuping">
-                <h5 style="font-weight: bold;">Status</h5>
+                <h6 style="font-weight: bold;">Status</h6>
                 <span class="">:</span>
             </div>            
         </div>
         <div class="col-sm-2">
-            <h5 class="">{!! labelStatusStok($header->status) !!}</h5>
+            <h6 class="">{!! labelStatusStok($header->status) !!}</h6>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-2">
             <div class="text-gropuping">
-                <h5 style="font-weight: bold;">Tanggal</h5>
+                <h6 style="font-weight: bold;">Tanggal</h6>
                 <span class="">:</span>
             </div>
         </div>
         <div class="col-sm-5">
-            <h5>{{tanggal_indonesia($header->tanggal, false)}}</h5>
+            <h6>{{tanggal_indonesia($header->tanggal, false)}}</h6>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-2">
             <div class="text-gropuping">
-                <h5 style="font-weight: bold;">Catatan</h5>
+                <h6 style="font-weight: bold;">Catatan</h6>
                 <span class="">:</span>
             </div>
         </div>
         <div class="col-sm-5">
-            <p style="margin-bottom: 0;margin-top: 6px;">{{$header->catatan}}</p>
+            <p style="">{{$header->catatan}}</p>
         </div>
     </div>
     <hr>
     <div class="row">
         <div class="col-lg-12">
-            <table class="table table-hover" id="productTable">
+            <table class="table table-hover table-sm" id="productTable">
                 <thead>
                     <tr>
                         <th class="text-left">No</th>
@@ -70,7 +70,7 @@
                     @foreach ($details as $i => $item)
                         <tr>
                             <td class="text-left">{{$i+1}}</td>
-                            <td class="text-left"> <small class="label bg-primary">{{$item->kode_produk}}</small></td>
+                            <td class="text-left"> <small class="badge bg-primary">{{$item->kode_produk}}</small></td>
                             <td class="text-left">{{$item->nama_produk}}</td>
                             <td class="text-right">{{$item->nilai}}</td>
                             <td class="text-right">{{format_uang($item->harga)}}</td>
@@ -84,11 +84,11 @@
     <hr>
     <div class="row">
         <div class="col-md-6">
-            <h4>Grand Total : <span id="grandTotal">{{format_uang($grandTotal)}}</span></h4>
+            <h5>Grand Total : <span id="grandTotal">{{format_uang($grandTotal)}}</span></h5>
         </div>
         <div class="col-md-6">
-            <div class="pull-right">
-                <button type="button" class="btn btn-flat btn-secondary" onclick="bootbox.hideAll()"> Tutup </button>
+            <div class="float-end">
+                <button type="button" class="btn btn-flat btn-sm btn-secondary" onclick="bootbox.hideAll()"> Tutup </button>
             </div>
         </div>
     </div>
