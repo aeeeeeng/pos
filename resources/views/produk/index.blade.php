@@ -23,7 +23,7 @@
                     <button onclick="cetakBarcode('{{ route('produk.cetak_barcode') }}')" class="btn btn-info btn-sm btn-flat"><i class="fa fa-barcode"></i> Cetak Barcode</button>
                 </div>
             </div>
-            <div class="card-body table-responsive">
+            <div class="card-body">
                 <form action="" method="post" class="form-produk">
                     @csrf
                     <table class="table table-sm table-stiped table-bordered">
