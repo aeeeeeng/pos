@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en">
 
-    
+
 <!-- Mirrored from themesbrand.com/minia/layouts/pages-starter.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 13 Jan 2022 06:27:11 GMT -->
 <head>
-        
+
         <meta charset="utf-8" />
         <title>{{ $setting->nama_perusahaan }} | @yield('title')</title>
         <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -19,7 +19,7 @@
         <link href="{{asset('template/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" />
 
         <!-- Responsive datatable examples -->
-        <link href="{{asset('template/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" /> 
+        <link href="{{asset('template/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" />
 
         <!-- preloader css -->
         <link rel="stylesheet" href="{{asset('template/css/preloader.min.css')}}" type="text/css" />
@@ -29,9 +29,11 @@
         <!-- Icons Css -->
         <link href="{{asset('template/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        
+
         <link rel="stylesheet" href="{{asset('libs/flatpickr/flatpickr.min.css')}}">
         <link rel="stylesheet" href="{{asset('libs/snackbar/snackbar.min.css')}}">
+
+        <link rel="stylesheet" href="{{asset('libs/datepicker/css/bootstrap-datepicker.min.css')}}">
         <!-- App Css-->
         <link href="{{asset('template/css/app.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
 
@@ -47,7 +49,7 @@
                 border: 1px solid #ced4da !important;
                 border-radius: 3px !important;
                 font-size: 12px !important;
-            }  
+            }
             .table-bordered thead tr, .table-hover thead tr {
                 background-color: #5156be;
                 color: #ffffff;
@@ -67,9 +69,9 @@
 
             @includeIf('layouts.header')
             @includeIf('layouts.sidebar')
-            
 
-            
+
+
 
             <!-- ============================================================== -->
             <!-- Start right Content here -->
@@ -99,20 +101,20 @@
                         <!-- end page title -->
 
                         @yield('content')
-                        
+
                     </div> <!-- container-fluid -->
                 </div>
                 <!-- End Page-content -->
 
                 @includeIf('layouts.footer')
-                
+
             </div>
             <!-- end main content-->
 
         </div>
         <!-- END layout-wrapper -->
 
-        
+
         <!-- Right Sidebar -->
         <div class="right-bar">
             <div data-simplebar class="h-100">
@@ -196,7 +198,7 @@
                     <h6 class="mt-4 mb-3 pt-2 sidebar-setting">Sidebar Size</h6>
 
                     <div class="form-check sidebar-setting">
-                        <input class="form-check-input" type="radio" name="sidebar-size" 
+                        <input class="form-check-input" type="radio" name="sidebar-size"
                             id="sidebar-size-default" value="default" onchange="document.body.setAttribute('data-sidebar-size', 'lg')">
                         <label class="form-check-label" for="sidebar-size-default">Default</label>
                     </div>
@@ -280,10 +282,12 @@
          <script src="{{asset('template/libs/datatables.net-buttons/js/buttons.html5.min.js')}}"></script>
          <script src="{{asset('template/libs/datatables.net-buttons/js/buttons.print.min.js')}}"></script>
          <script src="{{asset('template/libs/datatables.net-buttons/js/buttons.colVis.min.js')}}"></script>
- 
+
          <!-- Responsive examples -->
          <script src="{{asset('template/libs/datatables.net-responsive/js/dataTables.responsive.min.js')}}"></script>
          <script src="{{asset('template/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js')}}"></script>
+
+        <script src="{{asset('libs/datepicker/js/bootstrap-datepicker.min.js')}}"></script>
 
          <script>
              $("#sidebar-size-default").prop('checked', true).trigger('change');
@@ -301,7 +305,7 @@
                 });
 
                 setTimeout(() => {
-                    
+
                 }, 1000);
             });
 
@@ -309,24 +313,24 @@
                 $(selector).empty();
                 $(selector).append(`<img src="${window.URL.createObjectURL(temporaryFile)}" width="${width}">`);
             }
-    
-            function formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") 
+
+            function formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",")
             {
                 try {
                     decimalCount = Math.abs(decimalCount);
                     decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
-    
+
                     const negativeSign = amount < 0 ? "-" : "";
-    
+
                     let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
                     let j = (i.length > 3) ? i.length % 3 : 0;
-    
+
                     return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
                 } catch (e) {
                     console.log(e)
                 }
             };
-    
+
             function showErrorAlert(message)
             {
                 Snackbar.show({
@@ -335,7 +339,7 @@
                     backgroundColor: '#e7515a'
                 });
             }
-    
+
             function showSuccessAlert(message)
             {
                 Snackbar.show({
@@ -344,7 +348,7 @@
                     backgroundColor: '#8dbf42'
                 });
             }
-    
+
             function blockLoading()
             {
                 bootbox.dialog({
@@ -353,12 +357,12 @@
                     centerVertical: true
                 });
             }
-    
+
             function unBlockLoading()
             {
                 bootbox.hideAll();
             }
-    
+
             function tglIndonesia(dateText)
             {
                 if(dateText != '' && dateText != null) {
@@ -367,7 +371,7 @@
                 }
                 return '';
             }
-    
+
             function month(month)
             {
                 switch (month) {
@@ -385,19 +389,19 @@
                     case '12': return 'Desember';
                 }
             }
-    
+
             function formToJson(element) {
                 let formData = element.serializeArray();
                 let unindexed_array = formData;
                 let indexed_array = {};
-    
+
                 $.map(unindexed_array, function(n, i) {
                     indexed_array[n['name']] = n['value'];
                 });
-    
+
                 return JSON.stringify(indexed_array);
             }
-    
+
             function buttonLoading(button, text = null)
             {
                 if(text != null) {
@@ -407,13 +411,13 @@
                 }
                 button.attr('disabled', 'disabled');
             }
-    
+
             function buttonUnloading(button, buttonText)
             {
                 button.attr('disabled', false);
                 button.html(buttonText);
             }
-    
+
             function errorInput(errorResponse)
             {
                 if(typeof(errorResponse) === 'object') {
@@ -428,14 +432,14 @@
                     showErrorAlert(errorResponse.message)
                 }
             }
-    
+
             function removeErrorInput(form)
             {
                 form.find('div.form-group .form-control').removeClass('is-invalid');
                 form.find('div.form-group').removeClass('has-danger');
                 form.find('div.form-group span.invalid-feedback').remove();
             }
-    
+
             function labelStatusStok(status)
             {
                 switch (status) {
@@ -444,22 +448,22 @@
                     default: return '';
                 }
             }
-    
-            function formatDateIso(date) 
+
+            function formatDateIso(date)
             {
                 var d = new Date(date),
                     month = '' + (d.getMonth() + 1),
                     day = '' + d.getDate(),
                     year = d.getFullYear();
-    
+
                 if (month.length < 2)
                     month = '0' + month;
                 if (day.length < 2)
                     day = '0' + day;
-    
+
                 return [year, month, day].join('-');
             }
-    
+
         </script>
         @stack('scripts')
 
