@@ -90,7 +90,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/transaksi/loadform/{diskon}/{total}/{diterima}', [PenjualanDetailController::class, 'loadForm'])->name('transaksi.load_form');
         Route::resource('/transaksi', PenjualanDetailController::class)
             ->except('create', 'show', 'edit');
-        
+
         Route::get('transaksi/get-product', [PenjualanDetailController::class, 'getDataProduct'])->name('transaksi.autocomplete-product');
         Route::post('transaksi/simpan', [PenjualanDetailController::class, 'store'])->name('transaksi.simpan');
 
@@ -113,8 +113,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
         Route::get('/setting/first', [SettingController::class, 'show'])->name('setting.show');
         Route::post('/setting', [SettingController::class, 'update'])->name('setting.update');
+        Route::post('/setting/set-mode', [SettingController::class, 'setMode'])->name('setting.set_mode');
     });
- 
+
     Route::group(['middleware' => 'level:1,2'], function () {
         Route::get('/profil', [UserController::class, 'profil'])->name('user.profil');
         Route::post('/profil', [UserController::class, 'updateProfil'])->name('user.update_profil');
@@ -129,7 +130,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('store', [GudangController::class, 'store'])->name('gudang.store');
             Route::post('update/{id}', [GudangController::class, 'update'])->name('gudang.update');
             Route::get('last-code', [GudangController::class, 'getLastCode'])->name('gudang.lastcode');
-        }); 
+        });
 
         Route::prefix('stok-masuk')->group(function(){
             Route::get('/', [StokMasukController::class, 'index']);
@@ -160,5 +161,5 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('detail/{id}', [StokOpnameController::class, 'showDetail']);
         });
     });
-    
+
 });

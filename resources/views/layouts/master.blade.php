@@ -304,10 +304,33 @@
                     }
                 });
 
-                setTimeout(() => {
-
-                }, 1000);
+                const dark_mode = `{{$setting->dark_mode}}`;
+                darkModeInitial(dark_mode);
             });
+
+            function setModeDark()
+            {
+                $.ajax({
+                    url: `{{url('setting/set-mode')}}`,
+                    method: 'POST'
+                }).done(response => {
+                    const {dark_mode} = response.data;
+                    darkModeInitial(dark_mode);
+                });
+            }
+
+            function darkModeInitial(mode)
+            {
+                if(mode == 1) {
+                    document.body.setAttribute("data-layout-mode", "dark");
+                    document.body.setAttribute("data-topbar", "dark");
+                    document.body.setAttribute("data-sidebar", "dark");
+                } else {
+                    document.body.setAttribute("data-layout-mode", "light");
+                    document.body.setAttribute("data-topbar", "light");
+                    document.body.setAttribute("data-sidebar", "light");
+                }
+            }
 
             function preview(selector, temporaryFile, width = 200)  {
                 $(selector).empty();

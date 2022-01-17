@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Library\Response;
 use App\Models\Gudang;
 use Illuminate\Http\Request;
 use App\Models\Setting;
+use Exception;
+use Illuminate\Http\Client\ResponseSequence;
 
 class SettingController extends Controller
 {
@@ -17,6 +20,22 @@ class SettingController extends Controller
     public function show()
     {
         return Setting::first();
+    }
+
+    public function setMode(Request $request)
+    {
+        $status = 200;
+        $responseJson = [];
+
+        $oldMode = Setting::first()->dark_mode;
+        $nowMode = $oldMode == '0' ? '1' : '0';
+        try {
+            $update = Setting::first()->update(['dark_mode' => $nowMode]);
+            $responseJson = Response::success('berhasil', Setting::first());
+        } catch (Exception $e) {
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     public function update(Request $request)
