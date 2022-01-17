@@ -54,6 +54,7 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
+                    <a class="dropdown-item" href="{{url('profil')}}">Profil</a>
                     <a class="dropdown-item" href="#" onclick="$('#logout-form').submit()"><i class="mdi mdi-logout font-size-16 align-middle me-1"></i> Logout</a>
                 </div>
             </div>

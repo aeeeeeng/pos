@@ -34,6 +34,7 @@
         <link rel="stylesheet" href="{{asset('libs/snackbar/snackbar.min.css')}}">
 
         <link rel="stylesheet" href="{{asset('libs/datepicker/css/bootstrap-datepicker.min.css')}}">
+
         <!-- App Css-->
         <link href="{{asset('template/css/app.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
 
@@ -64,6 +65,10 @@
                 background-color: #313533;
                 border-color: #ced4da;
                 color: #ced4da;
+            }
+
+            .pace .pace-progress {
+                height: 1rem;
             }
         </style>
 
