@@ -6,65 +6,65 @@
 
 @section('breadcrumb')
     @parent
-    <li class="active">Pengaturan</li>
+    <li class="breadcrumb-item active">Pengaturan</li>
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <div class="box">
+        <div class="card">
             <form action="{{ route('setting.update') }}" method="post" class="form-setting" data-toggle="validator" enctype="multipart/form-data">
                 @csrf
-                <div class="box-body">
+                <div class="card-body">
                     <div class="alert alert-info alert-dismissible" style="display: none;">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <i class="icon fa fa-check"></i> Perubahan berhasil disimpan
                     </div>
-                    <div class="form-group row">
+                    <div class="form-group mb-2 row">
                         <label for="nama_perusahaan" class="col-lg-2 control-label">Nama Perusahaan</label>
                         <div class="col-lg-6">
-                            <input type="text" name="nama_perusahaan" class="form-control" id="nama_perusahaan" required autofocus>
+                            <input type="text" name="nama_perusahaan" class="form-control form-control-sm" id="nama_perusahaan" required autofocus>
                             <span class="help-block with-errors"></span>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="form-group mb-2 row">
                         <label for="telepon" class="col-lg-2 control-label">Telepon</label>
                         <div class="col-lg-6">
-                            <input type="text" name="telepon" class="form-control" id="telepon" required>
+                            <input type="text" name="telepon" class="form-control form-control-sm" id="telepon" required>
                             <span class="help-block with-errors"></span>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="form-group mb-2 row">
                         <label for="alamat" class="col-lg-2 control-label">Alamat</label>
                         <div class="col-lg-6">
-                            <textarea name="alamat" class="form-control" id="alamat" rows="3" required></textarea>
+                            <textarea name="alamat" class="form-control form-control-sm" id="alamat" rows="3" required></textarea>
                             <span class="help-block with-errors"></span>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="form-group mb-2 row">
                         <label for="path_logo" class="col-lg-2 control-label">Logo Perusahaan</label>
                         <div class="col-lg-4">
-                            <input type="file" name="path_logo" class="form-control" id="path_logo"
+                            <input type="file" name="path_logo" class="form-control form-control-sm" id="path_logo"
                                 onchange="preview('.tampil-logo', this.files[0])">
                             <span class="help-block with-errors"></span>
                             <br>
                             <div class="tampil-logo"></div>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="form-group mb-2 row">
                         <label for="path_kartu_member" class="col-lg-2 control-label">Kartu Member</label>
                         <div class="col-lg-4">
-                            <input type="file" name="path_kartu_member" class="form-control" id="path_kartu_member"
+                            <input type="file" name="path_kartu_member" class="form-control form-control-sm" id="path_kartu_member"
                                 onchange="preview('.tampil-kartu-member', this.files[0], 300)">
                             <span class="help-block with-errors"></span>
                             <br>
                             <div class="tampil-kartu-member"></div>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="form-group mb-2 row">
                         <label for="gudang_prioritas" class="col-lg-2 control-label">Gudang Prioritas</label>
                         <div class="col-lg-4">
-                            <select name="gudang_prioritas" id="gudang_prioritas" class="form-control">
+                            <select name="gudang_prioritas" id="gudang_prioritas" class="form-control form-control-sm">
                                 <option value="">Pilih Gudang</option>
                                 @foreach ($gudang as $item)
                                     <option value="{{$item->id_gudang}}">{{$item->kode_gudang . ' - ' . $item->nama_gudang}}</option>
@@ -72,24 +72,24 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="form-group mb-2 row">
                         <label for="diskon" class="col-lg-2 control-label">Diskon</label>
                         <div class="col-lg-2">
-                            <input type="number" name="diskon" class="form-control" id="diskon" required>
+                            <input type="number" name="diskon" class="form-control form-control-sm" id="diskon" required>
                             <span class="help-block with-errors"></span>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="form-group mb-2 row">
                         <label for="min_stok" class="col-lg-2 control-label">Notif Minimal Stok</label>
                         <div class="col-lg-2">
-                            <input type="number" name="min_stok" class="form-control" id="min_stok" required>
+                            <input type="number" name="min_stok" class="form-control form-control-sm" id="min_stok" required>
                             <span class="help-block with-errors"></span>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    <div class="form-group mb-2 row">
                         <label for="tipe_nota" class="col-lg-2 control-label">Tipe Nota</label>
                         <div class="col-lg-2">
-                            <select name="tipe_nota" class="form-control" id="tipe_nota" required>
+                            <select name="tipe_nota" class="form-control form-control-sm" id="tipe_nota" required>
                                 <option value="1">Nota Kecil</option>
                                 <option value="2">Nota Besar</option>
                             </select>
@@ -97,7 +97,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="box-footer text-right">
+                <div class="card-footer text-end">
                     <button class="btn btn-sm btn-flat btn-primary"><i class="fa fa-save"></i> Simpan Perubahan</button>
                 </div>
             </form>
