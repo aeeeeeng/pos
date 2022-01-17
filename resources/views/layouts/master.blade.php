@@ -54,6 +54,17 @@
                 background-color: #5156be;
                 color: #ffffff;
             }
+
+            body[data-layout-mode=dark] .card, body[data-layout-mode=dark] .card-header, body[data-layout-mode=dark] .modal-content, body[data-layout-mode=dark] .offcanvas, body[data-layout-mode=dark] .card-footer {
+                background-color: #313533;
+                border-color: #3b403d;
+            }
+
+            body[data-layout-mode=dark] .select2-dropdown, body[data-layout-mode=dark] .select2-search--dropdown .select2-search__field {
+                background-color: #313533;
+                border-color: #ced4da;
+                color: #ced4da;
+            }
         </style>
 
         @stack('css')

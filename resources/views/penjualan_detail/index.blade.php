@@ -28,9 +28,13 @@
 
     @media(max-width: 768px) {
         .tampil-bayar {
-            font-size: 3em;
-            height: 70px;
-            padding-top: 5px;
+            font-size: 20px;
+            position: fixed;
+            height: 60px;
+            bottom: 0;
+            left: 0;
+            z-index: 9;
+            width: 100%;
         }
     }
 </style>
@@ -38,108 +42,113 @@
 
 @section('breadcrumb')
     @parent
-    <li class="active">Transaksi Penjaualn</li>
+    <li class="breadcrumb-item active">Transaksi Penjaualn</li>
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-        <div class="box">
-            <div class="box-body">
-                
-                <div class="form-group row">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="form-group mb-2 row">
                     <label for="kode_produk" class="col-md-3">Cari Member Berdasar Kode / Nama Member -> </label>
                     <div class="col-lg-8">
                         <div class="input-group">
-                            <select class="pilih-member select2 form-control" style="width:500px;"></select>
+                            <select class="pilih-member select2 form-control form-control-sm" style="width:500px;"></select>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group row">
+                <div class="form-group mb-2 row">
                     <label for="kode_produk" class="col-md-3">Cari Produk Berdasar Kode / Nama Produk -> </label>
                     <div class="col-lg-8">
                         <div class="input-group">
-                            <select class="pilih-product select2 form-control" style="width:500px;"></select>
+                            <select class="pilih-product select2 form-control form-control-sm" style="width:500px;"></select>
                         </div>
                     </div>
                 </div>
-                
 
-                <table class="table table-bordered" id="tablePenjualan">
-                    <thead>
-                        <th width="5%">No</th>
-                        <th>Kode</th>
-                        <th>Nama</th>
-                        <th class="text-right">Harga</th>
-                        <th class="text-right" width="15%">Jumlah</th>
-                        <th class="text-right">Diskon</th>
-                        <th class="text-right">Subtotal</th>
-                        <th width="15%"><i class="fa fa-cog"></i></th>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="8" class="text-center">Belum ada data</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <hr>
-                <div class="row" id="detailTransaksi">
-                    <div class="col-lg-8">
-                        <div class="tampil-bayar bg-primary">Total Belanja<br>0</div>
-                        <div class="tampil-terbilang"></div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="tablePenjualan">
+                                <thead>
+                                    <th width="5%">No</th>
+                                    <th>Kode</th>
+                                    <th>Nama</th>
+                                    <th class="text-end">Harga</th>
+                                    <th class="text-end" width="15%">Jumlah</th>
+                                    <th class="text-end">Diskon</th>
+                                    <th class="text-end">Subtotal</th>
+                                    <th class="text-center"><i class="fa fa-cog"></i></th>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="8" class="text-center">Belum ada data</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="col-lg-4">
-                        
-                            
+                </div>
+
+                <hr>
+                <div class="row mb-3" id="detailTransaksi">
+                    <div class="col-lg-5">
+                        <div class="tampil-bayar bg-primary text-white">Total Belanja<br>0</div>
+                    </div>
+                    <div class="col-lg-7">
+
+
                             <input type="hidden" name="total" id="total">
                             <input type="hidden" name="total_item" id="total_item">
                             <input type="hidden" name="bayar" id="bayar">
 
-                            <div class="form-group row">
+                            <div class="form-group mb-2 row">
                                 <label for="totalrp" class="col-lg-2 control-label">Total</label>
                                 <div class="col-lg-8">
-                                    <input type="text" id="totalrp" class="form-control text-right" readonly>
+                                    <input type="text" id="totalrp" class="form-control form-control-sm text-end" readonly>
                                 </div>
                             </div>
-                            {{-- <div class="form-group row">
+                            {{-- <div class="form-group mb-2 row">
                                 <label for="kode_member" class="col-lg-2 control-label">Member</label>
                                 <div class="col-lg-8">
-                                    
+
                                 </div>
                             </div> --}}
-                            <div class="form-group row">
+                            <div class="form-group mb-2 row">
                                 <label for="diskon" class="col-lg-2 control-label">Diskon</label>
                                 <div class="col-lg-8">
-                                    <input type="number" name="diskon" id="diskon" class="form-control text-right" 
-                                        value="{{$diskon}}" 
+                                    <input type="number" name="diskon" id="diskon" class="form-control form-control-sm text-end"
+                                        value="{{$diskon}}"
                                         readonly>
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            <div class="form-group mb-2 row">
                                 <label for="bayar" class="col-lg-2 control-label">Bayar</label>
                                 <div class="col-lg-8">
-                                    <input type="text" id="bayarrp" class="form-control text-right" readonly>
+                                    <input type="text" id="bayarrp" class="form-control form-control-sm text-end" readonly>
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            <div class="form-group mb-2 row">
                                 <label for="diterima" class="col-lg-2 control-label">Diterima</label>
                                 <div class="col-lg-8">
-                                    <input type="number" id="diterima" onchange="diterimaUang(this)" onkeyup="diterimaUang(this)" class="form-control text-right" name="diterima" value="{{ $penjualan->diterima ?? 0 }}">
+                                    <input type="number" id="diterima" onchange="diterimaUang(this)" onkeyup="diterimaUang(this)" class="form-control form-control-sm text-end" name="diterima" value="{{ $penjualan->diterima ?? 0 }}">
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            <div class="form-group mb-2 row">
                                 <label for="kembali" class="col-lg-2 control-label">Kembali</label>
                                 <div class="col-lg-8">
-                                    <input type="text" id="kembali" name="kembali" class="form-control text-right" value="0" readonly>
+                                    <input type="text" id="kembali" name="kembali" class="form-control form-control-sm text-end" value="0" readonly>
                                 </div>
                             </div>
-                        
+
                     </div>
                 </div>
             </div>
 
-            <div class="box-footer">
+            <div class="card-footer">
                 <center>
                     <button type="button" class="btn btn-primary btn-flat" onclick="simpan(this)"><i class="fa fa-floppy-o"></i> &nbsp; Simpan Transaksi</button>
                 </center>
@@ -162,7 +171,7 @@
     let member = null
 
     $(document).ready(function(){
-        $('body').addClass('sidebar-collapse');
+        document.body.setAttribute("data-sidebar-size", "sm");
     });
 
     $(".pilih-product").select2({
@@ -263,7 +272,7 @@
         if($(that).val() < 0) {
             showErrorAlert('Quantity tidak boleh kurang dari 0');
             $(that).val(1);
-        } 
+        }
         dataDetail[indexEdit].qty_order = parseInt($(that).val());
         sumSubTotal(that, id);
         $("#diterima").val('0').trigger('change');
@@ -299,15 +308,15 @@
         } else {
             const row = dataDetail.map((item, index) => `<tr ${item.qty_order > item.stok ? `style="background-color:#f5f588"` : ''}>
                 <td>${index+1}</td>
-                <td><small class="label bg-primary">${item.kode_produk}</small></td>
+                <td><small class="badge bg-primary">${item.kode_produk}</small></td>
                 <td>${item.nama_produk}</td>
-                <td class="text-right">${formatMoney(item.harga_jual)}</td>
-                <td class="text-right">
-                    <input type="number" min="0" class="form-control text-right" value="${item.qty_order}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
+                <td class="text-end">${formatMoney(item.harga_jual)}</td>
+                <td class="text-end">
+                    <input type="number" min="0" class="form-control form-control-sm text-end" value="${item.qty_order}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
                 </td>
-                <td class="text-right">${item.diskon}</td>
-                <td class="text-right subtotal">${formatMoney(item.subtotal)}</td>
-                <td><button type="button" class="btn btn-flat btn-danger btn-xs" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
+                <td class="text-end">${item.diskon}</td>
+                <td class="text-end subtotal">${formatMoney(item.subtotal)}</td>
+                <td class="text-center"><button type="button" class="btn btn-flat btn-danger btn-sm" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
             </tr>`).join();
             table.find('tbody').html(row);
         }
@@ -378,7 +387,7 @@
             showErrorAlert('Total bayar tidak valid');
             return;
         }
-        
+
         $.ajax({
             url: "{{url('transaksi/simpan')}}" ,
             type: "POST",
@@ -473,7 +482,7 @@
     /// SELESAI
 
     document.cookie = "innerHeight=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    
+
     function notaKecil(url, title) {
         popupCenter(url, title, 625, 500);
     }
@@ -492,12 +501,12 @@
         const systemZoom = width / window.screen.availWidth;
         const left       = (width - w) / 2 / systemZoom + dualScreenLeft
         const top        = (height - h) / 2 / systemZoom + dualScreenTop
-        const newWindow  = window.open(url, title, 
+        const newWindow  = window.open(url, title,
         `
             scrollbars=yes,
-            width  = ${w / systemZoom}, 
-            height = ${h / systemZoom}, 
-            top    = ${top}, 
+            width  = ${w / systemZoom},
+            height = ${h / systemZoom},
+            top    = ${top},
             left   = ${left}
         `
         );

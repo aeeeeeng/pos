@@ -28,9 +28,13 @@
 
     @media(max-width: 768px) {
         .tampil-bayar {
-            font-size: 3em;
-            height: 70px;
-            padding-top: 5px;
+            font-size: 20px;
+            position: fixed;
+            height: 60px;
+            bottom: 0;
+            left: 0;
+            z-index: 9;
+            width: 100%;
         }
     }
 </style>
@@ -47,7 +51,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                
+
             </div>
             <div class="card-body">
                 <div class="row">
@@ -109,15 +113,14 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <hr>
                 <div class="row">
-                    <div class="col-lg-8">
+                    <div class="col-lg-5">
                         <div class="tampil-bayar bg-primary text-white"></div>
-                        <div class="tampil-terbilang"></div>
                     </div>
-                    <div class="col-lg-4">
-                        
+                    <div class="col-lg-7">
+
                             <div class="form-group mb-2 row">
                                 <label for="totalrp" class="col-lg-2 control-label">Total</label>
                                 <div class="col-lg-8">
@@ -136,7 +139,7 @@
                                     <input type="number" id="bayarrp" class="form-control form-control-sm">
                                 </div>
                             </div>
-                        
+
                     </div>
                 </div>
             </div>
@@ -237,20 +240,20 @@
         if($(that).val() < 0) {
             showErrorAlert('Quantity tidak boleh kurang dari 0');
             $(that).val(0);
-        } 
+        }
         dataDetail[indexEdit].qty_order = parseInt($(that).val());
         sumSubTotal(that, id);
         sumGrandTotal();
         sumTotalBayar();
     }
 
-    function changeHargaBeli(that, id) 
-    {  
+    function changeHargaBeli(that, id)
+    {
         const indexEdit = dataDetail.findIndex(item => item.id == id);
         if($(that).val() < 0) {
             showErrorAlert('Harga Beli tidak boleh kurang dari 0');
             $(that).val(0);
-        } 
+        }
         dataDetail[indexEdit].harga_beli = parseInt($(that).val());
         sumSubTotal(that, id);
         sumGrandTotal();
@@ -325,7 +328,7 @@
         const discount = dataDetail[indexExist].diskon;
         dataDetail[indexExist].subtotal = qty_order * harga_beli;
         $(that).closest('tr').find('td.subtotal').text(formatMoney(dataDetail[indexExist].subtotal));
-        
+
     }
 
     function sumTotalBayar()
@@ -372,7 +375,7 @@
             showErrorAlert('Total bayar tidak valid');
             return;
         }
-        
+
         $.ajax({
             url: "{{url('pembelian_detail/store')}}" ,
             type: "POST",
