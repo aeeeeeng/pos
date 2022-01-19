@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 use App\Models\Produk;
+use Illuminate\Support\Facades\DB;
 use PDF;
 
 class ProdukController extends Controller
@@ -23,10 +24,22 @@ class ProdukController extends Controller
 
     public function data()
     {
-        $produk = Produk::leftJoin('kategori', 'kategori.id_kategori', 'produk.id_kategori')
-            ->select('produk.*', 'nama_kategori')
-            // ->orderBy('kode_produk', 'asc')
-            ->get();
+        $produk = DB::table('produk as p')->leftJoin('kategori as k', 'k.id_kategori', '=', 'p.id_kategori')
+                ->leftJoin('stok_produk_detail as spd', 'spd.id_produk', 'p.id_produk')
+                ->selectRaw("
+                    p.id_produk,
+                    p.nama_produk,
+                    k.nama_kategori,
+                    p.merk,
+                    p.kode_produk,
+                    p.diskon,
+                    IFNULL(sum(sub_total) / sum(nilai),0) as hpp,
+                    p.harga_jual,
+                    IFNULL(sum(spd.nilai),0) as stok
+                ")
+                ->groupBy('p.id_produk', 'p.nama_produk', 'k.nama_kategori', 'p.merk', 'p.kode_produk', 'p.diskon', 'p.harga_jual')
+                ->get();
+
 
         return datatables()
             ->of($produk)
@@ -40,7 +53,7 @@ class ProdukController extends Controller
                 return '<span class="label label-success">'. $produk->kode_produk .'</span>';
             })
             ->addColumn('harga_beli', function ($produk) {
-                return format_uang($produk->harga_beli);
+                return format_uang($produk->hpp);
             })
             ->addColumn('harga_jual', function ($produk) {
                 return format_uang($produk->harga_jual);

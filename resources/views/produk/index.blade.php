@@ -36,7 +36,7 @@
                             <th>Nama</th>
                             <th>Kategori</th>
                             <th>Merk</th>
-                            <th>Harga Beli</th>
+                            <th>HPP (Sistem)</th>
                             <th>Harga Jual</th>
                             <th>Diskon</th>
                             <th>Stok</th>

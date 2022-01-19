@@ -41,7 +41,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <form onsubmit="store(this)" id="formStokOpname" class="">    
+                <form onsubmit="store(this)" id="formStokOpname" class="">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -258,7 +258,7 @@
         const qty_stok = dataDetail[indexExist].qty_stok;
         dataDetail[indexExist].stok_selisih = isNaN(parseInt(qty_stok - Math.abs(stok))) ? 0 : parseInt(qty_stok - Math.abs(stok));
         $(that).closest('tr').find('td.stok_selisih').html(
-            `${dataDetail[indexExist].stok_selisih >= 0 ? `<span class="text-green"> <i class="fa fa-angle-up"></i> ${dataDetail[indexExist].stok_selisih}</span>` : `<span class="text-danger"> <i class="fa fa-angle-down"></i> ${dataDetail[indexExist].stok_selisih}</span>`}`
+            `${dataDetail[indexExist].stok_selisih >= 0 ? `<span class="text-success"> <i class="fa fa-angle-up"></i> ${dataDetail[indexExist].stok_selisih}</span>` : `<span class="text-danger"> <i class="fa fa-angle-down"></i> ${dataDetail[indexExist].stok_selisih}</span>`}`
         );
     }
 
@@ -268,7 +268,7 @@
         if($(that).val() < 0 && $(that).val() != '') {
             showErrorAlert('Stok Aktual tidak boleh kurang dari 0');
             $(that).val(0);
-        } 
+        }
         dataDetail[indexEdit].qty_stok = parseInt($(that).val());
         sumSelisih(that, id);
     }
