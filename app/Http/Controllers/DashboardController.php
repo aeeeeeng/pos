@@ -24,8 +24,8 @@ class DashboardController extends Controller
         $member = Member::count();
 
         $stokMinimal = Setting::first()->min_stok ?? 0;
-        $produkStokMinimal = Produk::where('stok', '<', $stokMinimal)
-                             ->orderBy('stok', 'asc')->take(10)->get();
+        $produkStokMinimal = Produk::where('id_produk', '<', $stokMinimal)
+                             ->orderBy('id_produk', 'asc')->take(10)->get();
 
         $tanggal_awal = date('Y-m-01');
         $tanggal_akhir = date('Y-m-d');

@@ -8,6 +8,7 @@ use App\Http\Controllers\{
     LaporanLabaProductController,
     ProdukController,
     MemberController,
+    OutletController,
     PengeluaranController,
     PembelianController,
     PembelianDetailController,
@@ -120,6 +121,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/profil', [UserController::class, 'profil'])->name('user.profil');
         Route::post('/profil', [UserController::class, 'updateProfil'])->name('user.update_profil');
     });
+
+    Route::prefix('outlet')->group(function() {
+        Route::get('pilih-default', [OutletController::class, 'pilihDefault']);
+        Route::post('set-outlet', [OutletController::class, 'setOutlet']);
+    });
+
     Route::prefix('persediaan')->middleware('level:1')->group(function(){
         Route::prefix('gudang')->group(function(){
             Route::get('/', [GudangController::class, 'index'])->name('gudang.index');

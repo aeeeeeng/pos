@@ -32,6 +32,17 @@
         <div class="d-flex">
 
             <div class="dropdown d-none d-sm-inline-block">
+                <div class="btn-group" role="group">
+                    <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle mt-3" data-bs-toggle="dropdown" aria-expanded="false">
+                        Outlet - {{$outlet->nama_outlet}} <i class="mdi mdi-chevron-down"></i>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
+                        <li><a class="dropdown-item" onclick="changeDefaultOutletHeader(this)" href="#">Ganti Outlet</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dropdown d-none d-sm-inline-block">
                 <button type="button" class="btn header-item" id="mode-setting-btn" onclick="setModeDark()">
                     <i data-feather="moon" class="icon-lg layout-mode-dark"></i>
                     <i data-feather="sun" class="icon-lg layout-mode-light"></i>

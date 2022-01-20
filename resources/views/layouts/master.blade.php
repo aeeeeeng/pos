@@ -320,9 +320,38 @@
                     }
                 });
 
+                @if(session()->get('outlet') == null || session()->get('outlet') == '')
+                $.ajax({
+                    url: "{{url('outlet/pilih-default')}}",
+                    success: function(response) {
+                        const dialog = bootbox.dialog({
+                            closeButton: false,
+                            size: "xl",
+                            title: 'Pilih Outlet',
+                            message: response
+                        });
+                    }
+                });
+                @endif
+
                 const dark_mode = `{{$setting->dark_mode}}`;
                 darkModeInitial(dark_mode);
             });
+
+            function changeDefaultOutletHeader(that)
+            {
+                $.ajax({
+                    url: "{{url('outlet/pilih-default')}}",
+                    success: function(response) {
+                        const dialog = bootbox.dialog({
+                            closeButton: true,
+                            size: "xl",
+                            title: 'Pilih Outlet',
+                            message: response
+                        });
+                    }
+                });
+            }
 
             function setModeDark()
             {
