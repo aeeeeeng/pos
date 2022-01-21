@@ -20,7 +20,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('produk.index') }}">
+                        <a href="{{ url('produk') }}">
                             <i data-feather="briefcase"></i>
                             <span>Produk</span>
                         </a>

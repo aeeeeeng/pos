@@ -17,9 +17,18 @@ class KategoriController extends Controller
         return view('kategori.index');
     }
 
-    public function data()
+    public function data(Request $request)
     {
         $kategori = Kategori::orderBy('id_kategori', 'desc')->get();
+        
+        if($request->get('type') == 'select2') {
+            $resultData = $kategori->map(function($data){
+                return ['id' => $data->id_kategori, 'text' => $data->nama_kategori];
+            });
+            $result['results'] = $resultData;
+            $result['pagination']['more'] = false;
+            return response()->json($result);
+        }
 
         return datatables()
             ->of($kategori)

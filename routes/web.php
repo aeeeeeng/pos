@@ -42,14 +42,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::group(['middleware' => 'level:1'], function () {
-        Route::get('/kategori/data', [KategoriController::class, 'data'])->name('kategori.data');
-        Route::resource('/kategori', KategoriController::class);
-
-        Route::get('/produk/data', [ProdukController::class, 'data'])->name('produk.data');
-        Route::post('/produk/delete-selected', [ProdukController::class, 'deleteSelected'])->name('produk.delete_selected');
-        Route::post('/produk/cetak-barcode', [ProdukController::class, 'cetakBarcode'])->name('produk.cetak_barcode');
-        Route::resource('/produk', ProdukController::class);
-
         Route::get('/member/data', [MemberController::class, 'data'])->name('member.data');
         Route::post('/member/cetak-member', [MemberController::class, 'cetakMember'])->name('member.cetak_member');
         Route::resource('/member', MemberController::class);
@@ -122,7 +114,26 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/profil', [UserController::class, 'updateProfil'])->name('user.update_profil');
     });
 
-    Route::prefix('outlet')->group(function() {
+    
+    Route::prefix('kategori')->middleware('level:1')->group(function(){
+        Route::get('/', [KategoriController::class, 'index'])->name('kategori.index');
+        Route::get('data', [KategoriController::class, 'data'])->name('kategori.data');
+        Route::get('edit', [KategoriController::class, 'edit'])->name('kategori.edit');
+        Route::put('update', [KategoriController::class, 'update'])->name('kategori.update');
+        Route::delete('destroy', [KategoriController::class, 'delete'])->name('kategori.destroy');
+    });
+
+    Route::prefix('produk')->middleware('level:1')->group(function(){
+        Route::get('data', [ProdukController::class, 'data'])->name('produk.data');
+        Route::post('delete-selected', [ProdukController::class, 'deleteSelected'])->name('produk.delete_selected');
+        Route::post('cetak-barcode', [ProdukController::class, 'cetakBarcode'])->name('produk.cetak_barcode');
+        Route::get('create', [ProdukController::class, 'create']);
+        Route::post('simpan-add-opt', [ProdukController::class, 'storeAddOpt']);
+        Route::get('list-data-add-opt', [ProdukController::class, 'listDataAddOpt']);
+        Route::resource('/', ProdukController::class)->except('create', 'show', 'edit');
+    });
+
+    Route::prefix('outlet')->middleware('level:1')->group(function() {
         Route::get('pilih-default', [OutletController::class, 'pilihDefault']);
         Route::post('set-outlet', [OutletController::class, 'setOutlet']);
     });

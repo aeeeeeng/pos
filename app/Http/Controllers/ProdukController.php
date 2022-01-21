@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Library\Response;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 use App\Models\Produk;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use PDF;
 
@@ -80,7 +82,48 @@ class ProdukController extends Controller
      */
     public function create()
     {
-        //
+        $kategori = json_encode(Kategori::selectRaw("id_kategori as id, nama_kategori as text")->get());
+        return view('produk.create', compact('kategori'));
+    }
+
+    public function storeAddOpt(Request $request)
+    {
+        $status = 200;
+        $responseJson = [];
+        DB::beginTransaction();
+        try {
+            $payloads = $request->all()['opsiTambahan'];
+            $header['nama_add_opt'] = $payloads['group'];
+            $header['punya_bahan_baku'] = $payloads['punya_bahan_baku'];
+            $header['created_at'] = date("Y-m-d H:i:s");
+            $header['created_by'] = auth()->user()->name;
+            $idAddOpt = DB::table('add_opt')->insertGetId($header);
+
+            $details = [];
+            foreach ($payloads['detail'] as $item) {
+                $detail['id_add_opt'] = $idAddOpt;
+                $detail['nama_add_opt_detail'] = $item['nama'];
+                $detail['harga_add_opt_detail'] = $item['harga'];
+                $details[] = $detail;
+            }
+            DB::table('add_opt_detail')->insert($details);
+            $responseJson = Response::success('berhasil menambahkan tambahan optional');
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
+    }
+
+    public function listDataAddOpt()
+    {
+        $headers = DB::table('add_opt')->get();
+        foreach ($headers as $header) {
+            $header->detail = DB::table('add_opt_detail')->where('id_add_opt', $header->id_add_opt)->get();
+        }
+        return response()->json(Response::success('oke', $headers));
     }
 
     /**
