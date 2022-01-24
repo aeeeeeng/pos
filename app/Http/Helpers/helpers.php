@@ -1,5 +1,10 @@
 <?php
 
+function handlingObject($object)
+{
+    return isset($object) ? $object : '';
+}
+
 function format_uang ($angka) {
     return number_format($angka, 0, ',', '.');
 }
@@ -51,8 +56,8 @@ function tanggal_indonesia($tgl, $tampil_hari = true)
     } else {
         $text       .= "$tanggal $bulan $tahun";
     }
-    
-    return $text; 
+
+    return $text;
 }
 
 function tambah_nol_didepan($value, $threshold = null)

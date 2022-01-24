@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title')
-    Buat Produk
+    Ubah Produk
 @endsection
 
 @push('css')
@@ -223,6 +223,9 @@
 
     let kategori = JSON.parse(`{!! $kategori !!}`);
     let uom = JSON.parse(`{!! $uom !!}`);
+    let id = `{{$id}}`;
+    let url = `{{url('/')}}`;
+    let dataEdit = {};
 
     let opsiTambahan = {
         group: '',
@@ -234,78 +237,120 @@
     };
 
     $(document).ready(function(){
+
+        $("#id_kategori").select2({
+            placeholder: {
+                id: '',
+                text: 'Pilih Kategori'
+            },
+            tags: true,
+            templateSelection: function (data) {
+                if (data.id === '') {
+                    return 'Pilih Kategori';
+                }
+                return data.text;
+            },
+            createTag: function (params) {
+                return {
+                    id: params.term,
+                    text: params.term,
+                    newOption: true
+                }
+            },
+            templateResult: function (data) {
+                var $result = $("<span></span>");
+
+                $result.text(data.text);
+
+                if (data.newOption) {
+                    $result.append(" <em>(Kategori Baru)</em>");
+                }
+
+                return $result;
+            },
+            allowClear: true,
+            data: kategori
+        });
+
+        $("#id_uom").select2({
+            placeholder: {
+                id: '',
+                text: 'Pilih Satuan Stok'
+            },
+            tags: true,
+            templateSelection: function (data) {
+                if (data.id === '') {
+                    return 'Pilih Satuan Stok';
+                }
+                return data.text;
+            },
+            createTag: function (params) {
+                return {
+                    id: params.term,
+                    text: params.term,
+                    newOption: true
+                }
+            },
+            templateResult: function (data) {
+                var $result = $("<span></span>");
+
+                $result.text(data.text);
+
+                if (data.newOption) {
+                    $result.append(" <em>(Satuan Stok Baru)</em>");
+                }
+
+                return $result;
+            },
+            allowClear: true,
+            data: uom
+        });
+
         renderTableOpsiTambahan();
         loadAddOpt();
-        console.log(kategori);
+        loadDataEdit();
     });
 
-    $("#id_kategori").select2({
-        placeholder: {
-            id: '',
-            text: 'Pilih Kategori'
-        },
-        tags: true,
-        templateSelection: function (data) {
-            if (data.id === '') {
-                return 'Pilih Kategori';
-            }
-            return data.text;
-        },
-        createTag: function (params) {
-            return {
-                id: params.term,
-                text: params.term,
-                newOption: true
-            }
-        },
-        templateResult: function (data) {
-            var $result = $("<span></span>");
+    function loadDataEdit()
+    {
+        $.ajax({
+            url: `{{url('produk/show')}}/${id}`
+        }).done(response => {
+            const {produk} = response.data;
+            const {produkAddOpt} = response.data;
 
-            $result.text(data.text);
+            $("#nama_produk").val(produk.nama_produk);
+            $("#id_kategori").val(produk.nama_kategori).trigger('change');
+            $("#id_uom").val(produk.nama_uom).trigger('change');
+            $("#harga_jual").val(produk.harga_jual);
+            $("#sku_produk").val(produk.sku_produk);
+            $("#barcode_produk").val(produk.barcode_produk);
 
-            if (data.newOption) {
-                $result.append(" <em>(Kategori Baru)</em>");
+            if(produk.gambar != '' && produk.gambar != null) {
+                $("#blah").attr('src', url + `/img/produk-image/${produk.gambar}`);
             }
 
-            return $result;
-        },
-        allowClear: true,
-        data: kategori
-    });
+            produk.dijual == 1 ? $("#dijual").attr('checked', true) : $("#dijual").attr('checked', false);
+            produk.kelola_stok == 1 ? $("#kelola_stok").attr('checked', true) : $("#kelola_stok").attr('checked', false);
+            $("#deskripsi").val(produk.deskripsi);
+            $("#pajak").val(produk.pajak);
+            $(`.jenis-box[data-nama=${produk.tipe}]`).addClass('active').trigger('click');
+            produk.additional == 1 ? $("#additional").prop('checked', true).trigger('change') : $("#additional").prop('checked', false).trigger('change')
 
-    $("#id_uom").select2({
-        placeholder: {
-            id: '',
-            text: 'Pilih Satuan Stok'
-        },
-        tags: true,
-        templateSelection: function (data) {
-            if (data.id === '') {
-                return 'Pilih Satuan Stok';
-            }
-            return data.text;
-        },
-        createTag: function (params) {
-            return {
-                id: params.term,
-                text: params.term,
-                newOption: true
-            }
-        },
-        templateResult: function (data) {
-            var $result = $("<span></span>");
-
-            $result.text(data.text);
-
-            if (data.newOption) {
-                $result.append(" <em>(Satuan Stok Baru)</em>");
+            $("#accordionDetailProduk").collapse();
+            if(produk.additional == 1) {
+                produkAddOpt.map(item => {
+                    $(`.addtional-options[value=${item.id_add_opt}]`).prop('checked', true);
+                });
             }
 
-            return $result;
-        },
-        allowClear: true,
-        data: uom
-    });
+        }).fail(error => {
+            const respJson = $.parseJSON(error.responseText);
+            showErrorAlert(respJson.message);
+        }).always(() => {
+            unBlockLoading();
+        })
+    }
 
     function store(that)
     {
@@ -351,7 +396,7 @@
         fd.append('gambar', gambar);
 
         $.ajax({
-            url: "{{url('produk/store')}}",
+            url: `{{url('produk/update/')}}/${id}`,
             method: "POST",
             contentType: false,
             processData: false,
@@ -361,7 +406,7 @@
             }
         }).done(Response => {
             showSuccessAlert(Response.message);
-            resetForm();
+            loadDataEdit();
         }).fail(error => {
             const respJson = $.parseJSON(error.responseText);
             if(error.status == 500 || error.status == 400) {

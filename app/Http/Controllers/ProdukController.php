@@ -8,7 +8,10 @@ use Illuminate\Http\Request;
 use App\Models\Produk;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use PDF;
+use stdClass;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProdukController extends Controller
 {
@@ -19,60 +22,42 @@ class ProdukController extends Controller
      */
     public function index()
     {
-        $kategori = Kategori::all()->pluck('nama_kategori', 'id_kategori');
+        $dataKategori = Kategori::selectRaw("id_kategori as id, nama_kategori as text");
+        $dataOutlet = DB::table('outlet')->selectRaw("id_outlet as id, nama_outlet as text");
+        $dataAddOpt = DB::table('add_opt');
+        $dataProduk = DB::table('produk')->where('status', '1');
 
-        return view('produk.index', compact('kategori'));
+        $kategori = $dataKategori->get();
+        $outlet = $dataOutlet->get();
+
+        $totalKategori = $dataKategori->count();
+        $totalAddOpt = $dataAddOpt->count();
+        $totalProduk = $dataProduk->count();
+
+        return view('produk.index', compact('kategori', 'outlet', 'totalKategori', 'totalAddOpt', 'totalProduk'));
     }
 
-    public function data()
+    public function data(Request $request)
     {
-        $produk = DB::table('produk as p')->leftJoin('kategori as k', 'k.id_kategori', '=', 'p.id_kategori')
-                ->leftJoin('stok_produk_detail as spd', 'spd.id_produk', 'p.id_produk')
-                ->selectRaw("
-                    p.id_produk,
-                    p.nama_produk,
-                    k.nama_kategori,
-                    p.merk,
-                    p.kode_produk,
-                    p.diskon,
-                    IFNULL(sum(sub_total) / sum(nilai),0) as hpp,
-                    p.harga_jual,
-                    IFNULL(sum(spd.nilai),0) as stok
-                ")
-                ->groupBy('p.id_produk', 'p.nama_produk', 'k.nama_kategori', 'p.merk', 'p.kode_produk', 'p.diskon', 'p.harga_jual')
-                ->get();
+        $status = 200;
+        $responseJson = [];
+        try {
+            $produk = Produk::getProdukList($request->all(), 'datatable');
+            $datatables = DataTables::of($produk);
+            $datatables->addColumn('imageText', function($query) {
+                $arrProdukName = explode(" ", $query->nama_produk);
+                if(count($arrProdukName) > 0) {
+                    return Produk::imageText(substr($arrProdukName[0], 0, 1) . '' . substr($arrProdukName[1], 0, 1));
+                }
+                return Produk::imageText(substr($arrProdukName[0], 0, 1));
 
-
-        return datatables()
-            ->of($produk)
-            ->addIndexColumn()
-            ->addColumn('select_all', function ($produk) {
-                return '
-                    <input type="checkbox" name="id_produk[]" value="'. $produk->id_produk .'">
-                ';
-            })
-            ->addColumn('kode_produk', function ($produk) {
-                return '<span class="label label-success">'. $produk->kode_produk .'</span>';
-            })
-            ->addColumn('harga_beli', function ($produk) {
-                return format_uang($produk->hpp);
-            })
-            ->addColumn('harga_jual', function ($produk) {
-                return format_uang($produk->harga_jual);
-            })
-            ->addColumn('stok', function ($produk) {
-                return format_uang($produk->stok);
-            })
-            ->addColumn('aksi', function ($produk) {
-                return '
-                <div class="d-flex flex-wrap gap-1 align-items-center">
-                    <button type="button" onclick="editForm(`'. route('produk.update', $produk->id_produk) .'`)" class="btn btn-sm btn-info btn-flat"><i class="fa fa-wrench"></i></button>
-                    <button type="button" onclick="deleteData(`'. route('produk.destroy', $produk->id_produk) .'`)" class="btn btn-sm btn-danger btn-flat"><i class="fa fa-trash"></i></button>
-                </div>
-                ';
-            })
-            ->rawColumns(['aksi', 'kode_produk', 'select_all'])
-            ->make(true);
+            });
+            $responseJson = $datatables->make(true)->original;
+        } catch (Exception $e) {
+            $status - 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     /**
@@ -82,8 +67,9 @@ class ProdukController extends Controller
      */
     public function create()
     {
-        $kategori = json_encode(Kategori::selectRaw("id_kategori as id, nama_kategori as text")->get());
-        return view('produk.create', compact('kategori'));
+        $kategori = json_encode(Kategori::selectRaw("nama_kategori as id, nama_kategori as text")->get());
+        $uom = json_encode(DB::table('uom')->selectRaw('nama_uom as id, nama_uom as text')->get());
+        return view('produk.create', compact('kategori', 'uom'));
     }
 
     public function storeAddOpt(Request $request)
@@ -134,12 +120,35 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
-        $produk = Produk::latest()->first() ?? new Produk();
-        $request['kode_produk'] = 'P'. tambah_nol_didepan((int)$produk->id_produk +1, 6);
+        $status = 200;
+        $responseJson = [];
 
-        $produk = Produk::create($request->all());
-
-        return response()->json('Data berhasil disimpan', 200);
+        $validate = Validator::make($request->all(), Produk::$storeRule);
+        if($validate->fails()) {
+            $responseJson = Response::error($validate->errors());
+            return response()->json($responseJson, 400);
+        }
+        DB::beginTransaction();
+        try {
+            $gambar = '';
+            if($request->hasFile('gambar')) {
+                $file = $request->file('gambar');
+                $name = time() . '.' . $file->getClientOriginalExtension();
+                $destinationPath = public_path('img/produk-image');
+                $file->move($destinationPath, $name);
+                $gambar = $name;
+            }
+            $payloads = $request->all();
+            $payloads['gambar'] = $gambar;
+            Produk::storeProduk($payloads);
+            $responseJson = Response::success('Berhasil menambahkan produk');
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     /**
@@ -150,9 +159,22 @@ class ProdukController extends Controller
      */
     public function show($id)
     {
-        $produk = Produk::find($id);
-
-        return response()->json($produk);
+        $status = 200;
+        $responseJson = [];
+        try {
+            $produk = DB::table('produk as p')
+                      ->leftJoin('uom as u', 'p.id_uom', '=', 'u.id_uom')
+                      ->leftJoin('kategori as k', 'p.id_kategori', '=', 'k.id_kategori')
+                      ->selectRaw('p.*, u.nama_uom, k.nama_kategori')
+                      ->where('p.id_produk', $id)
+                      ->first();
+            $produkAddOpt = DB::table('produk_additional')->where('id_produk', $id)->get();
+            $responseJson = Response::success('ok', compact('produk', 'produkAddOpt'));
+        } catch (Exception $e) {
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     /**
@@ -163,7 +185,37 @@ class ProdukController extends Controller
      */
     public function edit($id)
     {
-        //
+        $kategori = json_encode(Kategori::selectRaw("nama_kategori as id, nama_kategori as text")->get());
+        $uom = json_encode(DB::table('uom')->selectRaw('nama_uom as id, nama_uom as text')->get());
+        return view('produk.edit', compact('kategori', 'uom', 'id'));
+    }
+
+    public function kelolaStok($id)
+    {
+        $produk = DB::table('produk as p')->where('id_produk', $id)->leftJoin('uom as u', 'p.id_uom', '=', 'u.id_uom')
+                  ->selectRaw('p.*, u.nama_uom')
+                  ->first();
+        return view('produk.kelola-stok', compact('produk'));
+    }
+
+    public function storeKelolaStok($id, Request $request)
+    {
+        $status = 200;
+        $responseJson = [];
+        $payloads = $request->all();
+
+        DB::beginTransaction();
+        try {
+            Produk::storeKelolaStokProduk($id, $payloads);
+            $responseJson = Response::success('Berhasil Mengubah Kelola Stok');
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+
+        return response()->json($responseJson, $status);
     }
 
     /**
@@ -175,10 +227,40 @@ class ProdukController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $produk = Produk::find($id);
-        $produk->update($request->all());
+        $status = 200;
+        $responseJson = [];
 
-        return response()->json('Data berhasil disimpan', 200);
+        $newRules = Produk::$storeRule;
+        $newRules['sku_produk'] = 'required|string|max:100|unique:produk,sku_produk,' . $id . ',id_produk';
+        $newRules['barcode_produk'] = 'nullable|string|max:100|unique:produk,barcode_produk,' . $id . ',id_produk';
+        $newRules['nama_produk'] = 'required|string|max:100|unique:produk,nama_produk,' . $id . ',id_produk';
+
+        $validate = Validator::make($request->all(), $newRules);
+        if($validate->fails()) {
+            $responseJson = Response::error($validate->errors());
+            return response()->json($responseJson, 400);
+        }
+        DB::beginTransaction();
+        try {
+            $gambar = DB::table('produk')->selectRaw('gambar')->where('id_produk', $id)->first()->gambar;
+            if($request->hasFile('gambar')) {
+                $file = $request->file('gambar');
+                $name = time() . '.' . $file->getClientOriginalExtension();
+                $destinationPath = public_path('img/produk-image');
+                $file->move($destinationPath, $name);
+                $gambar = $name;
+            }
+            $payloads = $request->all();
+            $payloads['gambar'] = $gambar;
+            Produk::updateProduk($payloads, $id);
+            $responseJson = Response::success('Berhasil mengubah produk');
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     /**
@@ -189,20 +271,38 @@ class ProdukController extends Controller
      */
     public function destroy($id)
     {
-        $produk = Produk::find($id);
-        $produk->delete();
-
-        return response(null, 204);
+        $status = 200;
+        $responseJson = [];
+        try {
+            DB::table('produk')->where('id_produk', $id)->update(['status' => '0']);
+            $responseJson = Response::success('Berhasil menghapus produk');
+        } catch (Exception $e) {
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
-    public function deleteSelected(Request $request)
+    public function deleteBulky(Request $request)
     {
-        foreach ($request->id_produk as $id) {
-            $produk = Produk::find($id);
-            $produk->delete();
-        }
+        $status = 200;
+        $responseJson = [];
 
-        return response(null, 204);
+        $idProduk = $request->post('idProduk');
+
+        DB::beginTransaction();
+        try {
+            foreach ($idProduk as $item) {
+                DB::table('produk')->where('id_produk', $item)->update(['status' => '0']);
+            }
+            $responseJson = Response::success('Berhasil Menghapus Produk');
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     public function cetakBarcode(Request $request)

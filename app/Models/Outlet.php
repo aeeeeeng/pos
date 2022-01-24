@@ -15,7 +15,7 @@ class Outlet extends Model
 
     public static function defaultOutlet()
     {
-        
+
         if(session()->get('outlet') != null) {
             return self::where('id_outlet', session()->get('outlet'))->first();
         } else {

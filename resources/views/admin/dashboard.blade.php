@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 <div class="text-end">
-                    <a href="{{ route('produk.index') }}" class="ms-1 text-white font-size-13">Lihat <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{{ url('produk') }}" class="ms-1 text-white font-size-13">Lihat <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div><!-- end card body -->
         </div><!-- end card -->
@@ -106,7 +106,7 @@
                             &nbsp;
                             <a href="{{ route('laporan_laba_produk.index') }}" target="__blank" class="btn btn-sm btn-flat btn-danger pull-right">Lihat Detail Penjualan</a>
                         </div>
-                    </div>                
+                    </div>
                 </div>
                 <div class="chart">
                     <canvas id="salesChart" style="max-height: 250px;"></canvas>
@@ -235,7 +235,7 @@ function renderChartLine()
                 backgroundColor: '#36a2eb',
                 borderColor: '#36a2eb',
                 data: {{ json_encode($data_pendapatan) }}
-            }, 
+            },
             {
                 label: "Laba Penjualan",
                 backgroundColor: 'rgb(255, 99, 132)',

@@ -114,7 +114,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/profil', [UserController::class, 'updateProfil'])->name('user.update_profil');
     });
 
-    
+
     Route::prefix('kategori')->middleware('level:1')->group(function(){
         Route::get('/', [KategoriController::class, 'index'])->name('kategori.index');
         Route::get('data', [KategoriController::class, 'data'])->name('kategori.data');
@@ -124,13 +124,22 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::prefix('produk')->middleware('level:1')->group(function(){
+        Route::get('/', [ProdukController::class, 'index'])->name('produk.index');
         Route::get('data', [ProdukController::class, 'data'])->name('produk.data');
+        Route::get('edit/{id}', [ProdukController::class, 'edit'])->name('produk.edit');
+        Route::get('show/{id}', [ProdukController::class, 'show'])->name('produk.show');
         Route::post('delete-selected', [ProdukController::class, 'deleteSelected'])->name('produk.delete_selected');
         Route::post('cetak-barcode', [ProdukController::class, 'cetakBarcode'])->name('produk.cetak_barcode');
         Route::get('create', [ProdukController::class, 'create']);
         Route::post('simpan-add-opt', [ProdukController::class, 'storeAddOpt']);
         Route::get('list-data-add-opt', [ProdukController::class, 'listDataAddOpt']);
-        Route::resource('/', ProdukController::class)->except('create', 'show', 'edit');
+        Route::post('store', [ProdukController::class, 'store']);
+        Route::post('update/{id}', [ProdukController::class, 'update']);
+        Route::post('delete/{id}', [ProdukController::class, 'destroy']);
+        Route::post('delete-bulky', [ProdukController::class, 'deleteBulky']);
+        Route::get('kelola-stok/{id}', [ProdukController::class, 'kelolaStok']);
+        Route::post('store-kelola-stok/{id}', [ProdukController::class, 'storeKelolaStok']);
+        // Route::resource('/', ProdukController::class)->except('create', 'show', 'edit');
     });
 
     Route::prefix('outlet')->middleware('level:1')->group(function() {

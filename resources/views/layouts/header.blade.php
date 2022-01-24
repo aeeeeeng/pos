@@ -31,14 +31,16 @@
 
         <div class="d-flex">
 
+
             <div class="dropdown d-none d-sm-inline-block">
-                <div class="btn-group" role="group">
-                    <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle mt-3" data-bs-toggle="dropdown" aria-expanded="false">
-                        Outlet - {{$outlet->nama_outlet}} <i class="mdi mdi-chevron-down"></i>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary mt-3">{{handlingObject(@$outlet->nama_outlet)}}</button>
+                    <button type="button" class="btn btn-primary mt-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="mdi mdi-chevron-down"></i>
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
-                        <li><a class="dropdown-item" onclick="changeDefaultOutletHeader(this)" href="#">Ganti Outlet</a></li>
-                    </ul>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#" onclick="changeDefaultOutletHeader(this)">Ganti Outlet</a>
+                    </div>
                 </div>
             </div>
 
