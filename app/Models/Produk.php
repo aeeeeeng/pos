@@ -112,6 +112,24 @@ class Produk extends Model
         }
     }
 
+    public static function storeKompositProduk($id, $payloads)
+    {
+        try {
+            DB::table('produk_komposit')->where('id_produk_master', $id)->delete();
+            $toInsert = [];
+            foreach ($payloads['detail'] as $item) {
+                $payloadInsert['id_produk_master'] = $id;
+                $payloadInsert['id_produk_detail'] = $item['id_produk'];
+                $payloadInsert['nama_komposit'] = 'BAHAN_BAKU_' . strtoupper(str_replace(' ', '_', $payloads['nama_produk']));
+                $payloadInsert['jumlah_komposit'] = $item['jumlah'];
+                $toInsert[] = $payloadInsert;
+            }
+            DB::table('produk_komposit')->insert($toInsert);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
     public static function updateProduk($payloads, $id)
     {
         try {

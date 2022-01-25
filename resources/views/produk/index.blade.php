@@ -112,7 +112,7 @@
     </div>
 </div>
 
-@includeIf('produk.form')
+
 @endsection
 
 @push('scripts')
@@ -209,7 +209,7 @@
                     className: "text-nowrap text-center",
                     render: function(d,t,r) {
                         const btnKelolaStok = `<a class="dropdown-item" href="#" onclick="kelolaStok(this, '${d}')">Kelola Stok</a>`;
-                        const btnKelolaBahanBaku = r.tipe == 'komposit' ? `<a class="dropdown-item" href="#">Kelola Bahan Baku</a>` : '';
+                        const btnKelolaBahanBaku = r.tipe == 'komposit' ? `<button type="button" class="dropdown-item" onclick="kelolaBahanBaku(this, '${d}')">Kelola Bahan Baku</button>` : '';
                         return `<div class="dropdown mt-4 mt-sm-0">
                                     <a href="#" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="mdi mdi-chevron-down"></i>
@@ -223,6 +223,22 @@
                     }
                 }
             ]
+        });
+    }
+
+    function kelolaBahanBaku(that, id)
+    {
+        event.preventDefault();
+        $.ajax({
+            url: "{{url('produk/kelola-bahan-baku')}}/" + id,
+            success: function(response) {
+                const dialog = bootbox.dialog({
+                    closeButton: false,
+                    size: "xl",
+                    title: `Kelola Bahan Baku`,
+                    message: response
+                });
+            }
         });
     }
 

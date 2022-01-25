@@ -46,7 +46,7 @@ class ProdukController extends Controller
             $datatables = DataTables::of($produk);
             $datatables->addColumn('imageText', function($query) {
                 $arrProdukName = explode(" ", $query->nama_produk);
-                if(count($arrProdukName) > 0) {
+                if(count($arrProdukName) > 1) {
                     return Produk::imageText(substr($arrProdukName[0], 0, 1) . '' . substr($arrProdukName[1], 0, 1));
                 }
                 return Produk::imageText(substr($arrProdukName[0], 0, 1));
@@ -177,6 +177,43 @@ class ProdukController extends Controller
         return response()->json($responseJson, $status);
     }
 
+    public function selectProdukTunggal(Request $request)
+    {
+        $q = $request->get('q');
+        $outlet = $request->get('outlet');
+        $notIn = $request->get('notIn');
+        $produk = DB::table('produk as p')->leftJoin('uom as u', 'u.id_uom', '=', 'p.id_uom')
+                  ->selectRaw('p.id_produk as id, p.nama_produk as text, u.nama_uom, p.*')
+                  ->where('p.tipe', 'tunggal')->where('p.id_outlet', $outlet)->where('p.status', '1')
+                  ->whereNotIn('p.id_produk', $notIn)
+                  ->where(function($query) use($q) {
+                    $query->where('p.nama_produk', 'like', '%' . $q . '%');
+                    $query->orWhere('p.sku_produk', 'like', '%' . $q . '%');
+                    $query->orWhere('p.barcode_produk', 'like', '%' . $q . '%');
+                  });
+        $result['incomplete_results'] = true;
+        $result['total_count'] = $produk->count();
+        $result['items'] = $produk->get();
+        return response()->json($result);
+    }
+
+    public function storeKomposit($id, Request $request)
+    {
+        $status = 200;
+        $responseJson = [];
+        DB::beginTransaction();
+        try {
+            Produk::storeKompositProduk($id, $request->all());
+            $responseJson = Response::success('Berhasil menyimpan bahan baku');
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -188,6 +225,23 @@ class ProdukController extends Controller
         $kategori = json_encode(Kategori::selectRaw("nama_kategori as id, nama_kategori as text")->get());
         $uom = json_encode(DB::table('uom')->selectRaw('nama_uom as id, nama_uom as text')->get());
         return view('produk.edit', compact('kategori', 'uom', 'id'));
+    }
+
+    public function kelolaBahanBaku($id)
+    {
+        $produk = DB::table('produk as p')->where('id_produk', $id)->leftJoin('uom as u', 'p.id_uom', '=', 'u.id_uom')
+                  ->selectRaw('p.*, u.nama_uom')
+                  ->first();
+        $details = DB::table('produk_komposit as pk')->where('pk.id_produk_master', $id)
+                   ->selectRaw('p.id_produk, p.nama_produk, pk.jumlah_komposit as jumlah, u.nama_uom')
+                   ->join('produk as p', function($join){
+                       $join->on('p.id_produk', '=', 'pk.id_produk_detail');
+                       $join->where('p.status', '1');
+                   })
+                   ->leftJoin('uom as u', 'p.id_uom', '=', 'u.id_uom')
+                   ->get();
+        $jsonDetails = json_encode($details);
+        return view('produk.form-kelola-bahan-baku', compact('produk', 'jsonDetails'));
     }
 
     public function kelolaStok($id)

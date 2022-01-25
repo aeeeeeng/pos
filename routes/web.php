@@ -139,6 +139,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('delete-bulky', [ProdukController::class, 'deleteBulky']);
         Route::get('kelola-stok/{id}', [ProdukController::class, 'kelolaStok']);
         Route::post('store-kelola-stok/{id}', [ProdukController::class, 'storeKelolaStok']);
+        Route::get('kelola-bahan-baku/{id}', [ProdukController::class, 'kelolaBahanBaku']);
+        Route::get('select-produk-tunggal', [ProdukController::class, 'selectProdukTunggal']);
+        Route::post('simpan-komposit/{id}', [ProdukController::class, 'storeKomposit']);
         // Route::resource('/', ProdukController::class)->except('create', 'show', 'edit');
     });
 
