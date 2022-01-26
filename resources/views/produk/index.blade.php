@@ -26,19 +26,19 @@
             <div class="card-body">
                 <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="tab" href="{{url('produk')}}" role="tab" aria-selected="true">
+                            <a class="nav-link active" href="{{url('produk')}}" aria-selected="true">
                                 <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
                                 <span class="d-none d-sm-block">Produk ({{$totalProduk}})</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#profile1" role="tab" aria-selected="false">
+                            <a class="nav-link" href="{{url('add-opt')}}" role="tab" aria-selected="false">
                                 <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
                                 <span class="d-none d-sm-block">Opsi Tambahan ({{$totalAddOpt}})</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#messages1" role="tab" aria-selected="false">
+                            <a class="nav-link" href="{{url('kategori')}}" role="tab" aria-selected="false">
                                 <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
                                 <span class="d-none d-sm-block">Kategori ({{$totalKategori}})</span>
                             </a>

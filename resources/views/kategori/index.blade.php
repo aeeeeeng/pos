@@ -1,115 +1,214 @@
 @extends('layouts.master')
 
 @section('title')
-    Daftar Kategori
+    Kategori
 @endsection
 
 @section('breadcrumb')
     @parent
-    <li class="breadcrumb-item active">Daftar Kategori</li>
+    <li class="breadcrumb-item active">Kategori</li>
 @endsection
 
 @section('content')
 <div class="row">
+
+</div>
+<div class="row">
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <button onclick="addForm('{{ route('kategori.store') }}')" class="btn btn-success btn-sm btn-flat"><i class="fa fa-plus-circle"></i> Tambah</button>
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <button type="button" onclick="formAdd(this)" class="btn btn-success btn-sm btn-flat"><i class="fa fa-plus-circle"></i> Tambah Kategori</button>
+                    {{-- <button onclick="deleteSelected(this)" class="btn btn-danger btn-sm btn-flat"><i class="fa fa-trash"></i> Hapus</button> --}}
+                </div>
             </div>
             <div class="card-body">
-                <table class="table table-sm table-bordered dt-responsive  nowrap w-100">
-                    <thead>
-                        <th width="5%">No</th>
-                        <th>Kategori</th>
-                        <th width="15%"><i class="fa fa-cog"></i></th>
-                    </thead>
-                </table>
+                <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url('produk')}}" aria-selected="false">
+                                <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                                <span class="d-none d-sm-block">Produk ({{$totalProduk}})</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url('add-opt')}}" role="tab" aria-selected="false">
+                                <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
+                                <span class="d-none d-sm-block">Opsi Tambahan ({{$totalAddOpt}})</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{url('kategori')}}" role="tab" aria-selected="true">
+                                <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
+                                <span class="d-none d-sm-block">Kategori ({{$totalKategori}})</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content p-3 text-muted">
+                        <div class="tab-pane active" id="home2" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="example-search-input" class="form-label">Cari</label>
+                                        <input class="form-control form-control-sm" type="text" value="" id="cari" onkeyup="tableDT.draw();" onchange="tableDT.draw();">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-hover table-sm" id="tableKategori">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>
+                                                    <input type="checkbox" onclick="checkAll(this)" class="checkall" id="checkAll">
+                                                </th>
+                                                <th>Nama Kategori</th>
+                                                <th>Jumlah Produk</th>
+                                                <th width="5%">#</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
 </div>
 
-@includeIf('kategori.form')
+
 @endsection
 
 @push('scripts')
 <script>
-    let table;
+    let tableDT;
 
-    $(function () {
-        table = $('.table').DataTable({
+    $(document).ready(function(){
+        loadTableDT();
+    });
+
+    function edit(that, id)
+    {
+        event.preventDefault();
+        $.ajax({
+            url: "{{url('kategori/edit')}}/" + id,
+            success: function(response) {
+                const dialog = bootbox.dialog({
+                    closeButton: false,
+                    size: "sm",
+                    title: `Edit Kategori`,
+                    message: response
+                });
+            }
+        });
+    }
+
+    function formAdd(that)
+    {
+        event.preventDefault();
+        $.ajax({
+            url: "{{url('kategori/create')}}",
+            success: function(response) {
+                const dialog = bootbox.dialog({
+                    closeButton: false,
+                    size: "sm",
+                    title: `Tambah Kategori`,
+                    message: response
+                });
+            }
+        });
+    }
+
+    function checkAll(that)
+    {
+        const isChecked = $(that).is(':checked');
+        if(isChecked) {
+            $(".check").prop('checked', true);
+        } else {
+            $(".check").prop('checked', false);
+        }
+    }
+
+    function check(that)
+    {
+        const isChecked = $(that).is(':checked');
+        if(!isChecked) {
+            $(".checkall").prop('checked', false);
+        }
+    }
+
+    function loadTableDT()
+    {
+        tableDT = $("#tableKategori").DataTable({
             responsive: true,
             processing: true,
             serverSide: true,
-            autoWidth: false,
+            searching: false,
+            lengthMenu: [
+                [10, 20, 50, -1],
+                ['10', '20', '50', 'Lihat Semua']
+            ],
+            "order": [[0, "desc" ]],
             ajax: {
-                url: '{{ route('kategori.data') }}',
+                'url': "{{url('kategori/data')}}",
+                'type': 'GET',
+                "dataSrc": function (response) {
+                    return response.data;
+                },
+                data: function(d){
+                    d.search = $("#cari").val()
+                },
+                error: function(error) {
+                    showErrorAlert(error.responseJSON.message);
+                }
             },
             columns: [
-                {data: 'DT_RowIndex', searchable: false, sortable: false},
-                {data: 'nama_kategori'},
-                {data: 'aksi', searchable: false, sortable: false},
+                {
+                    data: 'created_at',
+                    name: 'k.created_at',
+                    searchable: false,
+                    visible: false,
+                },
+                {
+                    data: 'id_kategori',
+                    name: 'k.id_kategori',
+                    className: "text-nowrap text-start",
+                    searchable: false,
+                    sortable: false,
+                    render: function (d,t,r) {
+                        return `<input type="checkbox" onclick="check(this)" class="check" value="${r.id_kategori}">`;
+                    }
+                },
+                {
+                    data: 'nama_kategori',
+                    name: 'k.nama_kategori',
+                    className: "text-nowrap text-start"
+                },
+                {
+                    data: 'totalProduk',
+                    name: 'totalProduk',
+                    className: "text-nowrap text-end"
+                },
+                {
+                    data: 'id_kategori',
+                    name: 'k.id_kategori',
+                    className: "text-nowrap text-center",
+                    render: function(d,t,r) {
+                        return `<div class="dropdown mt-4 mt-sm-0">
+                                    <a href="#" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="mdi mdi-chevron-down"></i>
+                                    </a>
+                                    <div class="dropdown-menu" style="">
+                                        <button type="button" class="dropdown-item" onclick="edit(this, '${d}')">Ubah</button>
+                                        <button class="dropdown-item" onclick="singleRemove('${d}')" href="#">Hapus</button>
+                                    </div>
+                                </div>`;
+                    }
+                }
             ]
         });
-
-        $('#modal-form').validator().on('submit', function (e) {
-            if (! e.preventDefault()) {
-                $.post($('#modal-form form').attr('action'), $('#modal-form form').serialize())
-                    .done((response) => {
-                        $('#modal-form').modal('hide');
-                        table.ajax.reload();
-                    })
-                    .fail((errors) => {
-                        alert('Tidak dapat menyimpan data');
-                        return;
-                    });
-            }
-        });
-    });
-
-    function addForm(url) {
-        $('#modal-form').modal('show');
-        $('#modal-form .modal-title').text('Tambah Kategori');
-
-        $('#modal-form form')[0].reset();
-        $('#modal-form form').attr('action', url);
-        $('#modal-form [name=_method]').val('post');
-        $('#modal-form [name=nama_kategori]').focus();
-    }
-
-    function editForm(url) {
-        $('#modal-form').modal('show');
-        $('#modal-form .modal-title').text('Edit Kategori');
-
-        $('#modal-form form')[0].reset();
-        $('#modal-form form').attr('action', url);
-        $('#modal-form [name=_method]').val('put');
-        $('#modal-form [name=nama_kategori]').focus();
-
-        $.get(url)
-            .done((response) => {
-                $('#modal-form [name=nama_kategori]').val(response.nama_kategori);
-            })
-            .fail((errors) => {
-                alert('Tidak dapat menampilkan data');
-                return;
-            });
-    }
-
-    function deleteData(url) {
-        if (confirm('Yakin ingin menghapus data terpilih?')) {
-            $.post(url, {
-                    '_token': $('[name=csrf-token]').attr('content'),
-                    '_method': 'delete'
-                })
-                .done((response) => {
-                    table.ajax.reload();
-                })
-                .fail((errors) => {
-                    alert('Tidak dapat menghapus data');
-                    return;
-                });
-        }
     }
 </script>
 @endpush

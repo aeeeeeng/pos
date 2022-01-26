@@ -118,8 +118,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::prefix('kategori')->middleware('level:1')->group(function(){
         Route::get('/', [KategoriController::class, 'index'])->name('kategori.index');
         Route::get('data', [KategoriController::class, 'data'])->name('kategori.data');
-        Route::get('edit', [KategoriController::class, 'edit'])->name('kategori.edit');
-        Route::put('update', [KategoriController::class, 'update'])->name('kategori.update');
+        Route::get('create', [KategoriController::class, 'create'])->name('kategori.create');
+        Route::post('store', [KategoriController::class, 'store'])->name('kategori.store');
+        Route::get('edit/{id}', [KategoriController::class, 'edit'])->name('kategori.edit');
+        Route::post('update/{id}', [KategoriController::class, 'update'])->name('kategori.update');
         Route::delete('destroy', [KategoriController::class, 'delete'])->name('kategori.destroy');
     });
 

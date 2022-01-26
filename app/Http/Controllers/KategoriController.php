@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Library\Response;
 use Illuminate\Http\Request;
 use App\Models\Kategori;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 class KategoriController extends Controller
 {
@@ -14,35 +19,29 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        return view('kategori.index');
+        $dataKategori = Kategori::selectRaw("id_kategori as id, nama_kategori as text");
+        $dataAddOpt = DB::table('add_opt');
+        $dataProduk = DB::table('produk')->where('status', '1');
+        $totalKategori = $dataKategori->count();
+        $totalAddOpt = $dataAddOpt->count();
+        $totalProduk = $dataProduk->count();
+
+        return view('kategori.index', compact('totalKategori', 'totalAddOpt', 'totalProduk'));
     }
 
     public function data(Request $request)
     {
-        $kategori = Kategori::orderBy('id_kategori', 'desc')->get();
-        
-        if($request->get('type') == 'select2') {
-            $resultData = $kategori->map(function($data){
-                return ['id' => $data->id_kategori, 'text' => $data->nama_kategori];
-            });
-            $result['results'] = $resultData;
-            $result['pagination']['more'] = false;
-            return response()->json($result);
+        $status = 200;
+        $responseJson = [];
+        try {
+            $kategori = Kategori::getDataKategori($request->all(), 'datatable');
+            $datatables = DataTables::of($kategori);
+            $responseJson = $datatables->make(true)->original;
+        } catch (Exception $e) {
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
         }
-
-        return datatables()
-            ->of($kategori)
-            ->addIndexColumn()
-            ->addColumn('aksi', function ($kategori) {
-                return '
-                
-                    <button onclick="editForm(`'. route('kategori.update', $kategori->id_kategori) .'`)" class="btn btn-sm btn-info btn-flat"><i class="fa fa-wrench"></i></button>
-                    <button onclick="deleteData(`'. route('kategori.destroy', $kategori->id_kategori) .'`)" class="btn btn-sm btn-danger btn-flat"><i class="fa fa-trash"></i></button>
-                
-                ';
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
+        return response()->json($responseJson, $status);
     }
 
     /**
@@ -52,7 +51,7 @@ class KategoriController extends Controller
      */
     public function create()
     {
-        //
+        return view('kategori.create');
     }
 
     /**
@@ -63,11 +62,23 @@ class KategoriController extends Controller
      */
     public function store(Request $request)
     {
-        $kategori = new Kategori();
-        $kategori->nama_kategori = $request->nama_kategori;
-        $kategori->save();
+        $status = 200;
+        $responseJson = [];
 
-        return response()->json('Data berhasil disimpan', 200);
+        $validate = Validator::make($request->all(), Kategori::$storeRule);
+        if($validate->fails()) {
+            $responseJson = Response::error($validate->errors());
+            return response()->json($responseJson, 400);
+        }
+
+        try {
+            Kategori::storeKategori($request->all());
+            $responseJson = Response::success('Berhasil menambahkan kategori');
+        } catch (Exception $e) {
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     /**
@@ -91,7 +102,8 @@ class KategoriController extends Controller
      */
     public function edit($id)
     {
-        //
+        $kategori = DB::table('kategori')->where('id_kategori', $id)->first();
+        return view('kategori.edit', compact('kategori'));
     }
 
     /**
@@ -103,11 +115,26 @@ class KategoriController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $kategori = Kategori::find($id);
-        $kategori->nama_kategori = $request->nama_kategori;
-        $kategori->update();
+        $status = 200;
+        $responseJson = [];
 
-        return response()->json('Data berhasil disimpan', 200);
+        $newRules = Kategori::$storeRule;
+        $newRules['nama_kategori'] = 'required|string|max:100|unique:kategori,nama_kategori,' . $id . ',id_kategori';
+        $validate = Validator::make($request->all(), $newRules);
+        if($validate->fails()) {
+            $responseJson = Response::error($validate->errors());
+            return response()->json($responseJson, 400);
+        }
+
+
+        try {
+            Kategori::updateKategori($id, $request->all());
+            $responseJson = Response::success('Perubahan berhasil disimpan');
+        } catch (Exception $e) {
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     /**
