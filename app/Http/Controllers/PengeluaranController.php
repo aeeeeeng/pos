@@ -2,25 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\Library\Response;
+use App\Library\UniqueCode;
 use Illuminate\Http\Request;
 use App\Models\Pengeluaran;
+use Exception;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class PengeluaranController extends Controller
 {
     public function index()
     {
-        return view('pengeluaran.index');
+        $outlet = DB::table('outlet')->selectRaw("id_outlet as id, nama_outlet as text")->get();
+        return view('pengeluaran.index', compact('outlet'));
     }
 
-    public function data()
+    public function data(Request $request)
     {
-        $pengeluaran = Pengeluaran::orderBy('id_pengeluaran', 'desc')->get();
+        $payloads = $request->all();
+        $pengeluaran = Pengeluaran::orderBy('id_pengeluaran', 'desc')
+                       ->where('status', '1');
+
+        if(isset($payloads['search'])) {
+            $pengeluaran->where('kode_pengeluaran', 'like', '%' . $payloads['search'] . '%');
+            $pengeluaran->orWhere('deskripsi', 'like', '%' . $payloads['search'] . '%');
+        }
+
+        if(isset($payloads['dateStart'])) {
+            $pengeluaran->whereBetween('tanggal_pengeluaran', [$payloads['dateStart'], $payloads['dateEnd']]);
+        }
+
+        if(isset($payloads['id_outlet'])) {
+            $pengeluaran->where('id_outlet', $payloads['id_outlet']);
+        }
+
+        $pengeluaran->get();
 
         return datatables()
             ->of($pengeluaran)
             ->addIndexColumn()
-            ->addColumn('created_at', function ($pengeluaran) {
-                return tanggal_indonesia($pengeluaran->created_at, false);
+            ->addColumn('tanggal_pengeluaran', function ($pengeluaran) {
+                return tanggal_indonesia($pengeluaran->tanggal_pengeluaran, false);
             })
             ->addColumn('nominal', function ($pengeluaran) {
                 return format_uang($pengeluaran->nominal);
@@ -57,9 +81,31 @@ class PengeluaranController extends Controller
      */
     public function store(Request $request)
     {
-        $pengeluaran = Pengeluaran::create($request->all());
 
-        return response()->json('Data berhasil disimpan', 200);
+        $status = 200;
+        $responseJson = [];
+
+        $validate = Validator::make($request->all(), Pengeluaran::$storeRule);
+        if($validate->fails()) {
+            $responseJson = Response::error($validate->errors());
+            return response()->json($responseJson, 400);
+        }
+
+        try {
+            $payloads = $request->all();
+            $payloads['kode_pengeluaran'] = (new UniqueCode(Pengeluaran::class, 'kode_pengeluaran', 'PL-', 9, true))->get();
+            $payloads['tanggal_pengeluaran'] = Carbon::createFromFormat('d/m/Y', $payloads['tanggal_pengeluaran'])->format('Y-m-d');
+            $payloads['created_at'] = date('Y-m-d H:i:s');
+            $payloads['created_by'] = auth()->user()->name;
+            unset($payloads['_token']);
+            unset($payloads['_method']);
+            Pengeluaran::insert($payloads);
+            $responseJson = Response::success('Berhasil menambahkan pengeluaran');
+        } catch (Exception $e) {
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     /**
@@ -70,8 +116,7 @@ class PengeluaranController extends Controller
      */
     public function show($id)
     {
-        $pengeluaran = Pengeluaran::find($id);
-
+        $pengeluaran = Pengeluaran::selectRaw("pengeluaran.*, DATE_FORMAT(pengeluaran.tanggal_pengeluaran,'%d/%m/%Y') AS TanggalPengeluaranFormat")->find($id);
         return response()->json($pengeluaran);
     }
 
@@ -83,7 +128,7 @@ class PengeluaranController extends Controller
      */
     public function edit($id)
     {
-        //
+
     }
 
     /**
@@ -95,9 +140,30 @@ class PengeluaranController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $pengeluaran = Pengeluaran::find($id)->update($request->all());
 
-        return response()->json('Data berhasil disimpan', 200);
+        $status = 200;
+        $responseJson = [];
+
+        $validate = Validator::make($request->all(), Pengeluaran::$storeRule);
+        if($validate->fails()) {
+            $responseJson = Response::error($validate->errors());
+            return response()->json($responseJson, 400);
+        }
+
+        try {
+            $payloads = $request->all();
+            $payloads['tanggal_pengeluaran'] = Carbon::createFromFormat('d/m/Y', $payloads['tanggal_pengeluaran'])->format('Y-m-d');
+            $payloads['updated_at'] = date('Y-m-d H:i:s');
+            $payloads['updated_by'] = auth()->user()->name;
+            unset($payloads['_token']);
+            unset($payloads['_method']);
+            DB::table('pengeluaran')->where('id_pengeluaran', $id)->update($payloads);
+            $responseJson = Response::success('Berhasil mengubah pengeluaran');
+        } catch (Exception $e) {
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     /**
@@ -108,8 +174,7 @@ class PengeluaranController extends Controller
      */
     public function destroy($id)
     {
-        $pengeluaran = Pengeluaran::find($id)->delete();
-
+        DB::table('pengeluaran')->where('id_pengeluaran', $id)->update(['status' => '0']);
         return response(null, 204);
     }
 }

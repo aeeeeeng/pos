@@ -1,5 +1,5 @@
 <div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-sm" role="document">
         <form action="" method="post" class="form-horizontal">
             @csrf
             @method('post')
@@ -10,23 +10,30 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group mb-2 row">
-                        <label for="deskripsi" class="col-lg-2 col-lg-offset-1 control-label">Deskripsi</label>
-                        <div class="col-lg-6">
-                            <input type="text" name="deskripsi" id="deskripsi" class="form-control" required autofocus>
-                            <span class="help-block with-errors"></span>
-                        </div>
+                    <div class="form-group mb-2">
+                        <label for="tanggal_pengeluaran" class="">Tanggal</label>
+                        <select name="id_outlet" id="id_outlet" class="form-control form-control-sm">
+                            <option value="">Outlet</option>
+                            @foreach ($outlet as $item)
+                                <option value="{{$item->id}}" {{$item->id == session()->get('outlet') ? 'selected' : ''}}>{{$item->text}}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="form-group mb-2 row">
-                        <label for="nominal" class="col-lg-2 col-lg-offset-1 control-label">Nominal</label>
-                        <div class="col-lg-6">
-                            <input type="number" name="nominal" id="nominal" class="form-control text-end" required>
-                            <span class="help-block with-errors"></span>
-                        </div>
+                    <div class="form-group mb-2">
+                        <label for="tanggal_pengeluaran">Tanggal</label>
+                        <input type="text" class="form-control form-control-sm" name="tanggal_pengeluaran" id="tanggal_pengeluaran" >
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="deskripsi">Deskripsi</label>
+                        <textarea name="deskripsi" id="deskripsi" class="form-control form-control-sm" row="300" ></textarea>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="nominal">Nominal</label>
+                        <input type="text" name="nominal" id="nominal" class="form-control form-control-sm text-end numbersOnly" >
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-sm btn-flat btn-primary"><i class="fa fa-save"></i> Simpan</button>
+                    <button class="btn btn-sm btn-flat btn-primary save"><i class="fa fa-save"></i> Simpan</button>
                     <button type="button" class="btn btn-sm btn-flat btn-warning" data-bs-dismiss="modal"><i class="fa fa-arrow-circle-left"></i> Batal</button>
                 </div>
             </div>

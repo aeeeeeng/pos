@@ -11,5 +11,13 @@ class Pengeluaran extends Model
 
     protected $table = 'pengeluaran';
     protected $primaryKey = 'id_pengeluaran';
+    protected $fillable = ['kode_pengeluaran'];
     protected $guarded = [];
+
+    public static $storeRule = [
+        'id_outlet' => 'required',
+        'tanggal_pengeluaran' => 'required',
+        'deskripsi' => 'required',
+        'nominal' => 'required'
+    ];
 }
