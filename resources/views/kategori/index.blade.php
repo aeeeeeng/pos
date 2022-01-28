@@ -46,10 +46,22 @@
                     <div class="tab-content p-3 text-muted">
                         <div class="tab-pane active" id="home2" role="tabpanel">
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="example-search-input" class="form-label">Cari</label>
-                                        <input class="form-control form-control-sm" type="text" value="" id="cari" onkeyup="tableDT.draw();" onchange="tableDT.draw();">
+                                        <input class="form-control form-control-sm" type="text" placeholder="Cari berdasarkan nama Kategori" id="cari" onkeyup="tableDT.draw();" onchange="tableDT.draw();">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="example-search-input" class="form-label">Outlet</label>
+                                        <select name="id_outlet" id="id_outlet" class="form-control form-control-sm" onchange="tableDT.draw()">
+                                            <option value="">Semua Outlet</option>
+                                            <option value="0">Tidak Punya Outlet</option>
+                                            @foreach ($outlet as $item)
+                                                <option value="{{$item->id}}" {{$item->id == session()->get('outlet') ? 'selected' : ''}}>{{$item->text}}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -87,6 +99,7 @@
 
     $(document).ready(function(){
         loadTableDT();
+        $("#id_outlet").select2();
     });
 
     function edit(that, id)
@@ -158,7 +171,8 @@
                     return response.data;
                 },
                 data: function(d){
-                    d.search = $("#cari").val()
+                    d.search = $("#cari").val(),
+                    d.id_outlet = $("#id_outlet").val()
                 },
                 error: function(error) {
                     showErrorAlert(error.responseJSON.message);

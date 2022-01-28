@@ -67,6 +67,10 @@
                 color: #ced4da;
             }
 
+            body[data-layout-mode=dark] .select2-dropdown, body[data-layout-mode=dark] .select2-container--default .select2-selection--single .select2-selection__rendered {
+                color: #a8b0b8;
+            }
+
             .pace .pace-progress {
                 height: 1rem;
             }

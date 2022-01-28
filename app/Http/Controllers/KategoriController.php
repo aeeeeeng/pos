@@ -22,11 +22,15 @@ class KategoriController extends Controller
         $dataKategori = Kategori::selectRaw("id_kategori as id, nama_kategori as text");
         $dataAddOpt = DB::table('add_opt');
         $dataProduk = DB::table('produk')->where('status', '1');
+
+        $dataOutlet = DB::table('outlet')->selectRaw("id_outlet as id, nama_outlet as text");
+        $outlet = $dataOutlet->get();
+
         $totalKategori = $dataKategori->count();
         $totalAddOpt = $dataAddOpt->count();
         $totalProduk = $dataProduk->count();
 
-        return view('kategori.index', compact('totalKategori', 'totalAddOpt', 'totalProduk'));
+        return view('kategori.index', compact('totalKategori', 'totalAddOpt', 'totalProduk', 'outlet'));
     }
 
     public function data(Request $request)

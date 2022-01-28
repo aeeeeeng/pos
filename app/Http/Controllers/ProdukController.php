@@ -79,6 +79,7 @@ class ProdukController extends Controller
         DB::beginTransaction();
         try {
             $payloads = $request->all()['opsiTambahan'];
+            $header['id_outlet'] = session()->get('outlet');
             $header['nama_add_opt'] = $payloads['group'];
             $header['punya_bahan_baku'] = $payloads['punya_bahan_baku'];
             $header['created_at'] = date("Y-m-d H:i:s");

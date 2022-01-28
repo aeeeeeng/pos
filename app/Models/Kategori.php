@@ -22,6 +22,7 @@ class Kategori extends Model
     public static function storeKategori($payloads)
     {
         try {
+            $payloads['id_outlet'] = session()->get('outlet');
             $payloads['nama_kategori'] = strtoupper($payloads['nama_kategori']);
             $payloads['created_at'] = date('Y-m-d H:i:s');
             DB::table('kategori')->insert($payloads);
@@ -59,6 +60,10 @@ class Kategori extends Model
 
             if(isset($payloads['search'])) {
                 $kategori->where('k.nama_kategori', 'like', '%' . $payloads['search'] . '%');
+            }
+
+            if(isset($payloads['id_outlet'])) {
+                $kategori->where('k.id_outlet', $payloads['id_outlet']);
             }
 
             // $kategori->orde

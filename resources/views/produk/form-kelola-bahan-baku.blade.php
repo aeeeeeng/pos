@@ -157,8 +157,34 @@
         loadTable();
     }
 
+    function removeError()
+    {
+        $(".jumlah").each(function(){
+            $(this).removeClass('is-invalid');
+        });
+    }
+
     function save(that)
     {
+
+        removeError();
+
+        const error = [];
+        payloads.map((header, indexParent) => {
+            header.detail.map((item, index) => {
+                if(item.id_produk != '' && item.jumlah == '') {
+                    error.push({keyParent: indexParent, key: index});
+                }
+            });
+        });
+
+        if(error.length > 0) {
+            error.map(item => {
+                $(`tr[data-key=${item.key}]`).find('.jumlah').addClass('is-invalid');
+            });
+            return;
+        }
+
         $.ajax({
             url: `{{url('produk/simpan-komposit/' . $produk->id_produk)}}`,
             method: 'post',

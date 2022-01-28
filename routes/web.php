@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\{
+    AddOptController,
     DashboardController,
     GudangController,
     KategoriController,
@@ -145,6 +146,16 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('select-produk-tunggal', [ProdukController::class, 'selectProdukTunggal']);
         Route::post('simpan-komposit/{id}', [ProdukController::class, 'storeKomposit']);
         // Route::resource('/', ProdukController::class)->except('create', 'show', 'edit');
+    });
+
+    Route::prefix('add-opt')->middleware('level:1')->group(function(){
+        Route::get('/', [AddOptController::class, 'index']);
+        Route::get('data', [AddOptController::class, 'data']);
+        Route::get('create', [AddOptController::class, 'create']);
+        Route::get('edit/{id}', [AddOptController::class, 'edit']);
+        Route::post('update/{id}', [AddOptController::class, 'update']);
+        Route::get('kelola-bahan-baku/{id}', [AddOptController::class, 'kelolaBahanBaku']);
+        Route::post('store-kelola-bahan-baku/{id}', [AddOptController::class, 'storeKelolaBahanBaku']);
     });
 
     Route::prefix('outlet')->middleware('level:1')->group(function() {

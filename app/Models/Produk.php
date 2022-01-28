@@ -179,7 +179,7 @@ class Produk extends Model
             $check = DB::table('kategori')->whereRaw("UPPER(kategori.nama_kategori) = '".$kategori."'");
             if($check->count() == 0) {
                 $createDate = date("Y-m-d H:i:s");
-                $id = DB::table('kategori')->insertGetId(['nama_kategori' => $kategori, 'created_at' => $createDate]);
+                $id = DB::table('kategori')->insertGetId(['id_outlet' => session()->get('outlet'), 'nama_kategori' => $kategori, 'created_at' => $createDate]);
                 return $id;
             }
             return $check->first()->id_kategori;
