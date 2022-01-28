@@ -27,20 +27,20 @@
                     <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link" href="{{url('produk')}}" aria-selected="false">
-                                    <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
-                                    <span class="d-none d-sm-block">Produk ({{$totalProduk}})</span>
+                                    <span class="d-block d-sm-none"><i class="fas fa-briefcase"></i></span>
+                                    <span class="d-none d-sm-block"> <i class="fas fa-briefcase"></i> Produk ({{$totalProduk}})</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link active" href="{{url('add-opt')}}" role="tab" aria-selected="true">
-                                    <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
-                                    <span class="d-none d-sm-block">Opsi Tambahan <span id="totalOpsiTambahan"></span></span>
+                                    <span class="d-block d-sm-none"><i class="fas fa-layer-group"></i></span>
+                                    <span class="d-none d-sm-block"><i class="fas fa-layer-group"></i> Opsi Tambahan <span id="totalOpsiTambahan"></span></span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{url('kategori')}}" role="tab" aria-selected="true">
-                                    <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
-                                    <span class="d-none d-sm-block">Kategori ({{$totalKategori}})</span>
+                                <a class="nav-link" href="{{url('kategori')}}" role="tab" aria-selected="false">
+                                    <span class="d-block d-sm-none"><i class="fas fa-tag"></i></span>
+                                    <span class="d-none d-sm-block"><i class="fas fa-tag"></i> Kategori ({{$totalKategori}})</span>
                                 </a>
                             </li>
                         </ul>
@@ -117,7 +117,7 @@
                 'url': "{{url('add-opt/data')}}",
                 'type': 'GET',
                 "dataSrc": function (response) {
-                    $("#totalOpsiTambahan").text(`(${response.recordsTotal})`);
+                    $("#totalOpsiTambahan").text(`(${response.recordsFiltered})`);
                     return response.data;
                 },
                 data: function(d){

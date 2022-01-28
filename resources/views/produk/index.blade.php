@@ -9,6 +9,47 @@
     <li class="breadcrumb-item active">Daftar Produk</li>
 @endsection
 
+@push('css')
+    <style>
+        .image-product {
+            width: 48px;
+            height: 48px;
+            border-radius: 4px;
+            margin-left: 0;
+            overflow: hidden;
+            background-color: #f2f2f2;
+            margin: 0 10px;
+            vertical-align: middle;
+        }
+        .image-product img {
+            width: 100%;
+            margin: 5px 0;
+            vertical-align: middle;
+            border: 0;
+        }
+
+        .no-image-product {
+            text-transform: uppercase!important;
+            width: 48px;
+            height: 48px;
+            padding: 8px 0;
+            text-align: center;
+            border-radius: 2px;
+            margin: 0 10px;
+            vertical-align: middle;
+            color: #fff;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        input.check, input.checkall {
+            height: 20px;
+            width: 20px;
+        }
+
+    </style>
+@endpush
+
 @section('content')
 <div class="row">
 
@@ -27,20 +68,20 @@
                 <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" href="{{url('produk')}}" aria-selected="true">
-                                <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
-                                <span class="d-none d-sm-block">Produk ({{$totalProduk}})</span>
+                                <span class="d-block d-sm-none"><i class="fas fa-briefcase"></i></span>
+                                <span class="d-none d-sm-block"> <i class="fas fa-briefcase"></i> Produk <span id="totalProduk"></span></span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{url('add-opt')}}" role="tab" aria-selected="false">
-                                <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
-                                <span class="d-none d-sm-block">Opsi Tambahan ({{$totalAddOpt}})</span>
+                                <span class="d-block d-sm-none"><i class="fas fa-layer-group"></i></span>
+                                <span class="d-none d-sm-block"><i class="fas fa-layer-group"></i> Opsi Tambahan ({{$totalAddOpt}})</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{url('kategori')}}" role="tab" aria-selected="false">
-                                <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
-                                <span class="d-none d-sm-block">Kategori ({{$totalKategori}})</span>
+                                <span class="d-block d-sm-none"><i class="fas fa-tag"></i></span>
+                                <span class="d-none d-sm-block"><i class="fas fa-tag"></i> Kategori ({{$totalKategori}})</span>
                             </a>
                         </li>
                     </ul>
@@ -89,20 +130,24 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <table class="table table-hover table-sm" id="tableProduct">
-                                        <thead>
-                                            <tr>
-                                                <th>
-                                                    <input type="checkbox" onclick="checkAll(this)" class="checkall" id="checkAll">
-                                                </th>
-                                                <th>Nama Produk</th>
-                                                <th>Kategori</th>
-                                                <th>Harga</th>
-                                                <th width="5%">#</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
+                                    <div class="table-responsive mb-0 fixed-solution" data-pattern="priority-columns">
+
+                                        <table class="table table-hover table-sm" id="tableProduct">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        <input type="checkbox" onclick="checkAll(this)" class="checkall" id="checkAll">
+                                                    </th>
+                                                    <th>Nama Produk</th>
+                                                    <th>Kategori</th>
+                                                    <th>Harga</th>
+                                                    <th width="5%">#</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -135,7 +180,7 @@
     function loadTableDT()
     {
         tableDT = $("#tableProduct").DataTable({
-            responsive: true,
+            responsive: false,
             processing: true,
             serverSide: true,
             searching: false,
@@ -147,6 +192,7 @@
                 'url': "{{url('produk/data')}}",
                 'type': 'GET',
                 "dataSrc": function (response) {
+                    $("#totalProduk").text(`(${response.recordsFiltered})`);
                     return response.data;
                 },
                 data: function(d){
@@ -178,16 +224,17 @@
                         const url = `{{url('/')}}`
                         let img = ''
                         if(r.gambar == '' || r.gambar == null) {
-                            img = `<img src="data:image/png;base64,${r.imageText}" class="img-thumbnail">`;
+                            img = `<div class="no-image-product" style="background-color:${backgroundColor(Math.floor(Math.random() * 10))}">${r.imageText}</div>`;
                         } else {
-                            img = `<img src="${url}/img/produk-image/${r.gambar}" alt="100" width="100" class="img-thumbnail" data-holder-rendered="true">`;
+                            img = `
+                                <div class="image-product">
+                                    <img src="${url}/img/produk-image/${r.gambar}">
+                                </div>`;
                         }
                         return `<div class="d-flex flex-wrap gap-3 align-items-center">
-                            <div style="max-width:50px; max-height:50px;display:inherit;">
-                            ${img}
-                            </div>
-                            <span>${d}</<span>
-                        </div>`;
+                                    ${img}
+                                    <span>${d}</<span>
+                                </div>`;
                     }
                 },
                 {
@@ -224,6 +271,23 @@
                 }
             ]
         });
+    }
+
+    function backgroundColor(randomNumber)
+    {
+        switch (randomNumber) {
+            case 1: return '#ff5252';
+            case 2: return '#e040fb';
+            case 3: return '#512da8';
+            case 4: return '#303f9f';
+            case 5: return '#1976d2';
+            case 6: return '#039be5';
+            case 7: return '#00acc1';
+            case 8: return '#00897b';
+            case 8: return '#43a047';
+            case 9: return '#ffeb3b';
+            default: return '#f4511e';
+        }
     }
 
     function kelolaBahanBaku(that, id)

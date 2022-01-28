@@ -30,9 +30,9 @@ class ProdukController extends Controller
         $kategori = $dataKategori->get();
         $outlet = $dataOutlet->get();
 
-        $totalKategori = $dataKategori->count();
-        $totalAddOpt = $dataAddOpt->count();
-        $totalProduk = $dataProduk->count();
+        $totalKategori = $dataKategori->where('id_outlet', session()->get('outlet'))->count();
+        $totalAddOpt = $dataAddOpt->where('id_outlet', session()->get('outlet'))->count();
+        $totalProduk = $dataProduk->where('id_outlet', session()->get('outlet'))->count();
 
         return view('produk.index', compact('kategori', 'outlet', 'totalKategori', 'totalAddOpt', 'totalProduk'));
     }
@@ -47,9 +47,9 @@ class ProdukController extends Controller
             $datatables->addColumn('imageText', function($query) {
                 $arrProdukName = explode(" ", $query->nama_produk);
                 if(count($arrProdukName) > 1) {
-                    return Produk::imageText(substr($arrProdukName[0], 0, 1) . '' . substr($arrProdukName[1], 0, 1));
+                    return substr($arrProdukName[0], 0, 1) . '' . substr($arrProdukName[1], 0, 1);
                 }
-                return Produk::imageText(substr($arrProdukName[0], 0, 1));
+                return substr($arrProdukName[0], 0, 1);
 
             });
             $responseJson = $datatables->make(true)->original;

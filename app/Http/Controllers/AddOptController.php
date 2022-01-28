@@ -21,9 +21,9 @@ class AddOptController extends Controller
         $dataOutlet = DB::table('outlet')->selectRaw("id_outlet as id, nama_outlet as text");
         $outlet = $dataOutlet->get();
 
-        $totalKategori = $dataKategori->count();
-        $totalAddOpt = $dataAddOpt->count();
-        $totalProduk = $dataProduk->count();
+        $totalKategori = $dataKategori->where('id_outlet', session()->get('outlet'))->count();
+        $totalAddOpt = $dataAddOpt->where('id_outlet', session()->get('outlet'))->count();
+        $totalProduk = $dataProduk->where('id_outlet', session()->get('outlet'))->count();
 
         return view('add-opt.index', compact('totalKategori', 'totalAddOpt', 'totalProduk', 'outlet'));
     }
