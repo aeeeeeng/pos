@@ -14,12 +14,6 @@
                 @if (auth()->user()->level == 1)
                     <li class="menu-title" data-key="t-inventori">INVENTORI</li>
                     <li>
-                        <a href="{{ route('kategori.index') }}">
-                            <i data-feather="box"></i>
-                            <span>Kategori</span>
-                        </a>
-                    </li>
-                    <li>
                         <a href="{{ url('produk') }}">
                             <i data-feather="briefcase"></i>
                             <span>Produk</span>
@@ -72,40 +66,40 @@
                     </li>
                     <li>
                         <a href="{{ route('transaksi.index') }}">
-                            <i data-feather="shopping-cart"></i> 
+                            <i data-feather="shopping-cart"></i>
                             <span>Transaksi Jual</span>
                         </a>
                     </li>
                     <li class="menu-title" data-key="t-report">REPORT</li>
                     <li>
                         <a href="{{ route('laporan.index') }}">
-                            <i data-feather="file-text"></i> 
+                            <i data-feather="file-text"></i>
                             <span>Laporan</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('laporan_laba_produk.index') }}">
-                            <i data-feather="file-text"></i> 
+                            <i data-feather="file-text"></i>
                             <span>Laporan Penjualan</span>
                         </a>
                     </li>
                     <li class="menu-title" data-key="t-system">SYSTEM</li>
                     <li>
                         <a href="{{ route('user.index') }}">
-                            <i data-feather="users"></i> 
+                            <i data-feather="users"></i>
                             <span>User</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route("setting.index") }}">
-                            <i data-feather="settings"></i> 
+                            <i data-feather="settings"></i>
                             <span>Pengaturan</span>
                         </a>
                     </li>
                 @else
                     <li>
                         <a href="{{ route('transaksi.index') }}">
-                            <i data-feather="shopping-cart"></i> 
+                            <i data-feather="shopping-cart"></i>
                             <span>Transaksi Jual</span>
                         </a>
                     </li>
