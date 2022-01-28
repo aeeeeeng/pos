@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Library\UniqueCode;
 use Illuminate\Http\Request;
 use App\Models\Supplier;
 
@@ -14,7 +15,7 @@ class SupplierController extends Controller
 
     public function data()
     {
-        $supplier = Supplier::orderBy('id_supplier', 'desc')->get();
+        $supplier = Supplier::orderBy('id_supplier', 'desc')->where('status', '1')->get();
 
         return datatables()
             ->of($supplier)
@@ -49,7 +50,11 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        $supplier = Supplier::create($request->all());
+        $payloads = $request->all();
+        $payloads['kode_supplier'] = (new UniqueCode(Supplier::class, 'kode_supplier', 'SUP-', 9, true))->get();
+        unset($payloads['_token']);
+        unset($payloads['_method']);
+        $supplier = Supplier::insert($payloads);
 
         return response()->json('Data berhasil disimpan', 200);
     }

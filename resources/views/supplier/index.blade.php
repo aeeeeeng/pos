@@ -20,6 +20,7 @@
                 <table class="table table-sm table-stiped table-bordered">
                     <thead>
                         <th>No</th>
+                        <th>Kode</th>
                         <th>Nama</th>
                         <th>Telepon</th>
                         <th>Alamat</th>
@@ -49,6 +50,7 @@
             },
             columns: [
                 {data: 'DT_RowIndex', searchable: false, sortable: false},
+                {data: 'kode_supplier'},
                 {data: 'nama'},
                 {data: 'telepon'},
                 {data: 'alamat'},
