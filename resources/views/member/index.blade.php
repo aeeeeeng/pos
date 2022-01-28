@@ -135,8 +135,8 @@
     }
 
     function cetakMember(url) {
-        if ($('input:checked').length < 1) {
-            alert('Pilih data yang akan dicetak');
+        if ($('input.member-check:checked').length < 1) {
+            showErrorAlert('Pilih member terlebih dahulu');
             return;
         } else {
             $('.form-member')

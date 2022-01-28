@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Library\UniqueCode;
 use App\Models\Member;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -22,14 +23,14 @@ class MemberController extends Controller
 
     public function data()
     {
-        $member = Member::orderBy('kode_member')->get();
+        $member = Member::orderBy('kode_member')->where('status', '1')->get();
 
         return datatables()
             ->of($member)
             ->addIndexColumn()
             ->addColumn('select_all', function ($produk) {
                 return '
-                    <input type="checkbox" name="id_member[]" value="'. $produk->id_member .'">
+                    <input type="checkbox" class="member-check" name="id_member[]" value="'. $produk->id_member .'">
                 ';
             })
             ->addColumn('kode_member', function ($member) {
@@ -65,11 +66,11 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        $member = Member::latest()->first() ?? new Member();
-        $kode_member = (int) $member->kode_member +1;
+
+        $kode_member = (new UniqueCode(Member::class, 'kode_member', 'MBR-', 9, true))->get();
 
         $member = new Member();
-        $member->kode_member = tambah_nol_didepan($kode_member, 5);
+        $member->kode_member = $kode_member;
         $member->nama = $request->nama;
         $member->telepon = $request->telepon;
         $member->alamat = $request->alamat;
@@ -124,9 +125,7 @@ class MemberController extends Controller
      */
     public function destroy($id)
     {
-        $member = Member::find($id);
-        $member->delete();
-
+        $member = Member::where('id_member', $id)->update(['status' => '0']);
         return response(null, 204);
     }
 
