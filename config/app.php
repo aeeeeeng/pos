@@ -2,6 +2,12 @@
 
 return [
 
+    'status_pembelian' => [
+        ['id' => 'DRAFT', 'nama' => 'Dipesan'],
+        ['id' => 'DONE', 'nama' => 'Diterima'],
+        ['id' => 'CANCEL', 'nama' => 'Dibatalkan']
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

@@ -12,6 +12,7 @@ use App\Models\StokProduk;
 use App\Models\Supplier;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\TryCatch;
 
@@ -22,11 +23,62 @@ class PembelianDetailController extends Controller
         $id_supplier = base64_decode($request->get('data'));
         $supplier = Supplier::find($id_supplier);
 
+        $outlet = DB::table('outlet')->selectRaw("id_outlet as id, nama_outlet as text")->get();
+
         if (! $supplier) {
             abort(404);
         }
 
-        return view('pembelian_detail.index', compact('supplier'));
+        return view('pembelian_detail.index', compact('supplier', 'outlet'));
+    }
+
+    public function getDataProduct(Request $request)
+    {
+        $q = $request->get('q');
+        $id_outlet = $request->get('id_outlet');
+
+        $sql = DB::table('produk as p')->selectRaw('
+                                                p.id_produk as id,
+                                                p.id_produk,
+                                                p.id_kategori,
+                                                p.kode_produk, p.nama_produk,
+                                                p.merk,
+                                                p.harga_jual, p.diskon,
+                                                p.created_at, p.updated_at,
+                                                u.nama_uom,
+                                                IFNULL(round(sum(nilai), 2),0) as stok,
+                                                IFNULL(round(sum(sub_total) / sum(nilai),2),0) as hpp')
+        ->leftJoin('uom as u', 'u.id_uom', '=', 'p.id_uom')
+        ->leftJoin('stok_produk_detail as spd', 'p.id_produk', '=', 'spd.id_produk')
+        ->where('p.id_outlet', $id_outlet)
+        ->where('p.kelola_stok', '1')
+        ->where(function($query) use($q) {
+            $query->where('p.kode_produk', 'like', '%'.strtoupper($q).'%');
+            $query->orWhere('p.nama_produk', 'like', '%'.$q.'%');
+        })
+        ->groupBy('p.id_produk', 'p.id_kategori',
+                'p.kode_produk', 'p.nama_produk',
+                'p.merk', 'u.nama_uom',
+                'p.harga_jual', 'p.diskon', 'p.created_at', 'p.updated_at');
+
+        $result['incomplete_results'] = true;
+        $result['total_count'] = $sql->count();
+        $result['items'] = $sql->get();
+        return response()->json($result);
+    }
+
+    public function generateNoPo()
+    {
+        $status = 200;
+        $responseJson = [];
+        try {
+            $lastNoPo = (new UniqueCode(Pembelian::class, 'no_pembelian', 'NPO-YNTKTS-', 9, true))->get();
+            $responseJson = Response::success('OK', compact('lastNoPo'));
+        } catch (Exception $e) {
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
     }
 
     public function data($id)
@@ -75,7 +127,7 @@ class PembelianDetailController extends Controller
     {
         $status = 200;
         $responseJson = [];
-        
+
         DB::beginTransaction();
         try {
             $payloads = $request->all();
@@ -84,12 +136,18 @@ class PembelianDetailController extends Controller
             $resultStok = [];
 
             $header['id_supplier'] = $payloads['id_supplier'];
+            $header['id_outlet'] = $payloads['id_outlet'];
+            $header['kode_pembelian'] = (new UniqueCode(Pembelian::class, 'kode_pembelian', 'PO-', 9, true))->get();
+            $header['no_pembelian'] = $payloads['no_pembelian'];
+            $header['tanggal_pembelian'] = Carbon::createFromFormat('d/m/Y', $payloads['tanggal_pembelian'])->format('Y-m-d');
             $header['total_item'] = count($payloads['dataDetail']);
             $header['total_harga'] = $payloads['grandTotal'];
-            $header['diskon'] = $payloads['diskon'];
-            $header['bayar'] = $payloads['totalBayar'];
+            $header['catatan'] = $payloads['catatan'];
+            $header['status'] = ($payloads['terima'] == true) ? 'DONE' : 'DRAFT';
+
             $header['created_at'] = date("Y-m-d H:i:s");
-            $header['updated_at'] = date("Y-m-d H:i:s");
+            $header['created_by'] = auth()->user()->name;
+
             $id_pembelian = DB::table('pembelian')->insertGetId($header);
             foreach ($payloads['dataDetail'] as $item) {
                 $detail = [];
@@ -99,7 +157,6 @@ class PembelianDetailController extends Controller
                 $detail['jumlah'] = $item['qty_order'];
                 $detail['subtotal'] = $item['subtotal'];
                 $detail['created_at'] = date("Y-m-d H:i:s");
-                $detail['updated_at'] = date("Y-m-d H:i:s");
                 $resultStok[] = [
                     'id_produk' => $item['id_produk'],
                     'kode_produk' => $item['kode_produk'],
@@ -109,10 +166,11 @@ class PembelianDetailController extends Controller
                     'stok_sekarang' => floatval(StokProduk::getLastStockProduct($item['id_produk'])) + floatval($detail['jumlah'])
                 ];
                 $details[] = $detail;
-                self::updateStock($item['id_produk'], $item['qty_order']);
             }
             DB::table('pembelian_detail')->insert($details);
-            self::storeStock($details);
+            if($payloads['terima'] == true) {
+                self::storeStock($payloads['id_outlet'], $details);
+            }
             $responseJson = Response::success('Berhasil menyimpan transaksi', $resultStok);
             DB::commit();
         } catch (Exception $e) {
@@ -123,15 +181,15 @@ class PembelianDetailController extends Controller
         return response()->json($responseJson, $status);
     }
 
-    private static function storeStock($detail)
+    private static function storeStock($idOutlet, $detail)
     {
         try {
             $stokProduk = [];
-            $stokProduk['id_gudang'] = Setting::first()->gudang_prioritas;
+            $stokProduk['id_outlet'] = $idOutlet;
             $stokProduk['tanggal'] = date("Y-m-d");
             $stokProduk['jenis'] = 'PEMBELIAN';
             $stokProduk['reference'] = 'STOKPEMBELIAN';
-            $stokProduk['kode'] = (new UniqueCode(StokProduk::class, 'kode', 'ST-B-', 4))->get();;
+            $stokProduk['kode'] = (new UniqueCode(StokProduk::class, 'kode', 'ST-B-', 9))->get();;
             $stokProduk['created_at'] = date("Y-m-d H:i:s");
             $stokProduk['created_by'] = auth()->user()->name;
             $id_reference = DB::table('stok_produk')->insertGetId($stokProduk);

@@ -29,11 +29,11 @@ class PenjualanDetailController extends Controller
     {
         $q = $request->get('q');
         $sql = DB::table('produk as p')->selectRaw('
-                                                p.id_produk as id, 
+                                                p.id_produk as id,
                                                 p.id_produk,
-                                                p.id_kategori, 
-                                                p.kode_produk, p.nama_produk, 
-                                                p.merk, p.harga_beli, 
+                                                p.id_kategori,
+                                                p.kode_produk, p.nama_produk,
+                                                p.merk,
                                                 p.harga_jual, p.diskon,
                                                 p.created_at, p.updated_at,
                                                 IFNULL(sum(nilai),0) as stok,
@@ -41,9 +41,9 @@ class PenjualanDetailController extends Controller
         ->leftJoin('stok_produk_detail as spd', 'p.id_produk', '=', 'spd.id_produk')
         ->where('p.kode_produk', 'like', '%'.strtoupper($q).'%')
         ->orWhere('p.nama_produk', 'like', '%'.$q.'%')
-        ->groupBy('p.id_produk', 'p.id_kategori', 
-                'p.kode_produk', 'p.nama_produk', 
-                'p.merk', 'p.harga_beli', 
+        ->groupBy('p.id_produk', 'p.id_kategori',
+                'p.kode_produk', 'p.nama_produk',
+                'p.merk',
                 'p.harga_jual', 'p.diskon', 'p.created_at', 'p.updated_at');
 
         $result['incomplete_results'] = true;
@@ -129,7 +129,7 @@ class PenjualanDetailController extends Controller
             throw new Exception($e->getMessage());
         }
     }
-    
+
 
     private static function updateStock($idProduct, $qty)
     {

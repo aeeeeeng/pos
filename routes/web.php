@@ -55,6 +55,8 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/pembelian/data', [PembelianController::class, 'data'])->name('pembelian.data');
         Route::get('/pembelian/{id}/create', [PembelianController::class, 'create'])->name('pembelian.create');
+        Route::get('/pembelian/ganti-status', [PembelianController::class, 'updateStatus']);
+        Route::post('/pembelian/simpan-status', [PembelianController::class, 'storeStatus']);
         Route::resource('/pembelian', PembelianController::class)
             ->except('create');
 
@@ -67,6 +69,8 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/pembelian_detail/price-adjustment', [PembelianDetailController::class, 'getDataProductAdj'])->name('transaksi.price_adjustment');
         Route::post('/pembelian_detail/store-adjustment', [PembelianDetailController::class, 'storeAdjustment'])->name('transaksi.price_adjustment');
+        Route::get('/pembelian_detail/generate-no-po', [PembelianDetailController::class, 'generateNoPo']);
+        Route::get('/pembelian_detail/get-data-product', [PembelianDetailController::class, 'getDataProduct']);
 
         Route::get('/penjualan/data', [PenjualanController::class, 'data'])->name('penjualan.data');
         Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');

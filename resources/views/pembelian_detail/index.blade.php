@@ -26,6 +26,12 @@
         height: 35px;
     }
 
+    .absolute-center {
+        position: absolute;
+        top: 40%;
+        right: 30%;
+    }
+
     @media(max-width: 768px) {
         .tampil-bayar {
             font-size: 20px;
@@ -71,20 +77,52 @@
                             </tr>
                         </table>
                     </div>
-                    <div class="col-md-6">
-                        <div class="float-end">
-                            <button class="btn btn-flat btn-md btn-warning" onclick="priceAdjustment()"> <i class="fa fa-coins"></i> &nbsp; Penyesuaian Harga Produk</button>
-                        </div>
-                        {{-- <div class="pull-right">
-                            <span>Jangan Lupa, sesuaikan harga terlebih dahulu sebelum melakukan transaksi pembelian</span>
-                        </div> --}}
-                    </div>
                 </div>
                 <hr>
                 <div class="row">
                     <div class="col-md-6">
+                        <div class="form-group ">
+                            <label for="id_outlet">Outlet <span class="text-danger">*</span></label>
+                            <select name="id_outlet" id="id_outlet" class="form-control form-control-sm">
+                                <option value="">Pilih Outlet</option>
+                                @foreach ($outlet as $item)
+                                    <option value="{{$item->id}}" {{$item->id == session()->get('outlet') ? 'selected' : ''}}>{{$item->text}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group ">
+                            <label for="no_pembelian">No. PO <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm" id="no_pembelian" name="no_pembelian" placeholder="Isi Nomor PO...">
+                            <div class="d-flex flex-wrap gap-3 mt-1">
+                                <span>Gunakan No. PO Sistem</span>
+                                <div class="">
+                                    <input type="checkbox" id="autoNoPo" switch="bool" onchange="generateNoPo(this)" />
+                                    <label for="autoNoPo" data-on-label="Ya" data-off-label="Tidak" style="min-width: 65px;"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group ">
+                            <label for="tanggal_pembelian">Tanggal <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm" id="tanggal_pembelian" name="tanggal_pembelian" placeholder="Klik untuk memilih tanggal...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group ">
+                            <label for="tanggal_pembelian">Catatan</label>
+                            <textarea name="catatan" id="catatan" class="form-control form-control-sm" cols="30" rows="5" placeholder="Isi Keterangan atau Catatan..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-12">
                         <div class="mb-2 form-group">
-                            <label for="kode_produk">Cari Produk Berdasar Kode / Nama Produk -> </label>
                             <select class="pilih-product select2 form-control form-control-sm"></select>
                         </div>
                     </div>
@@ -92,7 +130,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="table-responsive">
-                            <table class="table table-sm table-stiped table-bordered" id="tablePembelian">
+                            <table class="table table-sm table-hover" id="tablePembelian">
                                 <thead>
                                     <th width="5%">No</th>
                                     <th>Kode</th>
@@ -101,6 +139,7 @@
                                     <th class="text-end">Stok Akhir</th>
                                     <th class="text-end">Harga</th>
                                     <th class="text-end">Jumlah</th>
+                                    <th class="text-start">Satuan</th>
                                     <th class="text-end">Subtotal</th>
                                     <th <i class="fa fa-cog"></i></th>
                                 </thead>
@@ -116,38 +155,17 @@
 
                 <hr>
                 <div class="row">
-                    <div class="col-lg-5">
+                    <div class="col-lg-6">
                         <div class="tampil-bayar bg-primary text-white"></div>
                     </div>
-                    <div class="col-lg-7">
-
-                            <div class="form-group mb-2 row">
-                                <label for="totalrp" class="col-lg-2 control-label">Total</label>
-                                <div class="col-lg-8">
-                                    <input type="text" id="totalrp" class="form-control form-control-sm" readonly>
-                                </div>
-                            </div>
-                            <div class="form-group mb-2 row">
-                                <label for="diskon" class="col-lg-2 control-label">Diskon</label>
-                                <div class="col-lg-8">
-                                    <input type="number" name="diskon" id="diskon" class="form-control form-control-sm" value="" onkeyup="updateDiskon(this)" onchange="updateDiskon(this)">
-                                </div>
-                            </div>
-                            <div class="form-group mb-2 row">
-                                <label for="bayar" class="col-lg-2 control-label">Bayar</label>
-                                <div class="col-lg-8">
-                                    <input type="number" id="bayarrp" class="form-control form-control-sm">
-                                </div>
-                            </div>
-
+                    <div class="col-lg-6">
+                        <div class="d-flex flex-wrap gap-3 align-items-center text-center absolute-center">
+                            <button type="button" onclick="back(this)" class="btn btn-secondary btn-sm btn-flat float-end btn-simpan"><i class="fa fa-arrow-left"></i> &nbsp; Kembali</button>
+                            <button type="submit" onclick="simpan(this)" class="btn btn-primary btn-sm btn-flat float-end btn-simpan"><i class="fa fa-save"></i> &nbsp; Simpan Transaksi</button>
+                            <button type="submit" onclick="simpan(this, true)" class="btn btn-success btn-sm btn-flat float-end btn-simpan"><i class="fa fa-save"></i> &nbsp; Simpan & Terima Barang</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="card-footer">
-                <center>
-                    <button type="submit" onclick="simpan(this)" class="btn btn-primary btn-sm btn-flat pull-right btn-simpan"><i class="fa fa-floppy-o"></i> &nbsp; Simpan Transaksi</button>
-                </center>
             </div>
         </div>
     </div>
@@ -165,8 +183,12 @@
 
     $(document).ready(function(){
         document.body.setAttribute("data-sidebar-size", "sm");
-        $("#diskon").val(diskon);
-        $("#totalrp").val(grandTotal);
+
+        var f3 = flatpickr(document.getElementById('tanggal_pembelian'), {
+            dateFormat: "d/m/Y"
+        });
+
+        $("#id_outlet").select2({ width: '100%'});
     });
 
     $(".pilih-product").select2({
@@ -174,13 +196,14 @@
         placeholder: "Pilih Barang Melalui Kode/Nama",
         allowClear: true,
         ajax: {
-            url: "{{url('transaksi/get-product')}}",
+            url: "{{url('pembelian_detail/get-data-product')}}",
             dataType: 'json',
             delay: 250,
             data: function (params) {
                 return {
                     q: params.term, // search term
-                    page: params.page
+                    page: params.page,
+                    id_outlet: $("#id_outlet").val()
                 };
             },
             processResults: function (data, params) {
@@ -200,6 +223,12 @@
         templateSelection: formatResultSelection
     });
 
+    $(document).on('keyup', '.numbersOnly', function () {
+        if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+             this.value = this.value.replace(/[^0-9\.]/g, '');
+        }
+    });
+
     $('.pilih-product').on('select2:select', function (e) {
         var data = e.params.data;
         storeOptionProduct(data);
@@ -208,6 +237,23 @@
         sumGrandTotal();
         sumTotalBayar();
     });
+
+    function generateNoPo(that)
+    {
+        const isChecked = $(that).is(':checked');
+        if(isChecked) {
+            $.ajax({
+                url: `{{url('pembelian_detail/generate-no-po')}}`,
+            }).done(response => {
+                $("#no_pembelian").val(response.data.lastNoPo).prop('disabled', true);
+            }).fail(error => {
+                const respJson = $.parseJSON(error.responseText);
+                showErrorAlert(respJson.message);
+            });
+        } else {
+            $("#no_pembelian").val('').prop('disabled', false);
+        }
+    }
 
     function priceAdjustment()
     {
@@ -241,7 +287,7 @@
             showErrorAlert('Quantity tidak boleh kurang dari 0');
             $(that).val(0);
         }
-        dataDetail[indexEdit].qty_order = parseInt($(that).val());
+        dataDetail[indexEdit].qty_order = parseFloat($(that).val());
         sumSubTotal(that, id);
         sumGrandTotal();
         sumTotalBayar();
@@ -254,7 +300,7 @@
             showErrorAlert('Harga Beli tidak boleh kurang dari 0');
             $(that).val(0);
         }
-        dataDetail[indexEdit].harga_beli = parseInt($(that).val());
+        dataDetail[indexEdit].harga_beli = parseFloat($(that).val());
         sumSubTotal(that, id);
         sumGrandTotal();
         sumTotalBayar();
@@ -308,11 +354,12 @@
                 <td class="text-end">${formatMoney(item.hpp)}</td>
                 <td class="text-end">${item.stok}</td>
                 <td class="text-end">
-                    <input type="number" min="0" class="form-control form-control-sm text-end" value="${item.harga_beli}" onkeyup="changeHargaBeli(this, '${item.id}')" onchange="changeHargaBeli(this, '${item.id}')">
+                    <input type="text" min="0" class="form-control form-control-sm text-end numbersOnly" value="${item.harga_beli}" onkeyup="changeHargaBeli(this, '${item.id}')" onchange="changeHargaBeli(this, '${item.id}')">
                 </td>
                 <td class="text-end">
-                    <input type="number" min="0" class="form-control form-control-sm text-end" value="${item.qty_order}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
+                    <input type="text" min="0" class="form-control form-control-sm text-end numbersOnly" value="${item.qty_order}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
                 </td>
+                <td class="text-start">${item.nama_uom == '' ? '-' : item.nama_uom}</td>
                 <td class="text-end subtotal">${formatMoney(item.subtotal)}</td>
                 <td><button type="button" class="btn btn-flat btn-danger btn-sm" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
             </tr>`).join();
@@ -363,16 +410,23 @@
      return item.text;
     }
 
-    function simpan(that)
+    function simpan(that, terima = false)
     {
         event.preventDefault();
-        const payloads = {dataDetail, grandTotal, totalBayar, diskon, id_supplier};
-        if(dataDetail.length == 0) {
-            showErrorAlert('Produk harus berisi minimal 1 baris');
+        const id_outlet = $("#id_outlet").val();
+        const no_pembelian = $("#no_pembelian").val();
+        const tanggal_pembelian = $("#tanggal_pembelian").val();
+        const catatan = $("#catatan").val();
+
+        const payloads = {id_outlet, no_pembelian, tanggal_pembelian, catatan, dataDetail, grandTotal, id_supplier, terima};
+
+        if(id_outlet == '' || no_pembelian == '' || tanggal_pembelian == '') {
+            showErrorAlert('tanda berwarna bintang merah, wajib diisi');
             return;
         }
-        if(totalBayar < 0) {
-            showErrorAlert('Total bayar tidak valid');
+
+        if(dataDetail.length == 0) {
+            showErrorAlert('Produk harus berisi minimal 1 baris');
             return;
         }
 
@@ -383,56 +437,27 @@
             contentType: "application/json",
             data: JSON.stringify(payloads),
             beforeSend: () => {
-                blockLoading();
+                buttonLoading($(that));
             }
         }).done(response => {
             showSuccessAlert(response.message);
-            unBlockLoading();
-            const id_penjualan = response.data.id_penjualan;
-            const row = response.data.map(item => {
-                return `<tr>
-                    <td><small class="badge bg-primary">${item.kode_produk}</small></td>
-                    <td>${item.nama_produk}</td>
-                    <td class="text-end" ${parseFloat(item.stok_lama) < 0 ? `style="background-color:red;color:#fff;"` : ``}>${item.stok_lama}</td>
-                    <td class="text-end">${item.stok_tambah}</td>
-                    <td class="text-end">${item.stok_sekarang}</td>
-                </tr>`;
-            }).join();
-            const table = `<table class="table table-sm table-hover table-bordered" style="margin-top:10px;">
-            <thead>
-                <tr>
-                    <th>Kode Produk</th>
-                    <th>Nama Produk</th>
-                    <th class="text-end">Stok Lama</th>
-                    <th class="text-end">Stok Tambah</th>
-                    <th class="text-end">Stok Sekarang</th>
-                </tr>
-            </thead>
-            <tbody>${row}</tbody>
-            </table>`;
-            bootbox.dialog({
-                closeButton: false,
-                size: "large",
-                title: 'Info',
-                message: `
-                    <div class="alert alert-success alert-dismissible">
-                        <i class="fa fa-check icon"></i>
-                        Data Transaksi Pembelian Telah Selesai.
-                    </div>
-                    <hr>
-                    <span style="font-size:15px; font-weight:bold;">Informasi Perubahan Stok</span>
-                    ${table}
-                    <center>
-                        <a href="{{url('pembelian')}}" class="btn btn-sm btn-primary btn-flat">Kembali</a>
-                    </center>
-                `
-            });
+            setTimeout(() => {
+                window.location.href = `{{url('pembelian')}}`;
+            }, 500);
         }).fail(error => {
             const respJson = $.parseJSON(error.responseText);
             showErrorAlert(respJson.message);
-            unBlockLoading();
-        });
+        }).always(() => {
+            setTimeout(() => {
+                buttonUnloading($(that));
+            }, 500);
+        })
 
+    }
+
+    function back(that)
+    {
+        window.location.href = `{{url('pembelian')}}`;
     }
 
 </script>

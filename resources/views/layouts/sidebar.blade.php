@@ -55,7 +55,7 @@
                     <li>
                         <a href="{{ route('pembelian.index') }}">
                             <i data-feather="download"></i>
-                            <span>Pembelian</span>
+                            <span>Pesanan Pembelian</span>
                         </a>
                     </li>
                     <li>
