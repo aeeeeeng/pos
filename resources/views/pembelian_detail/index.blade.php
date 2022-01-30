@@ -29,7 +29,7 @@
     .absolute-center {
         position: absolute;
         top: 40%;
-        right: 30%;
+        right: 10%;
     }
 
     @media(max-width: 768px) {

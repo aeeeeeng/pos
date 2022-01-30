@@ -80,8 +80,8 @@ class PembelianController extends Controller
                 DB::table('pembelian')->where('id_pembelian', $id)->update(['status' => 'DONE', 'updated_at' => date('Y-m-d H:i:s'), 'updated_by' => auth()->user()->name ]);
                 $resultText = 'Berhasil menyimpan penerimaan & stok berhasil disimpan';
             } elseif($jenis) {
-                DB::table('pembelian')->where('id_pembelian', $id)->update(['status' => 'CANCEL', 'updated_at' => date('Y-m-d H:i:s'), 'updated_by' => auth()->user()->name ]);
-                DB::table('pembelian_detail')->where('id_pembelian', $id)->update(['jumlah' => 0]);
+                DB::table('pembelian')->where('id_pembelian', $id)->update(['status' => 'CANCEL', 'total_harga' => 0, 'updated_at' => date('Y-m-d H:i:s'), 'updated_by' => auth()->user()->name ]);
+                DB::table('pembelian_detail')->where('id_pembelian', $id)->update(['jumlah' => 0, 'subtotal' => 0]);
                 $resultText = 'Berhasil membatalkan';
             } else {
                 throw new Exception("Tidak ditemukan paramter simpan");

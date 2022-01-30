@@ -75,8 +75,8 @@
                             <td class="text-start">{{$item->nama_produk}}</td>
                             <td class="text-end {{$item->nilai == 0 ? 'bg-danger text-white' : ''}}">{{$item->nilai}}</td>
                             <td class="text-start">{{$item->nama_uom}}</td>
-                            <td class="text-end">{{format_uang($item->harga)}}</td>
-                            <td class="text-end {{$item->sub_total == 0 ? 'bg-danger text-white' : ''}}">{{format_uang($item->sub_total)}}</td>
+                            <td class="text-end">Rp. {{format_uang($item->harga)}}</td>
+                            <td class="text-end {{$item->sub_total == 0 ? 'bg-danger text-white' : ''}}">Rp. {{format_uang($item->sub_total)}}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -86,7 +86,7 @@
     <hr>
     <div class="row">
         <div class="col-md-6">
-            <h5>Grand Total : <span id="grandTotal">{{format_uang($grandTotal)}}</span></h5>
+            <h5>Grand Total : <span id="grandTotal">Rp. {{format_uang($grandTotal)}}</span></h5>
         </div>
         <div class="col-md-6">
             <div class="float-end">

@@ -56,7 +56,7 @@
                         <td class="text-nowrap text-end {{$item->jumlah == 0 ? 'bg-danger text-white' : ''}} ">{{ $item->jumlah }}</td>
                         <td class="text-nowrap text-start">{{ $item->nama_uom }}</td>
                         <td class="text-nowrap text-end">Rp. {{ format_uang($item->harga_beli) }}</td>
-                        <td class="text-nowrap text-end">Rp. {{ format_uang($item->subtotal) }}</td>
+                        <td class="text-nowrap text-end {{$item->subtotal == 0 ? 'bg-danger text-white' : ''}} ">Rp. {{ format_uang($item->subtotal) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -65,7 +65,10 @@
 </div>
 <hr>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
+        <h5>Grand Total : <span>Rp. {{format_uang($header->total_harga)}}</span></h5>
+    </div>
+    <div class="col-md-6">
             <div class="float-end">
                 @if ($jenis == 'lihat')
                     <button type="button" class="btn btn-flat btn-secondary" onclick="bootbox.hideAll()"> Kembali </button>
