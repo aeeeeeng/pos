@@ -16,14 +16,14 @@ class StokMasukController extends Controller
 {
     public function index()
     {
-        $gudang = Gudang::getAllGudangActive('row');
-        return view('stok-masuk.index', compact('gudang'));
+        $outlet = DB::table('outlet')->get();
+        return view('stok-masuk.index', compact('outlet'));
     }
 
     public function create()
     {
-        $gudang = Gudang::getAllGudangActive('row');
-        return view('stok-masuk.create', compact('gudang'));
+        $outlet = DB::table('outlet')->get();
+        return view('stok-masuk.create', compact('outlet'));
     }
 
     public function getData(Request $request)
@@ -42,6 +42,41 @@ class StokMasukController extends Controller
         return response()->json($responseJson, $status);
     }
 
+    public function getDataProduct(Request $request)
+    {
+        $q = $request->get('q');
+        $id_outlet = $request->get('id_outlet');
+        $sql = DB::table('produk as p')->selectRaw('
+                                                p.id_produk as id,
+                                                p.id_produk,
+                                                p.id_kategori,
+                                                p.kode_produk, p.nama_produk,
+                                                p.merk,
+                                                p.harga_jual, p.diskon,
+                                                p.created_at, p.updated_at,
+                                                u.nama_uom,
+                                                IFNULL(round(sum(nilai), 2),0) as stok,
+                                                IFNULL(round(sum(sub_total) / sum(nilai),2),0) as hpp')
+        ->leftJoin('uom as u', 'u.id_uom', '=', 'p.id_uom')
+        ->leftJoin('stok_produk_detail as spd', 'p.id_produk', '=', 'spd.id_produk')
+        ->where('p.id_outlet', $id_outlet)
+        ->where('p.kelola_stok', '1')
+        ->where('p.status', '1')
+        ->where(function($query) use($q) {
+            $query->where('p.kode_produk', 'like', '%'.strtoupper($q).'%');
+            $query->orWhere('p.nama_produk', 'like', '%'.$q.'%');
+        })
+        ->groupBy('p.id_produk', 'p.id_kategori',
+                'p.kode_produk', 'p.nama_produk',
+                'p.merk', 'u.nama_uom',
+                'p.harga_jual', 'p.diskon', 'p.created_at', 'p.updated_at');
+
+        $result['incomplete_results'] = true;
+        $result['total_count'] = $sql->count();
+        $result['items'] = $sql->get();
+        return response()->json($result);
+    }
+
     public function store(Request $request)
     {
         $status = 200;
@@ -50,12 +85,12 @@ class StokMasukController extends Controller
         try {
             $payloads = $request->all();
             $stokProduk = [];
-            $stokProduk['id_gudang'] = $payloads['id_gudang'];
+            $stokProduk['id_outlet'] = $payloads['id_outlet'];
             $stokProduk['tanggal'] = Carbon::createFromFormat('d/m/Y', $payloads['tanggal'])->format('Y-m-d');
             $stokProduk['catatan'] = $payloads['catatan'];
             $stokProduk['jenis'] = 'MASUK';
             $stokProduk['reference'] = 'STOKMASUK';
-            $stokProduk['kode'] = (new UniqueCode(StokProduk::class, 'kode', 'ST-M-', 4))->get();
+            $stokProduk['kode'] = (new UniqueCode(StokProduk::class, 'kode', 'ST-M-', 9))->get();
             $stokProduk['created_at'] = date("Y-m-d H:i:s");
             $stokProduk['created_by'] = auth()->user()->name;
             $id_reference = DB::table('stok_produk')->insertGetId($stokProduk);

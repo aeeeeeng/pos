@@ -52,6 +52,7 @@ class PembelianDetailController extends Controller
         ->leftJoin('stok_produk_detail as spd', 'p.id_produk', '=', 'spd.id_produk')
         ->where('p.id_outlet', $id_outlet)
         ->where('p.kelola_stok', '1')
+        ->where('p.status', '1')
         ->where(function($query) use($q) {
             $query->where('p.kode_produk', 'like', '%'.strtoupper($q).'%');
             $query->orWhere('p.nama_produk', 'like', '%'.$q.'%');

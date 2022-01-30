@@ -515,8 +515,8 @@
             function labelStatusStok(status)
             {
                 switch (status) {
-                    case 1 : return `<span class="badge bg-success"> AKTIF </span>`;
-                    case 0 : return `<span class="badge bg-danger"> BATAL </span>`;
+                    case 1 : return `<i class="fas fa-check-circle text-success me-3"></i> <span class="badge bg-success"> AKTIF </span>`;
+                    case 0 : return `<i class="fas fa-times-circle text-danger me-3"></i> <span class="badge bg-danger"> DIBATALKAN </span>`;
                     default: return '';
                 }
             }

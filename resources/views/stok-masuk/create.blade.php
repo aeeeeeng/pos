@@ -1,14 +1,16 @@
-<form onsubmit="store(this)" id="formStokMasuk" class="">    
+<form onsubmit="store(this)" id="formStokMasuk" class="">
     <div class="row">
         <div class="col-md-6">
             <div class="form-group mb-2">
-                <label for="id_gudang" class="control-label text-start">Gudang <span class="text-danger">*</span> </label>
-                <select name="id_gudang" id="id_gudang" class="form-control">
-                    <option value="">Pilih Gudang</option>
-                    @foreach ($gudang as $item)
-                        <option value="{{$item->id_gudang}}">{{$item->kode_gudang . ' - ' . $item->nama_gudang}}</option>
+                <label for="id_outlet" class="control-label text-start">Outlet <span class="text-danger">*</span> </label>
+
+                <select name="id_outlet" id="id_outlet" class="form-control form-control-sm">
+                    <option value="">Pilih Outlet</option>
+                    @foreach ($outlet as $item)
+                        <option value="{{$item->id_outlet}}" {{$item->id_outlet == session()->get('outlet') ? 'selected' : ''}} >{{$item->nama_outlet}}</option>
                     @endforeach
                 </select>
+
             </div>
         </div>
         <div class="col-md-6">
@@ -42,6 +44,7 @@
                             <th class="text-start">Kode Produk</th>
                             <th class="text-start" width="30%">Nama Produk</th>
                             <th class="text-end" width="10%">Stok Masuk</th>
+                            <th class="text-start">Satuan</th>
                             <th class="text-end" width="15%">Harga</th>
                             <th class="text-end">Subtotal</th>
                             <th class="text-start">#</th>
@@ -73,12 +76,17 @@
     var dataDetail = [];
 
     $(document).ready(function(){
-        
         var f3 = flatpickr(document.getElementById('tanggal'), {
             dateFormat: "d/m/Y"
         });
+    });
 
-        $("#id_gudang").select2({ width: '100%', dropdownParent: $('.modal') });
+    $("#id_outlet").select2({ width: '100%', dropdownParent: $('.modal') });
+
+    $(document).on('keyup', '.numbersOnly', function () {
+        if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+             this.value = this.value.replace(/[^0-9\.]/g, '');
+        }
     });
 
     $(".pilih-product-adjustment").select2({
@@ -87,12 +95,13 @@
         allowClear: true,
         width: '100%',
         ajax: {
-            url: "{{url('transaksi/get-product')}}",
+            url: "{{url('persediaan/stok-masuk/get-data-produk')}}",
             dataType: 'json',
             delay: 250,
             data: function (params) {
                 return {
                     q: params.term, // search term
+                    id_outlet: $("#id_outlet").val(),
                     page: params.page
                 };
             },
@@ -124,14 +133,14 @@
     function store(that)
     {
         event.preventDefault();
-        
+
         const form = $("#formStokMasuk");
 
-        const id_gudang = $("#id_gudang").val();
+        const id_outlet = $("#id_outlet").val();
         const tanggal = $("#tanggal").val();
         const catatan = $("#catatan").val();
 
-        if(id_gudang == '' || id_gudang == null) {
+        if(id_outlet == '' || id_outlet == null) {
             showErrorAlert('Gudang harus diisi');
             return;
         }
@@ -147,7 +156,7 @@
             showErrorAlert('Grand total tidak valid');
             return;
         }
-        const payloads = {dataDetail, id_gudang, tanggal, catatan};
+        const payloads = {dataDetail, id_outlet, tanggal, catatan};
         $.ajax({
             url: "{{url('persediaan/stok-masuk/store')}}" ,
             type: "POST",
@@ -186,7 +195,7 @@
         }
         sumGrandTotal();
     }
-    
+
 
     function sumSubTotal(that, id)
     {
@@ -215,10 +224,11 @@
                 <td><small class="badge bg-primary">${item.kode_produk}</small></td>
                 <td>${item.nama_produk}</td>
                 <td class="text-end">
-                    <input type="number" min="0" class="form-control form-control-sm text-end" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
+                    <input type="text" min="0" class="form-control form-control-sm text-end numbersOnly" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
                 </td>
+                <td class="text-start">${item.nama_uom}</td>
                 <td class="text-end">
-                    <input type="number" min="0" class="form-control form-control-sm text-end" value="${item.harga_beli}" onkeyup="changeHargaBeli(this, '${item.id}')" onchange="changeHargaBeli(this, '${item.id}')">
+                    <input type="text" min="0" class="form-control form-control-sm text-end numbersOnly" value="${item.harga_beli}" onkeyup="changeHargaBeli(this, '${item.id}')" onchange="changeHargaBeli(this, '${item.id}')">
                 </td>
                 <td class="text-end subtotal">${formatMoney(item.subtotal)}</td>
                 <td><button type="button" class="btn btn-flat btn-danger btn-sm" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
@@ -233,8 +243,8 @@
         if($(that).val() < 1 && $(that).val() != '') {
             showErrorAlert('Quantity tidak boleh kurang dari 0');
             $(that).val(1);
-        } 
-        dataDetail[indexEdit].qty_stok = parseInt($(that).val());
+        }
+        dataDetail[indexEdit].qty_stok = parseFloat($(that).val());
         sumSubTotal(that, id);
     }
 
@@ -244,8 +254,8 @@
         if($(that).val() < 1 && $(that).val() != '') {
             showErrorAlert('Harga tidak boleh kurang dari 0');
             $(that).val(1);
-        } 
-        dataDetail[indexEdit].harga_beli = parseInt($(that).val());
+        }
+        dataDetail[indexEdit].harga_beli = parseFloat($(that).val());
         sumSubTotal(that, id);
     }
 

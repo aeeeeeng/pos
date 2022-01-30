@@ -183,6 +183,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/', [StokMasukController::class, 'index']);
             Route::get('create', [StokMasukController::class, 'create']);
             Route::get('get-data', [StokMasukController::class, 'getData']);
+            Route::get('get-data-produk', [StokMasukController::class, 'getDataProduct']);
             Route::get('detail/{id}', [StokMasukController::class, 'showDetail']);
             Route::post('store', [StokMasukController::class, 'store']);
             Route::post('cancel/{id}', [StokMasukController::class, 'cancel']);

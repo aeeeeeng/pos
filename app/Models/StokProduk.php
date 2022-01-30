@@ -33,18 +33,24 @@ class StokProduk extends Model
     {
         try {
             $stokMasuk = DB::table('stok_produk as sp')
-                         ->join('gudang as g', function($join) {
-                             $join->on('sp.id_gudang', '=', 'g.id_gudang');
-                             $join->where('g.status', '1');
-                         })
-                         ->selectRaw("sp.*, g.nama_gudang, g.kode_gudang")
+                         ->leftJoin('outlet as o', 'sp.id_outlet', '=', 'o.id_outlet')
+                         ->selectRaw("sp.*, o.nama_outlet")
                          ->where('sp.jenis', 'MASUK');
-            if(isset($payloads['gudang'])) {
-                $stokMasuk->where('sp.id_gudang', $payloads['gudang']);
+
+            if(isset($payloads['id_outlet'])) {
+                $stokMasuk->where('sp.id_outlet', $payloads['id_outlet']);
             }
 
             if(isset($payloads['status'])) {
                 $stokMasuk->where('sp.status', $payloads['status']);
+            }
+
+            if(isset($payloads['search'])) {
+                $search = $payloads['search'];
+                $stokMasuk->where(function($query) use($search){
+                    $query->where('sp.kode', 'like', '%' . $search . '%');
+                    $query->orWhere('sp.catatan', 'like', '%' . $search . '%');
+                });
             }
 
             if(isset($payloads['dateStart']) && isset($payloads['dateEnd'])) {
@@ -140,10 +146,12 @@ class StokProduk extends Model
     public static function showDetailAllJenis($id)
     {
         try {
-            $header = DB::table('stok_produk as sp')->join('gudang as g', 'sp.id_gudang', '=', 'g.id_gudang')
+            $header = DB::table('stok_produk as sp')->join('outlet as o', 'o.id_outlet', '=', 'sp.id_outlet')
                       ->where('id_stok_produk', $id)
-                      ->selectRaw('sp.*, g.nama_gudang, g.kode_gudang')->first();
-            $details = DB::table('stok_produk_detail as spd')->join('produk as p', 'spd.id_produk', '=', 'p.id_produk')
+                      ->selectRaw('sp.*, o.nama_outlet')->first();
+            $details = DB::table('stok_produk_detail as spd')
+                       ->join('produk as p', 'spd.id_produk', '=', 'p.id_produk')
+                       ->leftJoin('uom as u', 'u.id_uom', '=', 'p.id_uom')
                        ->where('spd.id_reference', $id)->where('spd.sumber', 'stok_produk')->get();
             $grandTotal = $details->reduce(function($prev, $next){
                 return $prev + $next->sub_total;
@@ -167,7 +175,7 @@ class StokProduk extends Model
             $details = DB::table('stok_produk_detail as spd')
                        ->selectRaw("
                             p.kode_produk,
-                            p.nama_produk, 
+                            p.nama_produk,
                             sum(subSpd.jumlah_barang_sistem) as jumlah_barang_sistem,
                             sum(subSpd.jumlah_barang_sistem) + spd.nilai  as jumlah_barang_aktual,
                             spd.nilai as selisih,
@@ -196,5 +204,5 @@ class StokProduk extends Model
             throw new Exception($e->getMessage());
         }
     }
-    
+
 }

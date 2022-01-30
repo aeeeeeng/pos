@@ -153,7 +153,10 @@
                 {
                     data: 'kode_pembelian',
                     name: 'p.kode_pembelian',
-                    className: "text-nowrap text-start"
+                    className: "text-nowrap text-center",
+                    render: function(d,t,r) {
+                        return `<span style="cursor: pointer;" class="badge bg-primary">${d}</span>`;
+                    }
                 },
                 {
                     data: 'nama_supplier',
@@ -163,7 +166,10 @@
                 {
                     data: 'no_pembelian',
                     name: 'p.no_pembelian',
-                    className: "text-nowrap text-start"
+                    className: "text-nowrap text-center",
+                    render: function(d,t,r) {
+                        return `<span style="cursor: pointer;" class="badge bg-primary">${d}</span>`;
+                    }
                 },
                 {
                     data: 'tanggal_pembelian',
