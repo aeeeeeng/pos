@@ -45,16 +45,16 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="tanggal">Range Tanggal</label>
-                            <input type="text" class="form-control form-control-sm" id="tanggalFilter" name="tanggal">
+                            <input type="text" class="form-control form-control-sm" id="tanggalFilter" name="tanggal" onchange="filterTableStokKeluarDT()" placeholder="Klik untuk memilih tanggal">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="tanggal">Gudang</label>
-                            <select name="gudang" id="gudang" class="form-control form-control-sm">
-                                <option value="">Semua Gudang</option>
-                                @foreach ($gudang as $item)
-                                    <option value="{{$item->id_gudang}}">{{$item->kode_gudang . ' - ' . $item->nama_gudang}}</option>
+                            <label for="tanggal">Outlet</label>
+                            <select name="outlet" id="outlet" class="form-control" onchange="filterTableStokKeluarDT()">
+                                <option value="">Semua Outlet</option>
+                                @foreach ($outlet as $item)
+                                    <option value="{{$item->id_outlet}}">{{$item->nama_outlet}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -62,7 +62,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="tanggal">Status</label>
-                            <select name="status" id="status" class="form-control form-control-sm">
+                            <select name="status" id="status" class="form-control form-control-sm" onchange="filterTableStokKeluarDT()">
                                 <option value="">Semua Status</option>
                                 <option value="1">AKTIF</option>
                                 <option value="0">BATAL</option>
@@ -71,20 +71,21 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="">&nbsp;</label>
-                            <button type="button" class="btn btn-flat btn-sm btn-primary form-control" id="filter" onclick="filterTableStokKeluarDT()">Filter Table</button>
+                            <label for="">Cari</label>
+                            <input type="text" class="form-control form-control-sm" id="cari" name="cari" placeholder="Cari berdasarkan Kode / Catatan Stok Keluar" onchange="filterTableStokKeluarDT()" onkeyup="filterTableStokKeluarDT()">
                         </div>
                     </div>
                 </div>
                 <hr>
                 <div class="row">
                     <div class="col-md-12">
-                        <table class="table table-sm table-stiped table-bordered" id="tableStokKeluar">
+                        <table class="table table-sm table-hover" id="tableStokKeluar">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th width="5%">No</th>
                                     <th>Kode</th>
-                                    <th>Gudang</th>
+                                    <th>Outlet</th>
                                     <th>Tanggal</th>
                                     <th>Catatan</th>
                                     <th>Status</th>
@@ -109,8 +110,8 @@
 
     $(document).ready(function(){
         tableStokKeluarDT();
-        
-        $("#gudang").select2({ width: '100%' });
+
+        $("#outlet").select2({ width: '100%' });
         $("#status").select2({ width: '100%' });
 
         var f3 = flatpickr(document.getElementById('tanggalFilter'), {
@@ -132,13 +133,15 @@
     function tableStokKeluarDT()
     {
         tableDT = $("#tableStokKeluar").DataTable({
+            responsive: true,
             processing: true,
             serverSide: true,
-            searching: true,
+            searching: false,
             lengthMenu: [
                 [10, 20, 50, -1],
                 ['10', '20', '50', 'Lihat Semua']
             ],
+            "order": [[0, "desc" ]],
             ajax: {
                 'url': "{{url('persediaan/stok-keluar/get-data')}}",
                 'type': 'GET',
@@ -148,8 +151,9 @@
                 data: function(d){
                     d.dateStart = dateStart,
                     d.dateEnd = dateEnd,
-                    d.gudang = $("#gudang").val(),
-                    d.status = $("#status").val()
+                    d.id_outlet = $("#outlet").val(),
+                    d.status = $("#status").val(),
+                    d.search = $("#cari").val()
                 },
                 error: function(error) {
                     showErrorAlert(error.responseJSON.message);
@@ -157,7 +161,13 @@
             },
             columns: [
                 {
-                    data: '',
+                    data: 'created_at',
+                    name: 'sp.created_at',
+                    searchable: false,
+                    visible: false,
+                },
+                {
+                    data: 'reference',
                     name: 'no',
                     render: function(data, type, row, attr) {
                         return attr.row + attr.settings._iDisplayStart + 1;
@@ -171,12 +181,12 @@
                     name: 'sp.kode',
                     className: "text-center",
                     render: function(d,t,r) {
-                        return `<span style="cursor: pointer;" onclick="showDetail('${r.id_stok_produk}')" class="badge bg-primary">${d}</span>`;
+                        return `<span style="cursor: pointer;" class="badge bg-primary">${d}</span>`;
                     }
                 },
                 {
-                    data: 'nama_gudang',
-                    name: 'g.nama_gudang',
+                    data: 'nama_outlet',
+                    name: 'o.nama_outlet',
                     className: "text-left"
                 },
                 {
@@ -196,7 +206,7 @@
                 {
                     data: 'status',
                     name: 'sp.status',
-                    className: "text-center",
+                    className: "text-start",
                     render: function(d) {
                         return labelStatusStok(d);
                     }
@@ -208,8 +218,16 @@
                     searchable: false,
                     orderable: false,
                     render(d,t,r){
-                        const cancel = `<button type="button" class="btn btn-danger btn-flat btn-sm" onclick="cancel(this, '${d}')" ><i class="fas fa-times-circle"></i></button>`;
-                        return cancel;
+                        const btnCancel = r.status == 1 ? `<button type="button" class="dropdown-item" onclick="cancel(this, '${d}')" ><i class="fas fa-times-circle text-danger me-3"></i> Batalkan</button>` : '';
+                        return `<div class="dropdown mt-4 mt-sm-0">
+                                    <a href="#" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="mdi mdi-chevron-down"></i>
+                                    </a>
+                                    <div class="dropdown-menu" style="">
+                                        ${btnCancel}
+                                        <button class="dropdown-item" onclick="showDetail('${d}')"> <i class="fas fa-check-circle text-dark me-3"></i> Lihat Detail </button>
+                                    </div>
+                                </div>`;
                     }
                 }
             ]

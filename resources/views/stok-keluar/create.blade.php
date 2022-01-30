@@ -1,12 +1,12 @@
-<form onsubmit="store(this)" id="formStokKeluar" class="">    
+<form onsubmit="store(this)" id="formStokKeluar" class="">
     <div class="row">
         <div class="col-md-6">
             <div class="form-group mb-2">
-                <label for="id_gudang" class="control-label text-start">Gudang <span class="text-danger">*</span> </label>
-                <select name="id_gudang" id="id_gudang" class="form-control form-control-sm">
-                    <option value="">Pilih Gudang</option>
-                    @foreach ($gudang as $item)
-                        <option value="{{$item->id_gudang}}">{{$item->kode_gudang . ' - ' . $item->nama_gudang}}</option>
+                <label for="id_outlet" class="control-label text-start">Outlet <span class="text-danger">*</span> </label>
+                <select name="id_outlet" id="id_outlet" class="form-control form-control-sm">
+                    <option value="">Pilih Outlet</option>
+                    @foreach ($outlet as $item)
+                        <option value="{{$item->id_outlet}}" {{$item->id_outlet == session()->get('outlet') ? 'selected' : ''}} >{{$item->nama_outlet}}</option>
                     @endforeach
                 </select>
             </div>
@@ -40,9 +40,10 @@
                     <tr>
                         <th class="text-start">No</th>
                         <th class="text-start">Kode Produk</th>
-                        <th class="text-start" width="40%">Nama Produk</th>
+                        <th class="text-start" width="30%">Nama Produk</th>
                         <th class="text-end" width="15%">Stok Sisa</th>
                         <th class="text-end" width="15%">Stok Keluar</th>
+                        <th class="text-start">Satuan</th>
                         <th class="text-end">Nilai Stok (SISTEM)</th>
                         <th class="text-start">#</th>
                     </tr>
@@ -72,12 +73,12 @@
     var dataDetail = [];
 
     $(document).ready(function(){
-        
+
         var f3 = flatpickr(document.getElementById('tanggal'), {
             dateFormat: "d/m/Y"
         });
 
-        $("#id_gudang").select2({ width: '100%', dropdownParent: $('.modal') });
+        $("#id_outlet").select2({ width: '100%', dropdownParent: $('.modal') });
     });
 
     $(".pilih-product-adjustment").select2({
@@ -91,6 +92,7 @@
             delay: 250,
             data: function (params) {
                 return {
+                    id_outlet: $("#id_outlet").val(),
                     q: params.term, // search term
                     page: params.page
                 };
@@ -112,6 +114,12 @@
         templateSelection: formatResultAdjustmentSelection
     });
 
+    $(document).on('keyup', '.numbersOnly', function () {
+        if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+             this.value = this.value.replace(/[^0-9\.]/g, '');
+        }
+    });
+
     $('.pilih-product-adjustment').on('select2:select', function (e) {
         var data = e.params.data;
         storeOptionProduct(data);
@@ -123,15 +131,15 @@
     function store(that)
     {
         event.preventDefault();
-        
+
         const form = $("#formStokKeluar");
 
-        const id_gudang = $("#id_gudang").val();
+        const id_outlet = $("#id_outlet").val();
         const tanggal = $("#tanggal").val();
         const catatan = $("#catatan").val();
 
-        if(id_gudang == '' || id_gudang == null) {
-            showErrorAlert('Gudang harus diisi');
+        if(id_outlet == '' || id_outlet == null) {
+            showErrorAlert('Outlet harus diisi');
             return;
         }
         if(tanggal == '' || tanggal == null) {
@@ -142,7 +150,7 @@
             showErrorAlert('Produk harus berisi minimal 1 baris');
             return;
         }
-        const payloads = {dataDetail, id_gudang, tanggal, catatan};
+        const payloads = {dataDetail, id_outlet, tanggal, catatan};
         $.ajax({
             url: "{{url('persediaan/stok-keluar/store')}}" ,
             type: "POST",
@@ -186,14 +194,14 @@
         const nilai_stok = dataDetail[indexExist].nilai_stok;
         const qty_stok = dataDetail[indexExist].qty_stok;
         dataDetail[indexExist].subtotal = qty_stok * -1 * nilai_stok;
-        $(that).closest('tr').find('td.subtotal').text(formatMoney(dataDetail[indexExist].subtotal));
+        $(that).closest('tr').find('td.subtotal').text(`Rp. ${formatMoney(dataDetail[indexExist].subtotal)}`);
         sumGrandTotal();
     }
 
     function sumGrandTotal()
     {
         const grandTotal = dataDetail.reduce((prev, next) => prev + next.subtotal, 0);
-        $("#grandTotal").text(formatMoney(grandTotal));
+        $("#grandTotal").text(`Rp. ${formatMoney(grandTotal)}`);
     }
 
     function renderTable()
@@ -208,9 +216,10 @@
                 <td>${item.nama_produk}</td>
                 <td class="text-end">${item.stok}</td>
                 <td class="text-end">
-                    <input type="number" min="0" class="form-control form-control-sm text-end" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
+                    <input type="text" min="0" class="form-control form-control-sm text-end numbersOnly" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
                 </td>
-                <td class="text-end subtotal">${formatMoney(item.subtotal)}</td>
+                <td class="text-start">${item.nama_uom}</td>
+                <td class="text-end subtotal">Rp. ${formatMoney(item.subtotal)}</td>
                 <td><button type="button" class="btn btn-sm btn-flat btn-danger btn-xs" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
             </tr>`).join();
             table.find('tbody').html(row);
@@ -220,15 +229,15 @@
     function changeQty(that, id)
     {
         const indexEdit = dataDetail.findIndex(item => item.id == id);
-        if($(that).val() < 1 && $(that).val() != '') {
+        if($(that).val() < 0 && $(that).val() != '') {
             showErrorAlert('Quantity tidak boleh kurang dari 1');
             $(that).val(1);
-        } 
+        }
         if($(that).val() > dataDetail[indexEdit].stok) {
             showErrorAlert('Stok tidak mencukupi');
             $(that).val(dataDetail[indexEdit].stok);
-        } 
-        dataDetail[indexEdit].qty_stok = parseInt($(that).val());
+        }
+        dataDetail[indexEdit].qty_stok = parseFloat($(that).val());
         sumSubTotal(that, id)
     }
 

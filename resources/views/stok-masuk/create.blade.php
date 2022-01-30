@@ -141,7 +141,7 @@
         const catatan = $("#catatan").val();
 
         if(id_outlet == '' || id_outlet == null) {
-            showErrorAlert('Gudang harus diisi');
+            showErrorAlert('Outlet harus diisi');
             return;
         }
         if(tanggal == '' || tanggal == null) {

@@ -16,14 +16,14 @@ class StokKeluarController extends Controller
 {
     public function index()
     {
-        $gudang = Gudang::getAllGudangActive('row');
-        return view('stok-keluar.index', compact('gudang'));
+        $outlet = DB::table('outlet')->get();
+        return view('stok-keluar.index', compact('outlet'));
     }
 
     public function create()
     {
-        $gudang = Gudang::getAllGudangActive('row');
-        return view('stok-keluar.create', compact('gudang'));
+        $outlet = DB::table('outlet')->get();
+        return view('stok-keluar.create', compact('outlet'));
     }
 
     public function getData(Request $request)
@@ -50,12 +50,12 @@ class StokKeluarController extends Controller
         try {
             $payloads = $request->all();
             $stokProduk = [];
-            $stokProduk['id_gudang'] = $payloads['id_gudang'];
+            $stokProduk['id_outlet'] = $payloads['id_outlet'];
             $stokProduk['tanggal'] = Carbon::createFromFormat('d/m/Y', $payloads['tanggal'])->format('Y-m-d');
             $stokProduk['catatan'] = $payloads['catatan'];
             $stokProduk['jenis'] = 'KELUAR';
             $stokProduk['reference'] = 'STOKKELUAR';
-            $stokProduk['kode'] = (new UniqueCode(StokProduk::class, 'kode', 'ST-K-', 4, true))->get();
+            $stokProduk['kode'] = (new UniqueCode(StokProduk::class, 'kode', 'ST-K-', 9, true))->get();
             $stokProduk['created_at'] = date("Y-m-d H:i:s");
             $stokProduk['created_by'] = auth()->user()->name;
             $id_reference = DB::table('stok_produk')->insertGetId($stokProduk);
@@ -87,23 +87,27 @@ class StokKeluarController extends Controller
     {
 
         $q = $request->get('q');
+        $id_outlet = $request->get('id_outlet');
 
-      
 
         $product = DB::table('stok_produk_detail as spd')
         ->join('produk as p', 'spd.id_produk', '=', 'p.id_produk')
+        ->leftJoin('uom as u', 'p.id_uom', '=', 'u.id_uom')
         ->selectRaw("
             spd.id_produk as id,
-            sum(spd.nilai) as stok,
-            sum(sub_total) / sum(nilai) as nilai_stok, 
+            round(sum(spd.nilai), 2) as stok,
+            round(sum(sub_total) / sum(nilai), 2) as nilai_stok,
             p.id_produk,
             p.kode_produk,
             p.nama_produk,
-            p.harga_jual
+            p.harga_jual,
+            u.nama_uom
         ")
+        ->where('p.id_outlet', $id_outlet)
+        ->where('p.kelola_stok', '1')
         ->where('p.kode_produk', 'like', '%'.strtoupper($q).'%')
         ->orWhere('p.nama_produk', 'like', '%'.$q.'%')
-        ->groupBy('spd.id_produk', 'p.id_produk', 'p.kode_produk', 'p.nama_produk', 'p.harga_jual');
+        ->groupBy('spd.id_produk', 'p.id_produk', 'p.kode_produk', 'p.nama_produk', 'p.harga_jual', 'u.nama_uom');
 
         $final['incomplete_results'] = true;
         $final['total_count'] = $product->count();

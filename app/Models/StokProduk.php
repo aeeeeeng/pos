@@ -70,18 +70,24 @@ class StokProduk extends Model
     {
         try {
             $stokMasuk = DB::table('stok_produk as sp')
-                         ->join('gudang as g', function($join) {
-                             $join->on('sp.id_gudang', '=', 'g.id_gudang');
-                             $join->where('g.status', '1');
-                         })
-                         ->selectRaw("sp.*, g.nama_gudang, g.kode_gudang")
-                         ->where('sp.jenis', 'KELUAR');
-            if(isset($payloads['gudang'])) {
-                $stokMasuk->where('sp.id_gudang', $payloads['gudang']);
+                        ->leftJoin('outlet as o', 'sp.id_outlet', '=', 'o.id_outlet')
+                        ->selectRaw("sp.*, o.nama_outlet")
+                        ->where('sp.jenis', 'KELUAR');
+
+            if(isset($payloads['id_outlet'])) {
+                $stokMasuk->where('sp.id_outlet', $payloads['id_outlet']);
             }
 
             if(isset($payloads['status'])) {
                 $stokMasuk->where('sp.status', $payloads['status']);
+            }
+
+            if(isset($payloads['search'])) {
+                $search = $payloads['search'];
+                $stokMasuk->where(function($query) use($search){
+                    $query->where('sp.kode', 'like', '%' . $search . '%');
+                    $query->orWhere('sp.catatan', 'like', '%' . $search . '%');
+                });
             }
 
             if(isset($payloads['dateStart']) && isset($payloads['dateEnd'])) {
