@@ -17,7 +17,7 @@ class StokProduk extends Model
 
     protected $fillable = [
         'id_stok_produk',
-        'id_gudang',
+        'id_outlet',
         'kode',
         'catatan',
         'tanggal',
@@ -107,14 +107,11 @@ class StokProduk extends Model
     {
         try {
             $stokOpname = DB::table('stok_produk as sp')
-                         ->join('gudang as g', function($join) {
-                             $join->on('sp.id_gudang', '=', 'g.id_gudang');
-                             $join->where('g.status', '1');
-                         })
-                         ->selectRaw("sp.*, g.nama_gudang, g.kode_gudang")
+                         ->join('outlet as o', 'sp.id_outlet', '=', 'o.id_outlet')
+                         ->selectRaw("sp.*, o.nama_outlet")
                          ->where('sp.jenis', 'OPNAME');
-            if(isset($payloads['gudang'])) {
-                $stokOpname->where('sp.id_gudang', $payloads['gudang']);
+            if(isset($payloads['id_outlet'])) {
+                $stokOpname->where('o.id_outlet', $payloads['id_outlet']);
             }
 
             if(isset($payloads['status'])) {
@@ -123,6 +120,14 @@ class StokProduk extends Model
 
             if(isset($payloads['dateStart']) && isset($payloads['dateEnd'])) {
                 $stokOpname->whereBetween('tanggal', [$payloads['dateStart'], $payloads['dateEnd']]);
+            }
+
+            if(isset($payloads['search'])) {
+                $search = $payloads['search'];
+                $stokOpname->where(function($query) use($search){
+                    $query->where('sp.kode', 'like', '%' . $search . '%');
+                    $query->orWhere('sp.catatan', 'like', '%' . $search . '%');
+                });
             }
 
             if($type == 'datatable') {
@@ -171,9 +176,9 @@ class StokProduk extends Model
     public static function showDetailOpname($id)
     {
         try {
-            $header = DB::table('stok_produk as sp')->join('gudang as g', 'sp.id_gudang', '=', 'g.id_gudang')
+            $header = DB::table('stok_produk as sp')->leftJoin('outlet as o', 'o.id_outlet', '=', 'sp.id_outlet')
                       ->where('id_stok_produk', $id)
-                      ->selectRaw('sp.*, g.nama_gudang, g.kode_gudang')->first();
+                      ->selectRaw('sp.*, o.nama_outlet')->first();
 
             $subSpd = DB::table('stok_produk_detail')->selectRaw("id_produk, id_reference, sum(nilai) as jumlah_barang_sistem ")
                       ->groupBy('id_produk', 'id_reference');
@@ -182,13 +187,13 @@ class StokProduk extends Model
                        ->selectRaw("
                             p.kode_produk,
                             p.nama_produk,
-                            sum(subSpd.jumlah_barang_sistem) as jumlah_barang_sistem,
-                            sum(subSpd.jumlah_barang_sistem) + spd.nilai  as jumlah_barang_aktual,
+                            IFNULL(ROUND(sum(subSpd.jumlah_barang_sistem), 2), 0) as jumlah_barang_sistem,
+                            IFNULL(ROUND(sum(subSpd.jumlah_barang_sistem), 2), 0) + spd.nilai  as jumlah_barang_aktual,
                             spd.nilai as selisih,
                             spd.harga
                        ")
                        ->join('produk as p', 'spd.id_produk', '=', 'p.id_produk')
-                       ->joinSub($subSpd, 'subSpd', function($joinSub) use ($id) {
+                       ->leftJoinSub($subSpd, 'subSpd', function($joinSub) use ($id) {
                             $joinSub->on('spd.id_produk', '=', 'subSpd.id_produk');
                             $joinSub->where('subSpd.id_reference', '<', $id);
                        })

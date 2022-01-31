@@ -111,6 +111,9 @@
 
     let tableDT, dateStart, dateEnd;
 
+    dateStart = formatDateIso(Date.now());
+    dateEnd = formatDateIso(Date.now());
+
     $(document).ready(function(){
         tableStokMasukDT();
 
@@ -120,6 +123,7 @@
         var f3 = flatpickr(document.getElementById('tanggalFilter'), {
             mode: "range",
             dateFormat: "d/m/Y",
+            defaultDate: [formatDateIsoFlatP(Date.now()), formatDateIsoFlatP(Date.now())],
             onChange: function(dates) {
                 if (dates.length == 2) {
                     dateStart = formatDateIso(dates[0]);

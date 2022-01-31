@@ -1,57 +1,57 @@
-<div>    
+<div>
     <div class="row">
-        <div class="col-sm-2">
-            <div class="text-gropuping">
-                <h6 style="font-weight: bold;">Kode Stok Opname</h6>
-                <span class="">:</span>
-            </div>            
-        </div>
-        <div class="col-sm-2">
-            <h6 class="badge bg-primary">{{$header->kode}}</h6>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-2">
-            <div class="text-gropuping">
-                <h6 style="font-weight: bold;">Gudang</h6>
-                <span class="">:</span>
-            </div>            
-        </div>
-        <div class="col-sm-5">
-            <h6>{{$header->kode_gudang .  ' - ' . $header->nama_gudang}}</h6>
-        </div>
-        <div class="col-sm-2">
-            <div class="text-gropuping">
-                <h6 style="font-weight: bold;">Status</h6>
-                <span class="">:</span>
-            </div>            
-        </div>
-        <div class="col-sm-2">
-            <h6 class="">{!! labelStatusStok($header->status) !!}</h6>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-2">
-            <div class="text-gropuping">
-                <h6 style="font-weight: bold;">Tanggal</h6>
-                <span class="">:</span>
+            <div class="col-sm-2">
+                <div class="text-gropuping">
+                    <h6 style="font-weight: bold;">Kode Stok Masuk</h6>
+                    <span class="">:</span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <h6 class="badge bg-primary">{{$header->kode}}</h6>
             </div>
         </div>
-        <div class="col-sm-5">
-            <h6>{{tanggal_indonesia($header->tanggal, false)}}</h6>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-2">
-            <div class="text-gropuping">
-                <h6 style="font-weight: bold;">Catatan</h6>
-                <span class="">:</span>
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="text-gropuping">
+                    <h6 style="font-weight: bold;">Outlet</h6>
+                    <span class="">:</span>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <h6>{{$header->nama_outlet}}</h6>
+            </div>
+            <div class="col-sm-2">
+                <div class="text-gropuping">
+                    <h6 style="font-weight: bold;">Status</h6>
+                    <span class="">:</span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <h6 class="">{!! labelStatusStok($header->status) !!}</h6>
             </div>
         </div>
-        <div class="col-sm-5">
-            <p style="">{{$header->catatan}}</p>
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="text-gropuping">
+                    <h6 style="font-weight: bold;">Tanggal</h6>
+                    <span class="">:</span>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <h6>{{tanggal_indonesia($header->tanggal, false)}}</h6>
+            </div>
         </div>
-    </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="text-gropuping">
+                    <h6 style="font-weight: bold;">Catatan</h6>
+                    <span class="">:</span>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <p style="">{{$header->catatan}}</p>
+            </div>
+        </div>
     <hr>
     <div class="row">
         <div class="col-lg-12">
@@ -65,7 +65,6 @@
                         <th class="text-end">Jumlah Barang (AKTUAL)</th>
                         <th class="text-end">Silisih</th>
                         <th class="text-end">Harga Unit (SISTEM)</th>
-                        <th class="text-start">#</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,6 +91,6 @@
             </div>
         </div>
     </div>
-       
-    
+
+
 </div>

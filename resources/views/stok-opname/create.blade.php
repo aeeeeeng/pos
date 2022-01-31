@@ -32,6 +32,48 @@
                 text-align: left;
             }
         }
+
+        .table-scroll {
+            overflow-y: scroll;
+            height: 500px;
+        }
+
+        .sticky {
+            position: fixed;
+            top: 0;
+            z-index: 9999;
+            width: 75%;
+        }
+
+        @media  only screen and (max-width: 990px) {
+            .freeze {
+                position: -webkit-sticky;
+                position: sticky;
+                background-color: grey !important;
+                color: #ffffff !important;
+                border-width: 0 !important;
+                border-top: unset !important;
+            }
+            .first-col {
+                width: 100px;
+                min-width: 30px;
+                left: 0px;
+            }
+            .second-col {
+                width: 150px;
+                max-width: 165px;
+                left: 60px;
+                overflow: hidden;
+                overflow-x: scroll;
+            }
+            .second-col::-webkit-scrollbar {
+                display: none;
+            }
+            .table-hover>tbody>tr:hover>* {
+                --bs-table-accent-bg: unset;
+                color: #495057;
+            }
+        }
     </style>
 @endpush
 
@@ -45,11 +87,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="id_gudang" class="control-label text-start">Gudang <span class="text-danger">*</span> </label>
-                                <select name="id_gudang" id="id_gudang" class="form-control form-control-sm">
-                                    <option value="">Pilih Gudang</option>
-                                    @foreach ($gudang as $item)
-                                        <option value="{{$item->id_gudang}}">{{$item->kode_gudang . ' - ' . $item->nama_gudang}}</option>
+                                <label for="id_outlet" class="control-label text-start">Outlet <span class="text-danger">*</span> </label>
+                                <select name="id_outlet" id="id_outlet" class="form-control form-control-sm" onchange="selectedOutlet(this)">
+                                    <option value="">Pilih Outlet</option>
+                                    @foreach ($outlet as $item)
+                                        <option value="{{$item->id_outlet}}">{{$item->nama_outlet}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -57,46 +99,63 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="catatan" class="control-label text-start">Catatan</label>
-                                <textarea name="catatan" id="catatan" class="form-control form-control-sm"></textarea>
+                                <textarea name="catatan" id="catatan" class="form-control form-control-sm" cols="30" rows="5"></textarea>
                             </div>
                         </div>
                     </div>
                     <hr>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <select class="pilih-product-adjustment select2 form-control form-control-sm"></select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <table class="table table-sm table-hover" id="productTable">
-                                <thead>
-                                    <tr>
-                                        <th class="text-start">No</th>
-                                        <th class="text-start">Kode Produk</th>
-                                        <th class="text-start">Nama Produk</th>
-                                        <th class="text-end">Jumlah Barang (SISTEM)</th>
-                                        <th class="text-end">Jumlah Barang (AKTUAL)</th>
-                                        <th class="text-end">Silisih</th>
-                                        <th class="text-end">Harga Unit (SISTEM)</th>
-                                        <th class="text-start">#</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td colspan="9" class="text-center">Data masih kosong, pilih produk pada combobox diatas</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="float-end">
-                                <button type="button" class="btn btn-flat btn-sm btn-secondary" onclick="window.location.href = '{{url('persediaan/stok-opname')}}'"> Batal </button>
-                                <button type="submit" class="btn btn-flat btn-sm btn-primary"> Simpan </button>
+                    <div id="resultDetail" class="mt-3" style="display:none;">
+                        <div class="row" id="filterEl" style="padding: 10px;background-color: #4ba6ef;border-radius: 10px;color: #fff;">
+                                <div class="col-md-1" style="height: 60px;line-height: 60px;">
+                                    <h6 class="text-white" style="display: inline-block;vertical-align: middle;line-height: normal;">Filter : </h6>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-2">
+                                        <label for="filter_sku">Cari SKU</label>
+                                        <input type="text" class="form-control form-control-sm search-key" placeholder="Cari berdasarkan SKU" id="filter_sku_produk" onkeyup="filterTable(this)">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-2">
+                                        <label for="filter_produk">Cari Produk</label>
+                                        <input type="text" class="form-control form-control-sm search-key" placeholder="Cari berdasarkan nama produk" id="filter_nama_produk" onkeyup="filterTable(this)">
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="table-responsive table-scroll">
+                                        <table class="table table-sm table-hover" id="productTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-start">Kode Produk</th>
+                                                    <th class="text-start freeze first-col">SKU</th>
+                                                    <th class="text-start freeze second-col">Nama Produk</th>
+                                                    <th class="text-end">Jumlah Barang (SISTEM)</th>
+                                                    <th class="text-end">Jumlah Barang (AKTUAL)</th>
+                                                    <th class="text-end">Silisih</th>
+                                                    <th class="text-start">Satuan</th>
+                                                    <th class="text-end">Nilai Stok (SISTEM)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr><td colspan="9" class="text-center">Data masih kosong, pilih produk pada combobox diatas</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="float-end">
+                                        <button type="button" class="btn btn-flat btn-sm btn-secondary" onclick="window.location.href = '{{url('persediaan/stok-opname')}}'"> Batal </button>
+                                        <button type="submit" class="btn btn-flat btn-sm btn-primary"> Simpan </button>
+                                    </div>
+                                </div>
+                            </div>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -110,51 +169,77 @@
 
     var dataDetail = [];
 
+
     $(document).ready(function(){
-
-        $("#id_gudang").select2({ width: '100%' });
-
+        document.body.setAttribute("data-sidebar-size", "sm");
+        $("#id_outlet").select2({ width: '100%' });
         $('body').addClass('sidebar-collapse');
+
     });
 
-    $(".pilih-product-adjustment").select2({
-        placeholder: "Pilih Barang Melalui Kode/Nama",
-        allowClear: true,
-        width: '100%',
-        ajax: {
-            url: "{{url('persediaan/stok-opname/get-product')}}",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term, // search term
-                    page: params.page
-                };
-            },
-            processResults: function (data, params) {
-                params.page = params.page || 1;
+    $(document).on('keyup', '.numbersOnly', function () {
+        if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
+             this.value = this.value.replace(/[^0-9\.]/g, '');
+        }
+    });
 
-                return {
-                    results: data.items,
-                    pagination: {
-                    more: (params.page * 30) < data.total_count
+    function filterTable(that)
+    {
+        $('#productTable').find('tbody tr').hide().filter(function() {
+            return $(this).find('td').filter(function() {
+                const tdText = $(this).text().toLowerCase();
+                const inputValue = $('#' + $(this).data('input')).val() != undefined ? $('#' + $(this).data('input')).val().toLowerCase() : '';
+                return tdText.indexOf(inputValue) != -1;
+            }).length == $(this).find('td').length;
+        }).show();
+    }
+
+    function selectedOutlet(that)
+    {
+        const val = $(that).val();
+        const text = $(that).find('option:selected').text();
+
+        if(val != '') {
+            bootbox.confirm({
+                closeButton: false,
+                title: "Outlet Stok Opname",
+                message: `<span style="font-weight:bold;color:red;">Stok Opname</span> pada outlet ${text}, lanjutkan ?`,
+                buttons: {
+                    cancel: {
+                        label: '<i class="fa fa-times"></i> Batal'
+                    },
+                    confirm: {
+                        label: '<i class="fa fa-check"></i> Ya'
                     }
-                };
-            },
-            cache: true
-        },
-        minimumInputLength: 2,
-        templateResult: formatResultAdjustment,
-        templateSelection: formatResultAdjustmentSelection
-    });
-
-    $('.pilih-product-adjustment').on('select2:select', function (e) {
-        var data = e.params.data;
-        storeOptionProduct(data);
-        $(".pilih-product-adjustment").val('').trigger('change');
-        console.log(dataDetail);
-        renderTable();
-    });
+                },
+                callback: function (result) {
+                    if(result) {
+                        $(that).prop('disabled', true);
+                        $.ajax({
+                            url: `{{url('persediaan/stok-opname/get-product')}}`,
+                            data: {id_outlet: val},
+                            beforeSend: function(){
+                                blockLoading();
+                            }
+                        }).done(response => {
+                            dataDetail = response.data;
+                            renderTable();
+                            setTimeout(() => {
+                                unBlockLoading();
+                                $("#resultDetail").fadeIn(1000);
+                            }, 500);
+                        }).fail(error => {
+                            const respJson = $.parseJSON(error.responseText);
+                            showErrorAlert(respJson.message);
+                            $(that).val('').trigger('change');
+                        })
+                    } else {
+                        $(that).val('').trigger('change');
+                    }
+                }
+            });
+        }
+    }
 
     function store(that)
     {
@@ -176,10 +261,10 @@
                 if(result) {
                     const form = $("#formStokOpname");
 
-                    const id_gudang = $("#id_gudang").val();
+                    const id_outlet = $("#id_outlet").val();
                     const catatan = $("#catatan").val();
 
-                    if(id_gudang == '' || id_gudang == null) {
+                    if(id_outlet == '' || id_outlet == null) {
                         showErrorAlert('Gudang harus diisi');
                         return;
                     }
@@ -187,7 +272,7 @@
                         showErrorAlert('Produk harus berisi minimal 1 baris');
                         return;
                     }
-                    const payloads = {dataDetail, id_gudang, catatan};
+                    const payloads = {dataDetail, id_outlet, catatan};
                     $.ajax({
                         url: "{{url('persediaan/stok-opname/store')}}" ,
                         type: "POST",
@@ -212,21 +297,6 @@
         });
     }
 
-    function storeOptionProduct(selected)
-    {
-        selected.qty_stok = selected.stok;
-        selected.stok_selisih = selected.qty_stok - selected.stok;
-        const checkExist = dataDetail.filter(item => item.id === selected.id).length > 0 ? true : false;
-        if(checkExist) {
-            const indexExist = dataDetail.findIndex(item => item.id === selected.id);
-            dataDetail[indexExist].qty_stok = dataDetail[indexExist].qty_stok + 1;
-            const stok = dataDetail[indexExist].stok;
-            dataDetail[indexExist].stok_selisih - qty_stok - stok;
-        } else {
-            dataDetail.push(selected);
-        }
-    }
-
     function renderTable()
     {
         const table = $("#productTable");
@@ -234,18 +304,18 @@
             table.find('tbody').html(`<tr><td colspan="9" class="text-center">Data masih kosong, pilih produk pada combobox diatas</td></tr>`);
         } else {
             const row = dataDetail.map((item, index) => `<tr>
-                <td>${index+1}</td>
-                <td><small class="badge bg-primary">${item.kode_produk}</small></td>
-                <td>${item.nama_produk}</td>
-                <td class="text-end">${item.stok}</td>
-                <td class="text-end">
-                    <input type="number" min="0" class="form-control form-control-sm text-end" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
+                <td data-input="filter_xxx"><small class="badge bg-primary">${item.kode_produk}</small></td>
+                <td data-input="filter_sku_produk" class="freeze first-col"><small class="badge bg-primary">${item.sku_produk}</small></td>
+                <td data-input="filter_nama_produk" class="freeze second-col">${item.nama_produk}</td>
+                <td data-input="filter_xxx" class="text-end">${item.stok}</td>
+                <td data-input="filter_xxx" class="text-end float-end">
+                    <input type="text" class="form-control form-control-sm text-end numbersOnly" value="${item.qty_stok}" onkeyup="changeQty(this, '${item.id}')" onchange="changeQty(this, '${item.id}')">
                 </td>
-                <td class="text-end stok_selisih">
+                <td data-input="filter_xxx" class="text-end stok_selisih">
                     ${item.stok_selisih >= 0 ? `<span class="text-success"> <i class="fa fa-angle-up"></i> ${item.stok_selisih}</span>` : `<span class="text-danger"> <i class="fa fa-angle-down"></i> ${item.stok_selisih}</span>`}
                 </td>
-                <td class="text-end">${formatMoney(item.nilai_stok)}</td>
-                <td><button type="button" class="btn btn-flat btn-danger btn-sm" onclick="removeDetailArr('${item.id}')"><i class="fa fa-trash"></i></button></td>
+                <td data-input="filter_xxx" class="text-start">${item.nama_uom}</td>
+                <td data-input="filter_xxx" class="text-end">Rp. ${formatMoney(item.nilai_stok)}</td>
             </tr>`).join();
             table.find('tbody').html(row);
         }
@@ -256,10 +326,17 @@
         const indexExist = dataDetail.findIndex(item => item.id == id);
         const stok = dataDetail[indexExist].stok;
         const qty_stok = dataDetail[indexExist].qty_stok;
-        dataDetail[indexExist].stok_selisih = isNaN(parseInt(qty_stok - Math.abs(stok))) ? 0 : parseInt(qty_stok - Math.abs(stok));
+        dataDetail[indexExist].stok_selisih = isNaN(parseFloat(qty_stok - Math.abs(stok))) ? 0 : parseFloat(qty_stok - Math.abs(stok)).toFixed(2);
         $(that).closest('tr').find('td.stok_selisih').html(
             `${dataDetail[indexExist].stok_selisih >= 0 ? `<span class="text-success"> <i class="fa fa-angle-up"></i> ${dataDetail[indexExist].stok_selisih}</span>` : `<span class="text-danger"> <i class="fa fa-angle-down"></i> ${dataDetail[indexExist].stok_selisih}</span>`}`
         );
+    }
+
+    function changeHpp(that, id)
+    {
+        const indexExist = dataDetail.findIndex(item => item.id == id);
+        const new_nilai_stok = $(that).val();
+        dataDetail[indexExist].new_nilai_stok = isNaN(parseFloat(new_nilai_stok)) ? 0 : new_nilai_stok;
     }
 
     function changeQty(that, id)
@@ -269,15 +346,8 @@
             showErrorAlert('Stok Aktual tidak boleh kurang dari 0');
             $(that).val(0);
         }
-        dataDetail[indexEdit].qty_stok = parseInt($(that).val());
+        dataDetail[indexEdit].qty_stok = parseFloat($(that).val());
         sumSelisih(that, id);
-    }
-
-    function removeDetailArr(id)
-    {
-        const newData = dataDetail.filter(item => item.id != id);
-        dataDetail = newData;
-        renderTable();
     }
 
     function formatResultAdjustment(item) {
@@ -303,6 +373,8 @@
     function formatResultAdjustmentSelection(item) {
      return item.text;
     }
+
+
 
 </script>
 @endpush
