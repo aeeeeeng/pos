@@ -64,12 +64,7 @@
                             <span>Penjualan</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{{ route('transaksi.index') }}">
-                            <i data-feather="shopping-cart"></i>
-                            <span>Transaksi Jual</span>
-                        </a>
-                    </li>
+
                     <li class="menu-title" data-key="t-report">REPORT</li>
                     <li>
                         <a href="{{ route('laporan.index') }}">
@@ -97,12 +92,7 @@
                         </a>
                     </li>
                 @else
-                    <li>
-                        <a href="{{ route('transaksi.index') }}">
-                            <i data-feather="shopping-cart"></i>
-                            <span>Transaksi Jual</span>
-                        </a>
-                    </li>
+
                 @endif
             </ul>
         </div>

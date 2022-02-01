@@ -18,10 +18,19 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('layouts.master', function ($view) {
             $view->with(['setting' => Setting::first(), 'outlet' => Outlet::defaultOutlet()]);
         });
+        view()->composer('app.layouts.master', function ($view) {
+            $view->with(['setting' => Setting::first(), 'outlet' => Outlet::defaultOutlet()]);
+        });
         view()->composer('layouts.auth', function ($view) {
             $view->with(['setting' => Setting::first(), 'outlet' => Outlet::defaultOutlet()]);
         });
+        view()->composer('app.layouts.auth', function ($view) {
+            $view->with(['setting' => Setting::first(), 'outlet' => Outlet::defaultOutlet()]);
+        });
         view()->composer('auth.login', function ($view) {
+            $view->with(['setting' => Setting::first(), 'outlet' => Outlet::defaultOutlet()]);
+        });
+        view()->composer('app.auth.login', function ($view) {
             $view->with(['setting' => Setting::first(), 'outlet' => Outlet::defaultOutlet()]);
         });
     }
