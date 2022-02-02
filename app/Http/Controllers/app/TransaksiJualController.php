@@ -42,7 +42,7 @@ class TransaksiJualController extends Controller
                 $produk->orWhere('p.sku_produk', 'like', '%' . $request->get('cari') . '%');
                 $produk->orWhere('p.barcode_produk', 'like', '%' . $request->get('cari') . '%');
             }
-            $produk->orderBy('created_at', 'desc');
+            $produk->orderBy('p.nama_produk', 'asc');
             $resultProduk = $produk->get()->each(function($model){
                 $arrProdukName = explode(" ", $model->nama_produk);
                 if(count($arrProdukName) > 1) {

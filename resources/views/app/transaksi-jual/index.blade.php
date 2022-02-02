@@ -5,6 +5,7 @@
 @endsection
 
 @push('css')
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
     <style>
         .spinner-border {
             width: 5rem;
@@ -58,6 +59,7 @@
             border-radius: 100px;
             z-index: 9;
         }
+        .ui-effects-transfer { border: 2px dotted gray; }
     </style>
 @endpush
 
@@ -94,9 +96,10 @@
             </div>
         </div>
     </div>
+    <div id="hiddenCart" style="display:none;"></div>
     <div class="card" id="selectedItem" style="cursor:pointer; display:none;">
         <div class="card-body">
-            <button type="button" class="btn btn-sm btn-primary"> <i class="fas fa-times"></i> </button>
+            <button type="button" class="btn btn-sm btn-outline-primary btn-rounded" style="position: absolute;left: -40px;" onclick="resetSelected()"> <i class="fas fa-times"></i> </button>
             <div class="row">
                 <div class="col-md-6 col-xl-6">
                     <div class="float-start text-start">
@@ -114,6 +117,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 <script>
 
     let id_kategori = $("input[name=kategori]").val();
@@ -174,7 +178,7 @@
                             ${(() => {
                                 const url = `{{url('/')}}`;
                                 if(item.gambar == '' || item.gambar == null) {
-                                    return `<div class="nimg-fluid no-image-product mb-2" style="background-color:${backgroundColor(Math.floor(Math.random() * 10))}">${item.imageText}</div>`;
+                                    return `<div class="img-fluid no-image-product mb-2" style="background-color:${backgroundColor(Math.floor(Math.random() * 10))}">${item.imageText}</div>`;
                                 }
                                 return `<div class="img-fluid image-product mb-2">
                                             <img src="${url}/img/produk-image/${item.gambar}">
@@ -191,17 +195,26 @@
     {
         const selected = dataThumbnail.find(item => item.id_produk == id_produk);
         productSelected.push(selected);
-        if(productSelected.length) {
-            renderSelected();
-        }
+        renderSelected();
     }
 
     function renderSelected()
     {
-        $("#selectedItem").fadeIn(1000);
-        const total = productSelected.reduce((prev, next) => prev + next.harga_jual, 0);
-        $("#itemDipilih").text(`(${productSelected.length}) Item Dipilih`);
-        $("#totalHarga").text(`Rp. ${formatMoney(total)}`);
+        if(productSelected.length) {
+            $("#selectedItem").fadeOut(function(){
+                $("#selectedItem").fadeIn(1000);
+                const total = productSelected.reduce((prev, next) => prev + next.harga_jual, 0);
+                $("#itemDipilih").text(`(${productSelected.length}) Item Dipilih`);
+                $("#totalHarga").text(`Rp. ${formatMoney(total)}`);
+                $("#selectedItem").effect("shake", {
+                    times: 2
+                }, 200);
+            });
+        } else {
+            $("#selectedItem").fadeOut(1000);
+            $("#itemDipilih").text(`0 Item Dipilih`);
+            $("#totalHarga").text(`Rp. 0`);
+        }
     }
 
     function loadingCard()
@@ -211,6 +224,12 @@
                 <span class="sr-only">Loading...</span>
             </div>
         </div>`);
+    }
+
+    function resetSelected()
+    {
+        productSelected = [];
+        renderSelected();
     }
 
     function backgroundColor(randomNumber)
@@ -227,6 +246,46 @@
             case 8: return '#43a047';
             case 9: return '#ffeb3b';
             default: return '#f4511e';
+        }
+    }
+
+    function addToChart(that)
+    {
+        var cart = $('#selectedItem');
+        var elToDrag = $(that).find('.img-fluid').eq(0);
+        if (elToDrag) {
+            var imgclone = elToDrag.clone()
+            .offset({
+                top: elToDrag.offset().top,
+                left: elToDrag.offset().left
+            })
+            .css({
+                'opacity': '0.1',
+                'position': 'absolute',
+                'height': '150px',
+                'width': '150px',
+                'z-index': '100'
+            })
+            .appendTo($('body'))
+            .animate({
+                'top': cart.offset().top + 10,
+                'left': cart.offset().left + 10,
+                'width': 75,
+                'height': 75
+            }, 1000, 'easeInOutExpo');
+
+            setTimeout(function () {
+                cart.effect("shake", {
+                    times: 2
+                }, 200);
+            }, 1500);
+
+            imgclone.animate({
+                'width': 0,
+                'height': 0
+            }, function () {
+                $(that).detach()
+            });
         }
     }
 
