@@ -15,4 +15,5 @@ use Illuminate\Support\Facades\Route;
     Route::prefix('transaksi-jual')->middleware('level:1,2')->group(function(){
         Route::get('/', [TransaksiJualController::class, 'index']);
         Route::get('get-data-produk', [TransaksiJualController::class, 'getDataProduk']);
+        Route::get('get-add-opt/{id_produk}', [TransaksiJualController::class, 'getAddOpt']);
     });

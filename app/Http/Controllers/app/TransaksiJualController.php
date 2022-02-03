@@ -59,4 +59,28 @@ class TransaksiJualController extends Controller
         }
         return response()->json($responseJson, $status);
     }
+
+    public function getAddOpt($id_produk)
+    {
+        $status = 200;
+        $responseJson = [];
+        try {
+            $headerAddOpt = DB::table('produk_additional as pa')->where('pa.id_produk', $id_produk)
+            ->join('add_opt as ao', 'ao.id_add_opt', '=', 'pa.id_add_opt');
+            $totalHeader = $headerAddOpt->count();
+            $dataHeader = $headerAddOpt->get();
+            if($totalHeader > 0) {
+                $dataHeader->each(function($item){
+                    $detailAddOpt = DB::table('add_opt_detail as aod')->where('aod.id_add_opt', $item->id_add_opt)->get();
+                    $item->details = $detailAddOpt;
+                    return $item;
+                });
+            }
+            $responseJson = Response::success('ok', $dataHeader);
+        } catch (Exception $e) {
+            $status = 500;
+            $responseJson = Response::error($e->getMessage());
+        }
+        return response()->json($responseJson, $status);
+    }
 }
