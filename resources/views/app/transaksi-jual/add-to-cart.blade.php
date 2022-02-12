@@ -16,7 +16,7 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-12">
-                                <button class="btn btn-flat btn-primary form-control" onclick="storeAddOpt();"> <span id="grandTotal"></span> - Tambah Pesanan</button>
+                                <button class="btn btn-flat btn-primary w-100" id="storeAddOptDetail" onclick="storeAddOpt();"> <span id="grandTotal"></span> - Tambah Pesanan</button>
                             </div>
                         </div>
                     </div>

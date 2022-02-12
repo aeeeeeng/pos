@@ -30,7 +30,7 @@
         <div class="d-flex">
 
 
-            <div class="dropdown d-none d-sm-inline-block">
+            <div class="dropdown d-sm-inline-block">
                 <div class="btn-group">
                     <button type="button" class="btn btn-primary mt-3">{{handlingObject(@$outlet->nama_outlet)}}</button>
                     <button type="button" class="btn btn-primary mt-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -42,14 +42,14 @@
                 </div>
             </div>
 
-            <div class="dropdown d-none d-sm-inline-block">
+            <div class="dropdown d-sm-inline-block">
                 <button type="button" class="btn header-item" id="mode-setting-btn" onclick="setModeDark()">
                     <i data-feather="moon" class="icon-lg layout-mode-dark"></i>
                     <i data-feather="sun" class="icon-lg layout-mode-light"></i>
                 </button>
             </div>
 
-            <div class="dropdown d-inline-block">
+            <div class="dropdown d-none d-sm-inline-block">
                 <button type="button" class="btn header-item right-bar-toggle me-2">
                     <i data-feather="settings" class="icon-lg"></i>
                 </button>

@@ -24,7 +24,7 @@ class Produk extends Model
         'barcode_produk' => 'nullable|string|max:100|unique:produk,barcode_produk',
         'nama_produk' => 'required|string|max:100|unique:produk,nama_produk',
         'harga_jual' => 'required|integer',
-        'gambar' => 'nullable|max:1000'
+        'gambar' => 'nullable'
     ];
 
     public static function getProdukList($payloads, $type)
