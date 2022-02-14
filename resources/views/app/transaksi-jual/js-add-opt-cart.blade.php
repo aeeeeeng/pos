@@ -100,10 +100,10 @@
             }
             renderQty();
         }
-        const html = `<div class="col-md-6">
+        const html = `<div class="col-6">
                             <h6 class="text-white" style="margin-top: 5px;">Jumlah Pesanan</h6>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="qty-update float-end">
                                 <div class="d-flex flex-wrap gap-2">
                                     ${(() => {
@@ -180,7 +180,7 @@
                             <td style="width:10%; font-weight:bold;">${item.qty_order}x</td>
                             <td>
                                 <span>
-                                    ${item.addOpt.length > 0 ? item.addOpt.map(item => item.nama_add_opt_detail).join(', ') : 'Tidak ada yang dipilih'}
+                                    ${item.addOpt.length > 0 ? item.addOpt.map(item => item.nama_add_opt_detail).join(', ') : 'Original'}
                                 </span>
                                 <br>
                                 <a href="#" class="text-link fw-bold">Edit</a>
@@ -189,7 +189,7 @@
                         </tr>`;
             }).join(' ');
             $("#detailAddOptCartBottom #listDetailAddOpt tbody").html(rowDetail);
-            $("#buttonAddOptDetail").html(`<button type="button" onclick="selectProduct(this, '${productSelected[0].id_produk}')" class="btn btn-primary btn-lg btn-rounded w-50">Tambah Satu Lagi</button>`);
+            $("#buttonAddOptDetail").html(`<button type="button" onclick="selectProduct(this, '${productSelected[0].id_produk}')" class="btn btn-primary btn btn-rounded w-50">Tambah Satu Lagi</button>`);
         }
     }
 

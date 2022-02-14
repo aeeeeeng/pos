@@ -33,10 +33,12 @@ class TransaksiJualController extends Controller
             $produk = DB::table('produk as p')
                     ->leftJoin('kategori as k', 'p.id_kategori', '=', 'k.id_kategori')
                     ->selectRaw('p.*, k.nama_kategori')
-                    ->where('p.id_kategori', $id_kategori)
                     // ->where('p.id_outlet', session()->get('outlet'))
                     ->where('p.dijual', '1')
                     ->where('p.status', '1');
+            if($id_kategori != '') {
+                $produk->where('p.id_kategori', $id_kategori);
+            }
             if($request->get('cari') != '' || $request->get('cari') != null) {
                 $produk->where('p.nama_produk', 'like', '%' . $request->get('cari') . '%');
                 $produk->orWhere('p.sku_produk', 'like', '%' . $request->get('cari') . '%');

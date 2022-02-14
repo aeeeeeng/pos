@@ -175,8 +175,10 @@
                 <div class="card-header text-center">
                     <div style="overflow-x:scroll;">
                         <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="kategori" autocomplete="off" value="" id="all" checked>
+                            <label class="btn btn-outline-primary btn-lg text-nowrap" for="all">Semua Kategori</label>
                             @foreach ($kategori as $i => $item)
-                                <input type="radio" class="btn-check" name="kategori" autocomplete="off" value="{{$item->id_kategori}}" id="{{$item->id_kategori}}" {{$i == 0 ? 'checked' : ''}}>
+                                <input type="radio" class="btn-check" name="kategori" autocomplete="off" value="{{$item->id_kategori}}" id="{{$item->id_kategori}}" >
                                 <label class="btn btn-outline-primary btn-lg text-nowrap" for="{{$item->id_kategori}}">{{$item->nama_kategori}}</label>
                             @endforeach
                         </div>
@@ -240,6 +242,8 @@
 
     let member = {}, grandTotal = 0, promo = [], promoManual = [], promoTotal = 0, customAmmount = 0, diskon = {tipe:'', val:''}, catatan = '', finalTotal = 0;
 
+    let payNominal = 0, payCardNumber = 0;
+
     $(document).ready(function(){
         $('#modal-form').modal({backdrop: 'static', keyboard: false});
         loadData();
@@ -267,6 +271,8 @@
 
     $('input[type=radio][name=kategori]').on('change', function() {
         id_kategori = $(this).val();
+        cari = '';
+        $("#cari").val('');
         loadData();
     });
 
@@ -437,7 +443,7 @@
             if(totalQty == 0) {
                 htmlQty = `<div class="row">
                                 <div class="col-md-12">
-                                    <button class="btn btn-primary btn-rounded form-control text-center" id="" onclick="selectProduct(this, '${selected.id_produk}')">Tambah</button>
+                                    <button class="btn btn-primary btn-rounded w-100 text-center" id="" onclick="selectProduct(this, '${selected.id_produk}')">Tambah</button>
                                 </div>
                             </div>`;
             } else {
@@ -546,4 +552,5 @@
     @includeIf('app.transaksi-jual.js-add-opt-cart')
     @includeIf('app.transaksi-jual.js-summary')
     @includeIf('app.transaksi-jual.js-a-discount')
+    @includeIf('app.transaksi-jual.js-payment')
 @endpush
