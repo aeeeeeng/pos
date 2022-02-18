@@ -26,7 +26,8 @@
 
     function renderPayBack()
     {
-        $("#payBack").text(`Rp. ${formatMoney(payNominal - finalTotal)}`);
+        const result = (payNominal - finalTotal) > 0 ? payNominal - finalTotal : 0;
+        $("#payBack").text(`Rp. ${formatMoney(result)}`);
     }
 
     function changeBayar(that)
@@ -47,12 +48,14 @@
         const val = $("#payType").val();
         if(val == 'tunai') {
             $("#elPayNominal").fadeIn();
+            $("#bayar").val('');
             $("#elPayCard").fadeOut();
             payNominal = 0;
             renderPayBack();
         } else if (val == 'kartu') {
             $("#elPayNominal").fadeOut();
             $("#elPayCard").fadeIn();
+            $("#card").val('');
             payNominal = finalTotal;
             renderPayBack();
         }

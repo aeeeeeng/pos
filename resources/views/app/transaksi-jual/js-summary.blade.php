@@ -24,6 +24,13 @@
         }
     });
 
+    $("input[type='number']").on("keydown", function(e){
+        const invalidChars = ["e", "+", "E"];
+        if(invalidChars.includes(e.key)){
+            e.preventDefault();
+        }
+    });
+
     $("#member").select2({
         placeholder: "Pilih Member Melalui Kode/Nama",
         allowClear: true,
@@ -262,7 +269,7 @@
 
         if(diskon_tipe == '%' && diskon_value > 100) {
             showErrorAlert('Tidak bisa melebihi 100');
-            $("#diskon_value").val(diskon.val);
+            $("#diskon_value").val('');
             return;
         }
         diskon.tipe = diskon_tipe;

@@ -159,7 +159,6 @@
                 border-top: none;
             }
         }
-
     </style>
 @endpush
 
@@ -174,7 +173,7 @@
             <div class="card">
                 <div class="card-header text-center">
                     <div style="overflow-x:scroll;">
-                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                        <div class="btn-group mb-3" role="group" aria-label="Basic radio toggle button group">
                             <input type="radio" class="btn-check" name="kategori" autocomplete="off" value="" id="all" checked>
                             <label class="btn btn-outline-primary btn-lg text-nowrap" for="all">Semua Kategori</label>
                             @foreach ($kategori as $i => $item)
@@ -244,15 +243,42 @@
 
     let payNominal = 0, payCardNumber = 0;
 
+    function toggleFullScreen() {
+    if (!document.fullscreenElement &&    // alternative standard method
+        !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+        if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+        document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+    } else {
+        if (document.exitFullscreen) {
+        document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+        }
+    }
+    }
+
     $(document).ready(function(){
         $('#modal-form').modal({backdrop: 'static', keyboard: false});
         loadData();
     });
 
     $(window).bind('scroll resize', function() {
-        $('.card-header.text-center')
-        .css('position', 'sticky')
-        .css('top', $(this).scrollTop());
+        setTimeout(() => {
+            $('.card-header.text-center')
+            .css('position', 'sticky')
+            .css('top', $(this).scrollTop())
+        }, 500);
         if($(this).scrollTop() > 180) {
             $('.card-header.text-center')
             .css('box-shadow', '0 8px 12px 0 rgb(0 0 0 / 20%)')
@@ -270,6 +296,7 @@
 
 
     $('input[type=radio][name=kategori]').on('change', function() {
+        event.preventDefault();
         id_kategori = $(this).val();
         cari = '';
         $("#cari").val('');
@@ -311,7 +338,7 @@
     function renderThumbnail()
     {
         const rowProduct = product.map(item => {
-            return `<div class="col-xs-6 col-md-4 col-xxl-2" id="thumbnail${item.id_produk}">
+            return `<div class="col-xs-6 col-md-3 col-xxl-2" id="thumbnail${item.id_produk}">
                         <div class="card" style="box-shadow:0 8px 12px 0 rgb(0 0 0 / 20%); border-radius: 15px;">
                             <div class="card-body product-title">
                                 <h6 class="card-title"

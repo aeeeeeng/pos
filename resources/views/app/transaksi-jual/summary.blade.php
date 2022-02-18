@@ -65,7 +65,7 @@
                                 <div class="form-group mb-3">
                                     <label>Diskon</label>
                                     <div class="d-flex flex-wrap gap-1 align-items-center justify-content-start">
-                                        <input type="text" class="form-control numbersOnly text-end" id="diskon_value" placeholder="Masukkan nilai diskon" style="width:50%;" onchange="renderDiskon()" onkeyup="renderDiskon()">
+                                        <input type="number" class="form-control numbersOnly text-end" id="diskon_value" placeholder="Masukkan nilai diskon" style="width:50%;" onchange="renderDiskon()" onkeyup="renderDiskon()" autocomplete="off">
                                         <select name="diskon_tipe" id="diskon_tipe" class="form-select" style="width:80px;" onchange="renderDiskon()">
                                             <option value="rp">Rp.</option>
                                             <option value="%">%</option>
@@ -74,7 +74,7 @@
                                 </div>
                                 <div class="form-group mb-3">
                                     <label>Custom Ammount</label>
-                                    <input type="text" class="form-control numbersOnly text-end" placeholder="Custom Ammount" id="customAmmount" name="customAmmount" onkeyup="renderCustomAmmount();" onchange="renderCustomAmmount();">
+                                    <input type="number" class="form-control numbersOnly text-end" placeholder="Custom Ammount" id="customAmmount" name="customAmmount" onkeyup="renderCustomAmmount();" onchange="renderCustomAmmount();" autocomplete="off">
                                 </div>
                                 <div class="form-group mb-3">
                                     <label>Catatan</label>

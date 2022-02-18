@@ -74,14 +74,145 @@
             .pace .pace-progress {
                 height: 1rem;
             }
+
+            ::-webkit-scrollbar
+            {
+                width: 5px;
+                height: 5px;
+                background-color: #f3f3f9;
+                border-radius: 10px;
+            }
+
+            ::-webkit-scrollbar-track
+            {
+                -webkit-box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
+                border-radius: 10px;
+                background-color: #f3f3f9;
+            }
+
+            ::-webkit-scrollbar-thumb
+            {
+                border-radius: 10px;
+                -webkit-box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
+                background-color: #5156be;
+            }
+
+            body[data-layout-mode=dark] ::-webkit-scrollbar
+            {
+                background-color: #313533;
+            }
+
+            body[data-layout-mode=dark] ::-webkit-scrollbar-track
+            {
+                background-color: #313533;
+            }
+
+            body[data-layout-mode=dark] ::-webkit-scrollbar-thumb
+            {
+                background-color: #5156be;
+            }
+
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            input[type=number] {
+                -moz-appearance: textfield;
+            }
+
+            .loading-before-page {
+                position: fixed;
+                width: 100%;
+                height: 100vh;
+                left: 0;
+                top: 0;
+                background: #fff;
+                z-index: 9991;
+            }
+
+            body[data-layout-mode=dark] .loading-before-page {
+                background: #313533;
+            }
+
+            .container-loading {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                margin: 0 auto;
+                width: 100%;
+            }
+
+            .super-spinner {
+                box-sizing: border-box;
+                position: relative;
+                margin: auto;
+                width: 220px;
+                aspect-ratio: 1/1;
+                border-radius: 50%;
+                border: 30px solid transparent;
+                border-top-color: #5156be;
+                border-bottom-color: #e83e8c;
+                transform: rotateZ(-45deg);
+                animation: super-spinner 5s linear infinite;
+            }
+            .super-spinner::after {
+                box-sizing: border-box;
+                content: "";
+                position: absolute;
+                inset: -30px;
+                aspect-ratio: 1/1;
+                border-radius: 50%;
+                border: 30px solid transparent;
+                border-right-color: #e83e8c;
+                border-left-color: #5156be;
+                animation: super-spinner 5s linear infinite;
+            }
+            @keyframes super-spinner {
+                0% {
+                    transform: rotateZ(0deg);
+                }
+                25% {
+                    transform: rotateZ(360deg);
+                }
+                75% {
+                    transform: rotateZ(720deg);
+                }
+                100% {
+                    transform: rotateZ(1080deg);
+                }
+            }
+
+            .text-loading {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                text-align: center;
+                width: 100%;
+            }
+
         </style>
 
         @stack('css')
 
+        <script src="{{asset('template/libs/jquery/jquery.min.js')}}"></script>
+        <script>
+            $(document).ready(function(){
+                $(".loading-before-page").fadeOut('slow');
+            })
+        </script>
     </head>
 
     <body data-sidebar-size="lg" data-layout="horizontal">
-
+        <div class="loading-before-page">
+            <div class="container-loading">
+                <div class="super-spinner"></div>
+                <div class="text-loading">
+                    <h3>Memuat ...</h3>
+                </div>
+            </div>
+        </div>
     <!-- <body data-layout="horizontal"> -->
 
         <!-- Begin page -->
@@ -274,7 +405,6 @@
         <div class="rightbar-overlay"></div>
 
         <!-- JAVASCRIPT -->
-        <script src="{{asset('template/libs/jquery/jquery.min.js')}}"></script>
         <script src="{{asset('template/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
         <script src="{{asset('template/libs/metismenu/metisMenu.min.js')}}"></script>
         <script src="{{asset('template/libs/simplebar/simplebar.min.js')}}"></script>

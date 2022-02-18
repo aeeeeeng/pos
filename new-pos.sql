@@ -100,7 +100,7 @@ CREATE TABLE `add_opt_komposit` (
   `nama_komposit` varchar(255) NOT NULL,
   `jumlah_komposit` float NOT NULL,
   PRIMARY KEY (`id_add_opt_komposit`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of add_opt_komposit
@@ -1285,7 +1285,7 @@ CREATE TABLE `uom` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `updated_by` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id_uom`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of uom

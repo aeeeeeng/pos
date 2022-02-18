@@ -28,12 +28,12 @@
 
                     <div class="form-group mb-3" id="elPayNominal">
                         <label>Nominal Bayar</label>
-                        <input type="text" class="form-control numbersOnly text-end" id="bayar" name="bayar" placeholder="Isi Nominal Pembayaran" onchange="changeBayar(this)" onkeyup="changeBayar(this)" autocomplete="off">
+                        <input type="number" class="form-control numbersOnly text-end" id="bayar" name="bayar" placeholder="Isi Nominal Pembayaran" onchange="changeBayar(this)" onkeyup="changeBayar(this)" autocomplete="off">
                     </div>
 
                     <div class="form-group mb-3" id="elPayCard">
                         <label>Nomor Kartu</label>
-                        <input type="text" class="form-control numbersOnly text-end" id="card" name="card" placeholder="Isi Nominal Pembayaran" onchange="changeCard(this)" onkeyup="changeCard(this)" autocomplete="off">
+                        <input type="number" class="form-control numbersOnly text-end" id="card" name="card" placeholder="Isi Nominal Pembayaran" onchange="changeCard(this)" onkeyup="changeCard(this)" autocomplete="off">
                     </div>
 
                 </div>
