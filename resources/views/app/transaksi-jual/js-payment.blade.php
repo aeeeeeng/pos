@@ -75,8 +75,30 @@
                 return;
             }
         }
+        storeTransaction();
+    }
 
-        $("body").html('<h1>Opo Lek Lis ?? .......</h1>')
-
+    function storeTransaction()
+    {
+        const payType = $("#payType").val();
+        const payloads = {cart, member, grandTotal, promo, promoManual, promoTotal, customAmmount, diskon, catatan, finalTotal, payType, payNominal, payCardNumber};
+        $.ajax({
+            url: `{{url('app/transaksi-jual/store')}}`,
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(payloads),
+            beforeSend: function() {
+                loadingApp();
+            }
+        }).done(response => {
+            console.log(response);
+        }).fail(error => {
+            const respJson = $.parseJSON(error.responseText);
+            showErrorAlert(respJson.message);
+            $("#thumbnail").html('');
+        }).always(() => {
+            unLoadingApp();
+        })
     }
 </script>

@@ -289,4 +289,9 @@ class TransaksiJualController extends Controller
 
         return $promoQtyProduk->get();
     }
+
+    public function store(Request $request)
+    {
+        dd($request->all());
+    }
 }

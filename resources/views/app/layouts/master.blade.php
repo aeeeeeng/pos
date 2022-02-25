@@ -680,6 +680,16 @@
                 return [day, month, year].join('/');
             }
 
+            function loadingApp()
+            {
+                $(".loading-before-page").fadeIn();
+            }
+
+            function unLoadingApp()
+            {
+                $(".loading-before-page").fadeOut();
+            }
+
         </script>
         @stack('scripts')
     </body>

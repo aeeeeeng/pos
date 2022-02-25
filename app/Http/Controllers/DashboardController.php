@@ -18,6 +18,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        return view('admin.dashboard');
+
+    }
+
+    public function oldIndex()
+    {
         $kategori = Kategori::count();
         $produk = Produk::count();
         $supplier = Supplier::count();
@@ -51,7 +57,7 @@ class DashboardController extends Controller
         $laba_penjualan = self::getDataPenjualan($tanggal_awal, $tanggal_akhir);
 
         $terlaris = self::getDataTerlaris();
-        
+
         if (auth()->user()->level == 1) {
             return view('admin.dashboard', compact('kategori', 'produk', 'supplier', 'member', 'tanggal_awal', 'tanggal_akhir', 'data_tanggal', 'data_pendapatan', 'produkStokMinimal', 'laba_penjualan', 'terlaris'));
         } else {
@@ -61,12 +67,12 @@ class DashboardController extends Controller
 
     private static function getDataPenjualan($tglAwal, $tglAkhir)
     {
-        
+
         $data = LaporanLabaProduct::queryGetData($tglAwal, $tglAkhir);
-        
+
         $resultData = [];
-        
-        
+
+
         foreach ($data->groupBy('tanggalJual') as $i => $item ) {
             $labaBersih = 0;
             foreach ($item as $detail) {
